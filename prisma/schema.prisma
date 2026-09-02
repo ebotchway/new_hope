@@ -1,0 +1,324 @@
+// LivingHope platform schema
+// learn more: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------- Auth ----------
+
+enum Role {
+  DONOR
+  STAFF
+  ADMIN
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  phone         String?
+  passwordHash  String?
+  role          Role      @default(DONOR)
+
+  accounts      Account[]
+  sessions      Session[]
+  sponsorships  Sponsorship[]
+  donations     Donation[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// ---------- Children & sponsorship ----------
+
+enum ChildStatus {
+  AVAILABLE
+  SPONSORED
+  GRADUATED
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+model Child {
+  id          String      @id @default(cuid())
+  slug        String      @unique
+  name        String
+  gender      Gender
+  dateOfBirth DateTime?
+  bio         String      @db.Text
+  photoUrl    String?
+  school      String?
+  location    String?
+  status      ChildStatus @default(AVAILABLE)
+  featured    Boolean     @default(false)
+  order       Int         @default(0)
+
+  /// Optional funding goal (in cents) to show a sponsorship progress bar; 0 = no goal shown.
+  fundingGoalCents Int @default(0)
+
+  sponsorships Sponsorship[]
+  donations    Donation[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("children")
+}
+
+enum SponsorshipType {
+  FULL
+  CONTRIBUTION
+}
+
+enum SponsorshipStatus {
+  ACTIVE
+  PAUSED
+  ENDED
+}
+
+model Sponsorship {
+  id     String @id @default(cuid())
+  userId String
+  childId String
+
+  type   SponsorshipType
+  status SponsorshipStatus @default(ACTIVE)
+
+  stripeSubscriptionId String? @unique
+  monthlyAmountCents   Int
+
+  startDate DateTime  @default(now())
+  endDate   DateTime?
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  child Child @relation(fields: [childId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("sponsorships")
+}
+
+// ---------- Donations ----------
+
+enum DonationFrequency {
+  ONE_TIME
+  MONTHLY
+}
+
+enum DonationDesignation {
+  GENERAL
+  CHILD_SPONSORSHIP
+  PARTNERSHIP
+}
+
+enum DonationStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+}
+
+model Donation {
+  id String @id @default(cuid())
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  childId String?
+  child   Child?  @relation(fields: [childId], references: [id], onDelete: SetNull)
+
+  title       String?
+  donorName   String
+  donorEmail  String
+  donorPhone  String?
+  anonymous   Boolean @default(false)
+
+  amountCents Int
+  currency    String @default("usd")
+
+  frequency    DonationFrequency
+  designation  DonationDesignation @default(GENERAL)
+  status       DonationStatus      @default(PENDING)
+
+  emailUpdates    Boolean @default(true)
+  smsUpdates      Boolean @default(false)
+  whatsappUpdates Boolean @default(false)
+
+  stripeCheckoutSessionId String? @unique
+  stripePaymentIntentId   String? @unique
+  stripeSubscriptionId    String? @unique
+  stripeCustomerId        String?
+
+  receiptSentAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("donations")
+}
+
+// ---------- Partnership inquiries ----------
+
+enum PartnershipType {
+  INDIVIDUAL
+  GROUP
+  CORPORATE
+  CHURCH
+  WILL_GIFT
+  VOLUNTEER
+}
+
+enum InquiryStatus {
+  NEW
+  CONTACTED
+  CLOSED
+}
+
+model PartnershipInquiry {
+  id      String          @id @default(cuid())
+  type    PartnershipType
+  name    String
+  email   String
+  phone   String?
+  message String?         @db.Text
+  status  InquiryStatus   @default(NEW)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("partnership_inquiries")
+}
+
+// ---------- Site content (admin-managed) ----------
+
+model Story {
+  id        String  @id @default(cuid())
+  name      String
+  age       Int?
+  quote     String  @db.Text
+  mediaUrl  String?
+  imageUrl  String?
+  published Boolean @default(true)
+  order     Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("stories")
+}
+
+model ImpactStat {
+  id        String @id @default(cuid())
+  label     String
+  value     String
+  order     Int    @default(0)
+  published Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("impact_stats")
+}
+
+model HistoryEvent {
+  id          String   @id @default(cuid())
+  year        String
+  title       String
+  bulletPoints String[] @default([])
+  imageUrl    String?
+  order       Int      @default(0)
+  published   Boolean  @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("history_events")
+}
+
+model Trustee {
+  id       String  @id @default(cuid())
+  name     String
+  photoUrl String?
+  title    String?
+  order    Int     @default(0)
+  published Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("trustees")
+}
+
+model SiteSettings {
+  id Int @id @default(1)
+
+  heroHeadline    String @default("Transforming Lives Through Education")
+  heroSubheadline String @default("Providing access to education for a brighter future")
+  missionTitle    String @default("Our Guiding Mission")
+  missionBody     String @default("") @db.Text
+
+  facebookUrl String?
+  twitterUrl  String?
+  youtubeUrl  String?
+
+  contactEmail String?
+  contactPhone String?
+
+  updatedAt DateTime @updatedAt
+
+  @@map("site_settings")
+}
