@@ -17,7 +17,7 @@ export function SettingsForm({ settings }: { settings: SiteSettings | null }) {
   return (
     <form action={formAction} className="max-w-2xl space-y-8">
       <section className="space-y-4">
-        <h2 className="font-semibold text-brand-navy">Homepage Hero</h2>
+        <h2 className="font-semibold text-foreground">Homepage Hero</h2>
         <div className="grid gap-2">
           <Label htmlFor="heroHeadline">Headline</Label>
           <Input id="heroHeadline" name="heroHeadline" defaultValue={settings?.heroHeadline} required />
@@ -29,7 +29,7 @@ export function SettingsForm({ settings }: { settings: SiteSettings | null }) {
       </section>
 
       <section className="space-y-4">
-        <h2 className="font-semibold text-brand-navy">Guiding Mission</h2>
+        <h2 className="font-semibold text-foreground">Guiding Mission</h2>
         <div className="grid gap-2">
           <Label htmlFor="missionTitle">Title</Label>
           <Input id="missionTitle" name="missionTitle" defaultValue={settings?.missionTitle} required />
@@ -41,7 +41,7 @@ export function SettingsForm({ settings }: { settings: SiteSettings | null }) {
       </section>
 
       <section className="space-y-4">
-        <h2 className="font-semibold text-brand-navy">Social &amp; Contact</h2>
+        <h2 className="font-semibold text-foreground">Social &amp; Contact</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="grid gap-2">
             <Label htmlFor="facebookUrl">Facebook URL</Label>
@@ -62,6 +62,28 @@ export function SettingsForm({ settings }: { settings: SiteSettings | null }) {
           <div className="grid gap-2">
             <Label htmlFor="contactPhone">Contact Phone</Label>
             <Input id="contactPhone" name="contactPhone" defaultValue={settings?.contactPhone ?? ""} />
+          </div>
+        </div>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="font-semibold text-foreground">Mobile Money</h2>
+        <p className="text-xs text-muted-foreground">
+          Set a merchant number to offer Mobile Money as a payment option on the donation page.
+          Leave blank to hide it.
+        </p>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-2">
+            <Label htmlFor="momoProvider">Provider</Label>
+            <Input id="momoProvider" name="momoProvider" placeholder="MTN Mobile Money" defaultValue={settings?.momoProvider ?? ""} />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="momoNumber">Merchant Number</Label>
+            <Input id="momoNumber" name="momoNumber" placeholder="024 XXX XXXX" defaultValue={settings?.momoNumber ?? ""} />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="momoName">Registered Name</Label>
+            <Input id="momoName" name="momoName" placeholder="LivingHope Ghana" defaultValue={settings?.momoName ?? ""} />
           </div>
         </div>
       </section>

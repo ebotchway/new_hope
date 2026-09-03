@@ -98,9 +98,9 @@ export default async function AdminDashboardPage() {
             <CardContent className="p-5">
               <div className="flex items-center justify-between">
                 <p className="text-sm text-muted-foreground">{stat.label}</p>
-                <stat.icon className="size-4 text-brand-navy" />
+                <stat.icon className="size-4 text-foreground" />
               </div>
-              <p className="mt-2 text-2xl font-bold text-brand-navy">{stat.value}</p>
+              <p className="mt-2 text-2xl font-bold text-foreground">{stat.value}</p>
               <p className="mt-1 text-xs text-muted-foreground">{stat.hint}</p>
             </CardContent>
           </Card>
@@ -119,7 +119,7 @@ export default async function AdminDashboardPage() {
       <Card className="mt-6">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Recent Donations</CardTitle>
-          <Link href="/admin/donations" className="text-sm text-brand-navy hover:underline">
+          <Link href="/admin/donations" className="text-sm text-foreground hover:underline">
             View all
           </Link>
         </CardHeader>

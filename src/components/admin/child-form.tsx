@@ -34,7 +34,7 @@ export function ChildForm({
             id="gender"
             name="gender"
             defaultValue={child?.gender ?? "FEMALE"}
-            className="h-9 rounded-md border border-input bg-white px-3 text-sm"
+            className="h-9 rounded-md border border-input bg-card px-3 text-sm"
           >
             <option value="FEMALE">Female</option>
             <option value="MALE">Male</option>
@@ -58,7 +58,7 @@ export function ChildForm({
             id="status"
             name="status"
             defaultValue={child?.status ?? "AVAILABLE"}
-            className="h-9 rounded-md border border-input bg-white px-3 text-sm"
+            className="h-9 rounded-md border border-input bg-card px-3 text-sm"
           >
             <option value="AVAILABLE">Available</option>
             <option value="SPONSORED">Sponsored</option>

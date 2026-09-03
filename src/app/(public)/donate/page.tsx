@@ -13,7 +13,10 @@ export default async function DonatePage(props: PageProps<"/donate">) {
   const childId = typeof searchParams.childId === "string" ? searchParams.childId : undefined;
   const frequencyParam = typeof searchParams.frequency === "string" ? searchParams.frequency : undefined;
 
-  const child = childId ? await prisma.child.findUnique({ where: { id: childId } }) : null;
+  const [child, settings] = await Promise.all([
+    childId ? prisma.child.findUnique({ where: { id: childId } }) : null,
+    prisma.siteSettings.findUnique({ where: { id: 1 } }),
+  ]);
 
   if (child) {
     const session = await auth();
@@ -30,7 +33,7 @@ export default async function DonatePage(props: PageProps<"/donate">) {
         imageUrl={PLACEHOLDER_IMAGES.donateHero}
       />
 
-      <section className="px-4 py-16">
+      <section className="px-4 py-20">
         <div className="mx-auto max-w-xl">
           <Reveal>
             <DonationForm
@@ -38,6 +41,8 @@ export default async function DonatePage(props: PageProps<"/donate">) {
               childName={child?.name}
               designation={child ? "CHILD_SPONSORSHIP" : "GENERAL"}
               defaultFrequency={frequencyParam === "ONE_TIME" ? "ONE_TIME" : "MONTHLY"}
+              momoEnabled={Boolean(settings?.momoNumber)}
+              momoProviderName={settings?.momoProvider ?? undefined}
             />
           </Reveal>
         </div>

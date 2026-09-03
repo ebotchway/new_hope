@@ -4,12 +4,12 @@ import { Search, PointerIcon, Heart, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { PageHero } from "@/components/site/page-hero";
 import { SectionHeading } from "@/components/site/section-heading";
 import { CtaBanner } from "@/components/site/cta-banner";
 import { Reveal, RevealGroup, RevealItem } from "@/components/site/reveal";
 import { ChildFilterBar } from "@/components/site/child-filter-bar";
+import { ChildPhotoPlaceholder } from "@/components/site/child-photo-placeholder";
 import { SponsorshipProgress } from "@/components/site/sponsorship-progress";
 import { prisma } from "@/lib/prisma";
 import { getRaisedAmountsByChild } from "@/lib/child-funding";
@@ -83,13 +83,13 @@ export default async function SponsorAChildPage(props: PageProps<"/sponsor-a-chi
         </div>
       </PageHero>
 
-      <section id="how-it-works" className="px-4 py-20">
+      <section id="how-it-works" className="px-4 py-24">
         <div className="mx-auto max-w-6xl">
           <Reveal>
-            <SectionHeading title="How Child Sponsorship Works" className="mb-10" />
+            <SectionHeading eyebrow="The Process" title="How Child Sponsorship Works" className="mb-12" />
           </Reveal>
           <Reveal delay={0.1}>
-            <div className="relative mb-12 aspect-21/9 overflow-hidden rounded-2xl">
+            <div className="relative mb-14 aspect-21/9 overflow-hidden rounded-3xl shadow-sm">
               <Image
                 src={PLACEHOLDER_IMAGES.brightenerHero}
                 alt="Children who could be sponsored"
@@ -101,25 +101,30 @@ export default async function SponsorAChildPage(props: PageProps<"/sponsor-a-chi
           </Reveal>
           <RevealGroup className="grid gap-8 sm:grid-cols-4">
             {STEPS.map((step) => (
-              <RevealItem key={step.title} className="flex flex-col items-center gap-3 text-center">
-                <step.icon className="size-6 text-brand-navy" />
-                <h3 className="text-sm font-semibold">{step.title}</h3>
-                <p className="text-xs text-muted-foreground">{step.body}</p>
+              <RevealItem key={step.title} className="flex flex-col items-center gap-4 text-center">
+                <span className="flex size-14 items-center justify-center rounded-2xl bg-brand-navy/10">
+                  <step.icon className="size-6 text-foreground" />
+                </span>
+                <h3 className="text-base font-semibold text-foreground">{step.title}</h3>
+                <p className="text-sm text-muted-foreground">{step.body}</p>
               </RevealItem>
             ))}
           </RevealGroup>
         </div>
       </section>
 
-      <section className="bg-secondary px-4 py-20">
+      <section className="bg-secondary px-4 py-24">
         <div className="mx-auto max-w-4xl">
           <Reveal>
-            <SectionHeading title="When You Sponsor a Child's Education" className="mb-10" />
+            <SectionHeading eyebrow="What's Included" title="When You Sponsor a Child's Education" className="mb-12" />
           </Reveal>
           <RevealGroup className="space-y-4">
             {BENEFITS.map((benefit) => (
-              <RevealItem key={benefit} className="flex items-start gap-3 text-sm sm:text-base">
-                <Badge className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-brand-navy p-0 text-white">
+              <RevealItem
+                key={benefit}
+                className="flex items-start gap-4 rounded-2xl bg-card p-4 text-sm shadow-sm sm:text-base"
+              >
+                <Badge className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-brand-navy p-0 text-white">
                   ✓
                 </Badge>
                 {benefit}
@@ -129,13 +134,14 @@ export default async function SponsorAChildPage(props: PageProps<"/sponsor-a-chi
         </div>
       </section>
 
-      <section id="available-children" className="px-4 py-20">
+      <section id="available-children" className="px-4 py-24">
         <div className="mx-auto max-w-6xl">
           <Reveal>
             <SectionHeading
+              eyebrow="Meet the Children"
               title="Children Waiting for a Sponsor"
               subtitle="Every profile below represents a child ready to begin, or continue, their education journey."
-              className="mb-8"
+              className="mb-10"
             />
           </Reveal>
 
@@ -153,7 +159,7 @@ export default async function SponsorAChildPage(props: PageProps<"/sponsor-a-chi
                 return (
                   <RevealItem key={child.id}>
                     <Link href={`/sponsor-a-child/${child.slug}`} className="group block h-full">
-                      <Card className="h-full overflow-hidden border-none bg-secondary py-0 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+                      <Card className="h-full overflow-hidden rounded-2xl border-none bg-secondary py-0 shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl">
                         <div className="relative aspect-4/3 overflow-hidden bg-muted">
                           {child.photoUrl ? (
                             <Image
@@ -164,18 +170,12 @@ export default async function SponsorAChildPage(props: PageProps<"/sponsor-a-chi
                               className="object-cover transition-transform duration-500 group-hover:scale-105"
                             />
                           ) : (
-                            <div className="flex h-full items-center justify-center">
-                              <Avatar className="size-16">
-                                <AvatarFallback className="bg-brand-navy text-lg text-white">
-                                  {child.name.slice(0, 1)}
-                                </AvatarFallback>
-                              </Avatar>
-                            </div>
+                            <ChildPhotoPlaceholder />
                           )}
                         </div>
-                        <CardContent className="p-5">
+                        <CardContent className="p-6">
                           <div className="flex items-center justify-between">
-                            <h3 className="font-semibold">{child.name}</h3>
+                            <h3 className="text-lg font-semibold text-foreground">{child.name}</h3>
                             {age !== null && (
                               <span className="text-xs text-muted-foreground">{age} yrs</span>
                             )}
@@ -183,7 +183,7 @@ export default async function SponsorAChildPage(props: PageProps<"/sponsor-a-chi
                           {child.location && (
                             <p className="mt-1 text-xs text-muted-foreground">{child.location}</p>
                           )}
-                          <p className="mt-3 line-clamp-2 text-sm text-muted-foreground">
+                          <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-muted-foreground">
                             {child.bio}
                           </p>
                           {child.fundingGoalCents > 0 && (

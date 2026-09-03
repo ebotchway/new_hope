@@ -20,6 +20,7 @@ export default async function AdminImpactStatsPage() {
       <AdminPageHeader
         title="Impact Stats"
         description="Big numbers shown on the About page impact band. Drag to reorder."
+        breadcrumbs={[{ label: "Impact Stats" }]}
         action={
           <Button asChild>
             <Link href="/admin/impact-stats/new">
@@ -30,7 +31,7 @@ export default async function AdminImpactStatsPage() {
         }
       />
       <SortableListShell ids={stats.map((s) => s.id)} onReorder={reorderImpactStats}>
-        <div className="rounded-xl border bg-white">
+        <div className="rounded-xl border bg-card">
           <Table>
             <TableHeader>
               <TableRow>

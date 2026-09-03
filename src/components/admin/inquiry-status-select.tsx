@@ -20,7 +20,7 @@ export function InquiryStatusSelect({ id, status }: { id: string; status: Inquir
           if (!result.success) toast.error(result.error);
         })
       }
-      className="h-8 rounded-md border border-input bg-white px-2 text-xs"
+      className="h-8 rounded-md border border-input bg-card px-2 text-xs"
     >
       {STATUSES.map((s) => (
         <option key={s} value={s}>

@@ -18,18 +18,18 @@ export default function WhatWeDoPage() {
         imageUrl={PLACEHOLDER_IMAGES.whatWeDoHero}
       />
 
-      <section className="px-4 py-20">
+      <section className="px-4 py-24">
         <div className="mx-auto max-w-6xl">
           <Reveal>
-            <SectionHeading title="Our Mission in Action" align="left" className="mb-10" />
+            <SectionHeading eyebrow="Our Approach" title="Our Mission in Action" align="left" className="mb-12" />
           </Reveal>
-          <div className="grid gap-6 sm:grid-cols-2">
-            <Reveal className="flex flex-col gap-4">
-              <p className="text-sm text-muted-foreground sm:text-base">
+          <div className="grid gap-8 sm:grid-cols-2">
+            <Reveal className="flex flex-col gap-5">
+              <p className="text-base leading-relaxed text-muted-foreground">
                 LivingHope breaks the poverty cycle by providing underprivileged children with
                 quality education. We provide school fees and educational supplies.
               </p>
-              <div className="relative aspect-4/3 overflow-hidden rounded-2xl">
+              <div className="relative aspect-4/3 overflow-hidden rounded-3xl shadow-sm">
                 <Image
                   src={PLACEHOLDER_IMAGES.missionSecondary}
                   alt="Children with school books"
@@ -39,8 +39,8 @@ export default function WhatWeDoPage() {
                 />
               </div>
             </Reveal>
-            <Reveal direction="left" delay={0.1} className="flex flex-col gap-3">
-              <div className="relative aspect-4/3 overflow-hidden rounded-2xl">
+            <Reveal direction="left" delay={0.1} className="flex flex-col gap-4">
+              <div className="relative aspect-4/3 overflow-hidden rounded-3xl shadow-sm">
                 <Image
                   src={PLACEHOLDER_IMAGES.brightenerHero}
                   alt="Vocational training workshop"
@@ -57,18 +57,20 @@ export default function WhatWeDoPage() {
         </div>
       </section>
 
-      <section className="px-4 pb-20">
+      <section className="px-4 pb-24">
         <div className="mx-auto max-w-6xl">
           <Reveal>
-            <SectionHeading title="How We Transform Lives" className="mb-10" />
+            <SectionHeading eyebrow="The Method" title="How We Transform Lives" className="mb-12" />
           </Reveal>
-          <RevealGroup className="grid gap-4 sm:grid-cols-2">
+          <RevealGroup className="grid gap-5 sm:grid-cols-2">
             <RevealItem>
-              <Card className="h-full border-none bg-secondary transition-transform duration-300 hover:-translate-y-1">
-                <CardContent className="flex flex-col items-center gap-3 p-8 text-center">
-                  <HardHat className="size-7 text-brand-navy" />
-                  <h3 className="font-semibold">Vocational Training</h3>
-                  <p className="text-sm text-muted-foreground">
+              <Card className="h-full rounded-2xl border-none bg-secondary shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lg">
+                <CardContent className="flex flex-col items-center gap-4 p-10 text-center">
+                  <span className="flex size-14 items-center justify-center rounded-2xl bg-brand-navy/10">
+                    <HardHat className="size-7 text-foreground" />
+                  </span>
+                  <h3 className="text-xl font-semibold text-foreground">Vocational Training</h3>
+                  <p className="text-sm leading-relaxed text-muted-foreground">
                     We empower older youth with vocational skills for employment and economic
                     independence.
                   </p>
@@ -76,11 +78,13 @@ export default function WhatWeDoPage() {
               </Card>
             </RevealItem>
             <RevealItem>
-              <Card className="h-full border-none bg-brand-navy text-white transition-transform duration-300 hover:-translate-y-1">
-                <CardContent className="flex flex-col items-center gap-3 p-8 text-center">
-                  <GraduationCap className="size-7" />
-                  <h3 className="font-semibold">Quality Education</h3>
-                  <p className="text-sm text-white/80">
+              <Card className="h-full rounded-2xl border-none bg-brand-navy text-white shadow-xl shadow-brand-navy/15 transition-all duration-300 hover:-translate-y-1.5">
+                <CardContent className="flex flex-col items-center gap-4 p-10 text-center">
+                  <span className="flex size-14 items-center justify-center rounded-2xl bg-white/15">
+                    <GraduationCap className="size-7" />
+                  </span>
+                  <h3 className="text-xl font-semibold">Quality Education</h3>
+                  <p className="text-sm leading-relaxed text-white/80">
                     We provide comprehensive schooling including tuition, books, uniforms, and daily
                     meals.
                   </p>

@@ -16,14 +16,26 @@ export function CtaBanner({
   className?: string;
 }) {
   return (
-    <section className={cn("px-4 py-16 sm:py-24", className)}>
-      <div className="mx-auto max-w-5xl rounded-2xl bg-brand-navy px-6 py-14 text-center text-white sm:px-12">
-        <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">{title}</h2>
+    <section className={cn("px-4 py-20 sm:py-28", className)}>
+      <div
+        className="relative mx-auto max-w-5xl overflow-hidden rounded-3xl bg-brand-navy px-6 py-16 text-center text-white sm:px-16 sm:py-20"
+        style={{
+          backgroundImage:
+            "radial-gradient(120% 140% at 15% -10%, color-mix(in oklch, var(--brand-navy-dark) 60%, transparent), transparent 60%)",
+        }}
+      >
+        <h2 className="text-3xl tracking-tight text-balance sm:text-4xl lg:text-5xl">{title}</h2>
         {subtitle && (
-          <p className="mx-auto mt-3 max-w-xl text-sm text-white/80 sm:text-base">{subtitle}</p>
+          <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-white/80 sm:text-lg">
+            {subtitle}
+          </p>
         )}
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-          <Button asChild size="lg" className="rounded-full bg-white text-brand-navy hover:bg-white/90">
+        <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
+          <Button
+            asChild
+            size="lg"
+            className="h-12 rounded-full bg-white px-7 text-base text-brand-navy shadow-lg shadow-black/20 hover:bg-white/90"
+          >
             <Link href={primary.href}>{primary.label}</Link>
           </Button>
           {secondary && (
@@ -31,7 +43,7 @@ export function CtaBanner({
               asChild
               size="lg"
               variant="outline"
-              className="rounded-full border-white/40 bg-transparent text-white hover:bg-white/10 hover:text-white"
+              className="h-12 rounded-full border-white/40 bg-transparent px-7 text-base text-white hover:bg-white/10 hover:text-white"
             >
               <Link href={secondary.href}>{secondary.label}</Link>
             </Button>

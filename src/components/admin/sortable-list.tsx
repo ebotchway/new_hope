@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, type ReactNode } from "react";
+import { useId, useState, useTransition, type ReactNode } from "react";
 import {
   DndContext,
   closestCenter,
@@ -76,6 +76,7 @@ export function SortableListShell({
   onReorder: (ids: string[]) => Promise<ActionResult>;
   children: ReactNode;
 }) {
+  const dndContextId = useId();
   const [order, setOrder] = useState(ids);
   const [, startTransition] = useTransition();
   const sensors = useSensors(
@@ -101,7 +102,12 @@ export function SortableListShell({
   }
 
   return (
-    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+    <DndContext
+      id={dndContextId}
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragEnd={handleDragEnd}
+    >
       <SortableContext items={order} strategy={verticalListSortingStrategy}>
         {children}
       </SortableContext>

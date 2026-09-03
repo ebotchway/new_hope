@@ -15,6 +15,7 @@ import {
 import { requireStaff } from "@/lib/session";
 import { Logo } from "@/components/site/logo";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const NAV_SECTIONS = [
   {
@@ -52,7 +53,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   return (
     <div className="flex min-h-screen bg-secondary/30">
-      <aside className="hidden w-64 shrink-0 flex-col border-r bg-white lg:flex">
+      <aside className="hidden w-64 shrink-0 flex-col border-r bg-background lg:flex">
         <div className="p-5">
           <Logo />
         </div>
@@ -87,11 +88,12 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       </aside>
 
       <div className="flex flex-1 flex-col">
-        <header className="flex items-center justify-between border-b bg-white px-6 py-3 lg:justify-end">
+        <header className="flex items-center justify-between border-b bg-background px-6 py-3 lg:justify-end">
           <div className="lg:hidden">
             <Logo />
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
+            <ThemeToggle className="text-muted-foreground hover:bg-secondary hover:text-foreground" />
             <Avatar className="size-8">
               <AvatarFallback className="bg-brand-navy text-xs text-white">
                 {(session.user.name ?? session.user.email ?? "U").slice(0, 1).toUpperCase()}

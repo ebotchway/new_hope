@@ -21,6 +21,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const NAV_LINKS = [
   { href: "/what-we-do", label: "What we Do" },
@@ -36,29 +37,30 @@ export async function SiteHeader() {
   const isStaff = user?.role === "ADMIN" || user?.role === "STAFF";
 
   return (
-    <header className="sticky top-0 z-50 bg-white pt-4 pb-2 px-4">
-      <div className="mx-auto flex max-w-7xl items-center justify-between rounded-2xl bg-brand-navy px-4 py-3 text-white sm:px-6">
-        <Logo light className="shrink-0" />
+    <header className="sticky top-0 z-50 bg-background pt-5 pb-1.5 px-4">
+      <div className="mx-auto flex max-w-7xl items-center justify-between rounded-2xl bg-brand-navy px-6 py-4.5 text-white shadow-lg shadow-brand-navy/10 sm:px-8">
+        <Logo light size="lg" className="shrink-0" />
 
-        <nav className="hidden items-center gap-6 lg:flex">
+        <nav className="hidden items-center gap-8 lg:flex">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="text-sm font-medium text-white/85 transition-colors hover:text-white"
+              className="text-[15px] font-medium text-white/85 transition-colors hover:text-white"
             >
               {link.label}
             </Link>
           ))}
         </nav>
 
-        <div className="hidden items-center gap-2 sm:flex">
+        <div className="hidden items-center gap-3 lg:flex">
+          <ThemeToggle className="text-white/85 hover:bg-white/10 hover:text-white" />
           {user ? (
             <DropdownMenu>
-              <DropdownMenuTrigger className="flex items-center gap-2 rounded-full pl-1 pr-3 py-1 hover:bg-white/10 transition-colors">
-                <Avatar className="h-7 w-7">
+              <DropdownMenuTrigger className="flex items-center gap-2 rounded-full py-1.5 pr-4 pl-1 transition-colors hover:bg-white/10">
+                <Avatar className="h-8 w-8">
                   <AvatarImage src={user.image ?? undefined} alt={user.name ?? "User"} />
-                  <AvatarFallback className="text-brand-navy text-xs">
+                  <AvatarFallback className="text-foreground text-xs">
                     {(user.name ?? user.email ?? "U").slice(0, 1).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
@@ -102,13 +104,17 @@ export async function SiteHeader() {
             </DropdownMenu>
           ) : (
             <>
-              <Button asChild variant="secondary" className="rounded-full bg-white text-brand-navy hover:bg-white/90">
+              <Button
+                asChild
+                variant="secondary"
+                className="h-10 rounded-full bg-white px-5.5 text-[15px] text-brand-navy hover:bg-white/90"
+              >
                 <Link href="/login">Log In</Link>
               </Button>
               <Button
                 asChild
                 variant="outline"
-                className="rounded-full border-white/40 bg-transparent text-white hover:bg-white/10 hover:text-white"
+                className="h-10 rounded-full border-white/40 bg-transparent px-5.5 text-[15px] text-white hover:bg-white/10 hover:text-white"
               >
                 <Link href="/signup">Join</Link>
               </Button>
@@ -125,8 +131,9 @@ export async function SiteHeader() {
           </SheetTrigger>
           <SheetContent side="right" className="w-72">
             <SheetHeader>
-              <SheetTitle>
+              <SheetTitle className="flex items-center justify-between">
                 <Logo />
+                <ThemeToggle className="text-foreground hover:bg-muted" />
               </SheetTitle>
             </SheetHeader>
             <nav className="flex flex-col gap-1 px-4">

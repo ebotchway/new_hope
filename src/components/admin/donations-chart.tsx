@@ -1,5 +1,6 @@
 "use client";
 
+import { TrendingUp } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 import {
   ChartContainer,
@@ -16,9 +17,19 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function DonationsChart({ data }: { data: { date: string; amount: number }[] }) {
+  const hasData = data.some((d) => d.amount > 0);
+
   return (
-    <ChartContainer config={chartConfig} className="h-64 w-full">
-      <AreaChart data={data} margin={{ left: 0, right: 12, top: 12 }}>
+    <div className="relative">
+      {!hasData && (
+        <div className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 text-center">
+          <TrendingUp className="size-6 text-muted-foreground/50" />
+          <p className="text-sm font-medium text-muted-foreground">No donations in this period yet</p>
+          <p className="text-xs text-muted-foreground/70">The chart will fill in as gifts come in.</p>
+        </div>
+      )}
+      <ChartContainer config={chartConfig} className={`h-64 w-full ${!hasData ? "opacity-40" : ""}`}>
+        <AreaChart data={data} margin={{ left: 0, right: 12, top: 12 }}>
         <defs>
           <linearGradient id="donationsFill" x1="0" y1="0" x2="0" y2="1">
             <stop offset="5%" stopColor="var(--brand-navy)" stopOpacity={0.35} />
@@ -53,7 +64,8 @@ export function DonationsChart({ data }: { data: { date: string; amount: number 
           stroke="var(--brand-navy)"
           strokeWidth={2}
         />
-      </AreaChart>
-    </ChartContainer>
+        </AreaChart>
+      </ChartContainer>
+    </div>
   );
 }

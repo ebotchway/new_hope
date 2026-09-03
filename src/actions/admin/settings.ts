@@ -22,6 +22,9 @@ export async function updateSiteSettings(
     youtubeUrl: formData.get("youtubeUrl") || undefined,
     contactEmail: formData.get("contactEmail") || "",
     contactPhone: formData.get("contactPhone") || undefined,
+    momoProvider: formData.get("momoProvider") || undefined,
+    momoNumber: formData.get("momoNumber") || undefined,
+    momoName: formData.get("momoName") || undefined,
   });
 
   if (!parsed.success) {
@@ -38,6 +41,7 @@ export async function updateSiteSettings(
 
   revalidatePath("/");
   revalidatePath("/about");
+  revalidatePath("/donate");
   revalidatePath("/admin/settings");
   return { success: true };
 }

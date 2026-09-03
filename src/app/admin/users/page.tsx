@@ -13,9 +13,13 @@ export default async function AdminUsersPage() {
 
   return (
     <>
-      <AdminPageHeader title="Users" description="Donor accounts and staff access." />
+      <AdminPageHeader
+        title="Users"
+        description="Donor accounts and staff access."
+        breadcrumbs={[{ label: "Users" }]}
+      />
 
-      <div className="rounded-xl border bg-white">
+      <div className="rounded-xl border bg-card">
         <Table>
           <TableHeader>
             <TableRow>

@@ -19,7 +19,10 @@ export default async function EditHistoryEventPage(props: PageProps<"/admin/hist
 
   return (
     <>
-      <AdminPageHeader title={`Edit ${event.year} Entry`} />
+      <AdminPageHeader
+        title={`Edit ${event.year} Entry`}
+        breadcrumbs={[{ label: "History", href: "/admin/history" }, { label: event.year }]}
+      />
       <HistoryEventForm event={event} action={action} />
     </>
   );

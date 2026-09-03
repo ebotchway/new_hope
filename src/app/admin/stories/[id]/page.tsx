@@ -19,7 +19,10 @@ export default async function EditStoryPage(props: PageProps<"/admin/stories/[id
 
   return (
     <>
-      <AdminPageHeader title={`Edit ${story.name}'s Story`} />
+      <AdminPageHeader
+        title={`Edit ${story.name}'s Story`}
+        breadcrumbs={[{ label: "Stories", href: "/admin/stories" }, { label: story.name }]}
+      />
       <StoryForm story={story} action={action} />
     </>
   );

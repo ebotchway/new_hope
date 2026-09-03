@@ -13,7 +13,10 @@ export default function NewStoryPage() {
 
   return (
     <>
-      <AdminPageHeader title="Add a Story" />
+      <AdminPageHeader
+        title="Add a Story"
+        breadcrumbs={[{ label: "Stories", href: "/admin/stories" }, { label: "Add Story" }]}
+      />
       <StoryForm action={action} />
     </>
   );

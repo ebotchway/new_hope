@@ -44,17 +44,17 @@ export async function SiteFooter() {
   ].filter((s) => s.href);
 
   return (
-    <footer className="mt-24 bg-brand-navy text-white">
-      <div className="mx-auto max-w-7xl px-6 py-14">
-        <div className="flex flex-col items-center gap-6 text-center">
-          <Logo light tagline />
+    <footer className="mt-28 bg-brand-navy text-white">
+      <div className="mx-auto max-w-7xl px-6 py-18">
+        <div className="flex flex-col items-center gap-7 text-center">
+          <Logo light tagline size="lg" />
 
-          <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+          <nav className="flex flex-wrap items-center justify-center gap-x-7 gap-y-2">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-sm text-white/80 hover:text-white"
+                className="text-sm text-white/80 transition-colors hover:text-white"
               >
                 {link.label}
               </Link>
@@ -70,7 +70,7 @@ export async function SiteFooter() {
                   target="_blank"
                   rel="noreferrer"
                   aria-label={label}
-                  className="flex size-9 items-center justify-center rounded-full bg-white/10 transition-colors hover:bg-white/20"
+                  className="flex size-10 items-center justify-center rounded-full bg-white/10 transition-colors hover:bg-white/20"
                 >
                   <Icon className="size-4" />
                 </a>
@@ -79,7 +79,7 @@ export async function SiteFooter() {
           )}
         </div>
 
-        <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-6 text-xs text-white/60 sm:flex-row">
+        <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-7 text-xs text-white/60 sm:flex-row">
           <p>Copyright © {new Date().getFullYear()} LivingHope. All Rights Reserved</p>
           <div className="flex items-center gap-4">
             <Link href="/privacy" className="hover:text-white">

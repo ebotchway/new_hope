@@ -20,6 +20,7 @@ export default async function AdminStoriesPage() {
       <AdminPageHeader
         title="Stories"
         description="Testimonial cards shown in the homepage carousel. Drag to reorder."
+        breadcrumbs={[{ label: "Stories" }]}
         action={
           <Button asChild>
             <Link href="/admin/stories/new">
@@ -30,7 +31,7 @@ export default async function AdminStoriesPage() {
         }
       />
       <SortableListShell ids={stories.map((s) => s.id)} onReorder={reorderStories}>
-        <div className="rounded-xl border bg-white">
+        <div className="rounded-xl border bg-card">
           <Table>
             <TableHeader>
               <TableRow>

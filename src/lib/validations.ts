@@ -9,6 +9,7 @@ export const donationSchema = z.object({
   amountCents: z.number().int().min(500, "Minimum donation is $5"),
   frequency: z.enum(["ONE_TIME", "MONTHLY"]),
   designation: z.enum(["GENERAL", "CHILD_SPONSORSHIP", "PARTNERSHIP"]),
+  paymentMethod: z.enum(["CARD", "MOBILE_MONEY"]),
   childId: z.string().optional(),
   emailUpdates: z.boolean(),
   smsUpdates: z.boolean(),
@@ -82,6 +83,12 @@ export const trusteeSchema = z.object({
   published: z.boolean().default(true),
 });
 
+export const childUpdateSchema = z.object({
+  title: z.string().min(2, "Title is required"),
+  body: z.string().min(5, "Add a short update"),
+  published: z.boolean().default(true),
+});
+
 export const siteSettingsSchema = z.object({
   heroHeadline: z.string().min(2),
   heroSubheadline: z.string().min(2),
@@ -92,4 +99,7 @@ export const siteSettingsSchema = z.object({
   youtubeUrl: z.string().optional(),
   contactEmail: z.email().optional().or(z.literal("")),
   contactPhone: z.string().optional(),
+  momoProvider: z.string().optional(),
+  momoNumber: z.string().optional(),
+  momoName: z.string().optional(),
 });

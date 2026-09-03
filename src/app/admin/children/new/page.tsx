@@ -13,7 +13,11 @@ export default function NewChildPage() {
 
   return (
     <>
-      <AdminPageHeader title="Add a Child" description="Create a new sponsorable child profile." />
+      <AdminPageHeader
+        title="Add a Child"
+        description="Create a new sponsorable child profile."
+        breadcrumbs={[{ label: "Children", href: "/admin/children" }, { label: "Add Child" }]}
+      />
       <ChildForm action={action} />
     </>
   );

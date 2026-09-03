@@ -32,6 +32,8 @@ export function DonationForm({
   defaultFrequency,
   prefillName,
   prefillEmail,
+  momoEnabled = false,
+  momoProviderName,
 }: {
   childId?: string;
   childName?: string;
@@ -39,6 +41,8 @@ export function DonationForm({
   defaultFrequency: FormValues["frequency"];
   prefillName?: string;
   prefillEmail?: string;
+  momoEnabled?: boolean;
+  momoProviderName?: string;
 }) {
   const [customAmount, setCustomAmount] = useState("");
   const {
@@ -58,6 +62,7 @@ export function DonationForm({
       amountCents: AMOUNT_PRESETS[1],
       frequency: defaultFrequency,
       designation,
+      paymentMethod: "CARD",
       childId,
       emailUpdates: true,
       smsUpdates: false,
@@ -67,17 +72,22 @@ export function DonationForm({
 
   const amountCents = watch("amountCents");
   const frequency = watch("frequency");
+  const paymentMethod = watch("paymentMethod");
   const anonymous = watch("anonymous");
   const emailUpdates = watch("emailUpdates");
   const smsUpdates = watch("smsUpdates");
   const whatsappUpdates = watch("whatsappUpdates");
 
   async function onSubmit(values: FormValues) {
-    const result = await createDonationCheckout(values);
-    if (result.success) {
-      window.location.href = result.url;
-    } else {
-      toast.error(result.error);
+    try {
+      const result = await createDonationCheckout(values);
+      if (result.success) {
+        window.location.href = result.url;
+      } else {
+        toast.error(result.error);
+      }
+    } catch {
+      toast.error("Couldn't start checkout — check your connection and try again.");
     }
   }
 
@@ -101,7 +111,7 @@ export function DonationForm({
                 "rounded-lg border py-2.5 text-sm font-medium transition-colors",
                 frequency === freq
                   ? "border-brand-navy bg-brand-navy text-white"
-                  : "border-input bg-white hover:bg-secondary"
+                  : "border-input bg-card hover:bg-secondary"
               )}
             >
               {freq === "ONE_TIME" ? "One-time" : "Monthly"}
@@ -109,6 +119,29 @@ export function DonationForm({
           ))}
         </div>
       </div>
+
+      {momoEnabled && (
+        <div>
+          <Label className="mb-3 block">Payment Method</Label>
+          <div className="grid grid-cols-2 gap-2">
+            {(["CARD", "MOBILE_MONEY"] as const).map((method) => (
+              <button
+                key={method}
+                type="button"
+                onClick={() => setValue("paymentMethod", method)}
+                className={cn(
+                  "rounded-lg border py-2.5 text-sm font-medium transition-colors",
+                  paymentMethod === method
+                    ? "border-brand-navy bg-brand-navy text-white"
+                    : "border-input bg-card hover:bg-secondary"
+                )}
+              >
+                {method === "CARD" ? "Card" : momoProviderName || "Mobile Money"}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div>
         <Label className="mb-3 block">Amount</Label>
@@ -125,7 +158,7 @@ export function DonationForm({
                 "rounded-lg border py-2.5 text-sm font-medium transition-colors",
                 amountCents === preset && !customAmount
                   ? "border-brand-navy bg-brand-navy text-white"
-                  : "border-input bg-white hover:bg-secondary"
+                  : "border-input bg-card hover:bg-secondary"
               )}
             >
               {formatMoney(preset)}
@@ -229,9 +262,15 @@ export function DonationForm({
         </div>
 
         <Button type="submit" disabled={isSubmitting} className="mt-8 w-full rounded-full" size="lg">
-          {isSubmitting ? "Redirecting to checkout…" : "Complete Donation"}
+          {isSubmitting
+            ? "Redirecting…"
+            : paymentMethod === "MOBILE_MONEY"
+              ? "Continue to Mobile Money"
+              : "Complete Donation"}
         </Button>
-        <p className="mt-3 text-center text-xs text-muted-foreground">🔒 100% Secure Donation</p>
+        <p className="mt-3 text-center text-xs text-muted-foreground">
+          {paymentMethod === "MOBILE_MONEY" ? "📱 You'll get a reference to complete the transfer" : "🔒 100% Secure Donation"}
+        </p>
       </div>
     </form>
   );

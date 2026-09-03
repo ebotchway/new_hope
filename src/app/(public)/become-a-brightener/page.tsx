@@ -29,16 +29,17 @@ export default async function BecomeABrightenerPage(
         imageUrl={PLACEHOLDER_IMAGES.brightenerHero}
       />
 
-      <section className="px-4 py-20">
+      <section className="px-4 py-24">
         <div className="mx-auto max-w-6xl">
           <Reveal>
             <SectionHeading
+              eyebrow="Ways to Help"
               title="Your Path to Impact"
               subtitle="We have various ways for you to make a lasting impact. Explore each of them to find one that best meets your desire to help a street child."
-              className="mb-10"
+              className="mb-12"
             />
           </Reveal>
-          <Reveal delay={0.1} className="relative aspect-21/9 overflow-hidden rounded-2xl">
+          <Reveal delay={0.1} className="relative aspect-21/9 overflow-hidden rounded-3xl shadow-sm">
             <Image
               src={PLACEHOLDER_IMAGES.missionSecondary}
               alt="Children supported by LivingHope"
@@ -50,12 +51,12 @@ export default async function BecomeABrightenerPage(
         </div>
       </section>
 
-      <section className="px-4 pb-20">
+      <section className="bg-secondary px-4 py-24">
         <div className="mx-auto max-w-6xl">
           <Reveal>
-            <SectionHeading title="Explore Our Partnership Options" className="mb-10" />
+            <SectionHeading eyebrow="Options" title="Explore Our Partnership Options" className="mb-12" />
           </Reveal>
-          <RevealGroup className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <RevealGroup className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {PARTNERSHIP_TYPES.map((option, index) => {
               const Icon = option.icon;
               const highlighted = index === 0;
@@ -64,15 +65,23 @@ export default async function BecomeABrightenerPage(
                   <Card
                     className={
                       highlighted
-                        ? "h-full border-none bg-brand-navy text-white transition-transform duration-300 hover:-translate-y-1"
-                        : "h-full border-none bg-secondary transition-transform duration-300 hover:-translate-y-1"
+                        ? "h-full rounded-2xl border-none bg-brand-navy text-white shadow-xl shadow-brand-navy/15 transition-all duration-300 hover:-translate-y-1.5"
+                        : "h-full rounded-2xl border-none bg-card shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lg"
                     }
                   >
-                    <CardContent className="flex h-full flex-col gap-4 p-6">
-                      <Icon className={highlighted ? "size-6" : "size-6 text-brand-navy"} />
+                    <CardContent className="flex h-full flex-col gap-4 p-7">
+                      <span
+                        className={
+                          highlighted
+                            ? "flex size-14 items-center justify-center rounded-2xl bg-white/15"
+                            : "flex size-14 items-center justify-center rounded-2xl bg-brand-navy/10"
+                        }
+                      >
+                        <Icon className={highlighted ? "size-6" : "size-6 text-foreground"} />
+                      </span>
                       <div>
-                        <h3 className="font-semibold">{option.title}</h3>
-                        <p className={highlighted ? "mt-2 text-sm text-white/80" : "mt-2 text-sm text-muted-foreground"}>
+                        <h3 className="text-lg font-semibold">{option.title}</h3>
+                        <p className={highlighted ? "mt-2 text-sm leading-relaxed text-white/80" : "mt-2 text-sm leading-relaxed text-muted-foreground"}>
                           {option.description}
                         </p>
                       </div>
@@ -95,13 +104,14 @@ export default async function BecomeABrightenerPage(
         </div>
       </section>
 
-      <section id="inquire" className="px-4 pb-20">
+      <section id="inquire" className="px-4 py-24">
         <div className="mx-auto max-w-2xl">
           <Reveal>
             <SectionHeading
+              eyebrow="Get in Touch"
               title="Tell Us How You'd Like to Help"
               subtitle="Share a few details and our partnerships team will reach out with next steps."
-              className="mb-8"
+              className="mb-10"
             />
           </Reveal>
           <Reveal delay={0.1}>

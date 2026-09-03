@@ -20,6 +20,7 @@ export default async function AdminHistoryPage() {
       <AdminPageHeader
         title="History"
         description="Timeline entries shown on the About page. Drag to reorder."
+        breadcrumbs={[{ label: "History" }]}
         action={
           <Button asChild>
             <Link href="/admin/history/new">
@@ -30,7 +31,7 @@ export default async function AdminHistoryPage() {
         }
       />
       <SortableListShell ids={events.map((e) => e.id)} onReorder={reorderHistoryEvents}>
-        <div className="rounded-xl border bg-white">
+        <div className="rounded-xl border bg-card">
           <Table>
             <TableHeader>
               <TableRow>

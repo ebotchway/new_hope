@@ -12,8 +12,13 @@ export async function requireStaff() {
 
 export async function requireAdmin() {
   const session = await auth();
-  if (!session || session.user.role !== "ADMIN") {
+  if (!session) {
     redirect("/login");
+  }
+  if (session.user.role !== "ADMIN") {
+    // Already signed in, just not privileged enough — bouncing to /login would be
+    // confusing (they're not logged out). Send them back to the dashboard they do have.
+    redirect("/admin");
   }
   return session;
 }

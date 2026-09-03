@@ -1,8 +1,10 @@
 import Link from "next/link";
+import { Smartphone, CreditCard } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AdminPageHeader } from "@/components/admin/page-header";
+import { ConfirmMomoButton } from "@/components/admin/confirm-momo-button";
 import { prisma } from "@/lib/prisma";
 import { formatMoney, formatDate } from "@/lib/format";
 import type { DonationStatus } from "@/generated/prisma/enums";
@@ -37,6 +39,7 @@ export default async function AdminDonationsPage(props: PageProps<"/admin/donati
       <AdminPageHeader
         title="Donations"
         description={`Total raised: ${formatMoney(total._sum.amountCents ?? 0)}`}
+        breadcrumbs={[{ label: "Donations" }]}
       />
 
       <div className="mb-4 flex flex-wrap gap-2">
@@ -48,7 +51,7 @@ export default async function AdminDonationsPage(props: PageProps<"/admin/donati
               "rounded-full border px-3 py-1 text-xs font-medium",
               status === option
                 ? "border-brand-navy bg-brand-navy text-white"
-                : "border-input bg-white text-muted-foreground hover:bg-secondary"
+                : "border-input bg-card text-muted-foreground hover:bg-secondary"
             )}
           >
             {option ?? "All"}
@@ -56,7 +59,7 @@ export default async function AdminDonationsPage(props: PageProps<"/admin/donati
         ))}
       </div>
 
-      <div className="rounded-xl border bg-white">
+      <div className="rounded-xl border bg-card">
         <Table>
           <TableHeader>
             <TableRow>
@@ -64,8 +67,10 @@ export default async function AdminDonationsPage(props: PageProps<"/admin/donati
               <TableHead>Amount</TableHead>
               <TableHead>Frequency</TableHead>
               <TableHead>Designation</TableHead>
+              <TableHead>Payment</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Date</TableHead>
+              <TableHead className="w-36" />
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -82,14 +87,32 @@ export default async function AdminDonationsPage(props: PageProps<"/admin/donati
                   {donation.child && <span className="text-muted-foreground"> · {donation.child.name}</span>}
                 </TableCell>
                 <TableCell>
+                  <span className="flex items-center gap-1.5 text-muted-foreground">
+                    {donation.paymentMethod === "MOBILE_MONEY" ? (
+                      <Smartphone className="size-3.5" />
+                    ) : (
+                      <CreditCard className="size-3.5" />
+                    )}
+                    {donation.paymentMethod === "MOBILE_MONEY" ? "Mobile Money" : "Card"}
+                  </span>
+                  {donation.momoReference && (
+                    <p className="mt-0.5 font-mono text-xs text-muted-foreground">{donation.momoReference}</p>
+                  )}
+                </TableCell>
+                <TableCell>
                   <Badge className={STATUS_VARIANT[donation.status]}>{donation.status}</Badge>
                 </TableCell>
                 <TableCell className="text-muted-foreground">{formatDate(donation.createdAt)}</TableCell>
+                <TableCell>
+                  {donation.status === "PENDING" && donation.paymentMethod === "MOBILE_MONEY" && (
+                    <ConfirmMomoButton id={donation.id} />
+                  )}
+                </TableCell>
               </TableRow>
             ))}
             {donations.length === 0 && (
               <TableRow>
-                <TableCell colSpan={6} className="py-10 text-center text-sm text-muted-foreground">
+                <TableCell colSpan={8} className="py-10 text-center text-sm text-muted-foreground">
                   No donations yet.
                 </TableCell>
               </TableRow>

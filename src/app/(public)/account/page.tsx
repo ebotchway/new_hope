@@ -26,34 +26,34 @@ export default async function AccountPage() {
   ]);
 
   return (
-    <section className="px-4 py-16">
+    <section className="px-4 py-20">
       <div className="mx-auto max-w-4xl space-y-10">
         <div>
-          <h1 className="text-2xl font-bold text-brand-navy">Welcome back, {session.user.name}</h1>
-          <p className="mt-1 text-sm text-muted-foreground">{session.user.email}</p>
+          <h1 className="text-3xl font-bold text-foreground sm:text-4xl">Welcome back, {session.user.name}</h1>
+          <p className="mt-1.5 text-sm text-muted-foreground">{session.user.email}</p>
         </div>
 
-        <Card>
+        <Card className="rounded-2xl border-none bg-secondary shadow-sm">
           <CardHeader>
-            <CardTitle>My Sponsorships</CardTitle>
+            <CardTitle className="text-lg">My Sponsorships</CardTitle>
           </CardHeader>
           <CardContent>
             {sponsorships.length === 0 ? (
               <p className="text-sm text-muted-foreground">
                 You&apos;re not sponsoring a child yet.{" "}
-                <Link href="/sponsor-a-child" className="font-medium text-brand-navy underline-offset-4 hover:underline">
+                <Link href="/sponsor-a-child" className="font-medium text-foreground underline-offset-4 hover:underline">
                   Browse children
                 </Link>
               </p>
             ) : (
-              <ul className="divide-y">
+              <ul className="divide-y divide-border">
                 {sponsorships.map((s) => (
-                  <li key={s.id} className="flex items-center justify-between py-3 text-sm">
+                  <li key={s.id} className="flex items-center justify-between py-3.5 text-sm">
                     <div>
                       <p className="font-medium">{s.child.name}</p>
                       <p className="text-xs text-muted-foreground">Since {formatDate(s.startDate)}</p>
                     </div>
-                    <Badge variant={s.status === "ACTIVE" ? "default" : "secondary"} className="bg-brand-navy">
+                    <Badge variant={s.status === "ACTIVE" ? "default" : "secondary"} className="rounded-full bg-brand-navy">
                       {s.status}
                     </Badge>
                   </li>
@@ -63,22 +63,22 @@ export default async function AccountPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="rounded-2xl border-none bg-secondary shadow-sm">
           <CardHeader>
-            <CardTitle>Donation History</CardTitle>
+            <CardTitle className="text-lg">Donation History</CardTitle>
           </CardHeader>
           <CardContent>
             {donations.length === 0 ? (
               <p className="text-sm text-muted-foreground">No donations yet.</p>
             ) : (
-              <ul className="divide-y">
+              <ul className="divide-y divide-border">
                 {donations.map((d) => (
-                  <li key={d.id} className="flex items-center justify-between py-3 text-sm">
+                  <li key={d.id} className="flex items-center justify-between py-3.5 text-sm">
                     <div>
                       <p className="font-medium">{formatMoney(d.amountCents, d.currency)}</p>
                       <p className="text-xs text-muted-foreground">{formatDate(d.createdAt)}</p>
                     </div>
-                    <Badge variant="outline">{d.status}</Badge>
+                    <Badge variant="outline" className="rounded-full">{d.status}</Badge>
                   </li>
                 ))}
               </ul>

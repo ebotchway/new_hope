@@ -19,7 +19,10 @@ export default async function EditImpactStatPage(props: PageProps<"/admin/impact
 
   return (
     <>
-      <AdminPageHeader title={`Edit "${stat.value}"`} />
+      <AdminPageHeader
+        title={`Edit "${stat.value}"`}
+        breadcrumbs={[{ label: "Impact Stats", href: "/admin/impact-stats" }, { label: stat.value }]}
+      />
       <ImpactStatForm stat={stat} action={action} />
     </>
   );

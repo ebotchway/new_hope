@@ -13,7 +13,10 @@ export default function NewImpactStatPage() {
 
   return (
     <>
-      <AdminPageHeader title="Add an Impact Stat" />
+      <AdminPageHeader
+        title="Add an Impact Stat"
+        breadcrumbs={[{ label: "Impact Stats", href: "/admin/impact-stats" }, { label: "Add Stat" }]}
+      />
       <ImpactStatForm action={action} />
     </>
   );

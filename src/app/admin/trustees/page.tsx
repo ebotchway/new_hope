@@ -21,6 +21,7 @@ export default async function AdminTrusteesPage() {
       <AdminPageHeader
         title="Trustees"
         description="Board members shown on the About page. Drag to reorder."
+        breadcrumbs={[{ label: "Trustees" }]}
         action={
           <Button asChild>
             <Link href="/admin/trustees/new">
@@ -31,7 +32,7 @@ export default async function AdminTrusteesPage() {
         }
       />
       <SortableListShell ids={trustees.map((t) => t.id)} onReorder={reorderTrustees}>
-        <div className="rounded-xl border bg-white">
+        <div className="rounded-xl border bg-card">
           <Table>
             <TableHeader>
               <TableRow>

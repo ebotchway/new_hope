@@ -19,7 +19,10 @@ export default async function EditTrusteePage(props: PageProps<"/admin/trustees/
 
   return (
     <>
-      <AdminPageHeader title={`Edit ${trustee.name}`} />
+      <AdminPageHeader
+        title={`Edit ${trustee.name}`}
+        breadcrumbs={[{ label: "Trustees", href: "/admin/trustees" }, { label: trustee.name }]}
+      />
       <TrusteeForm trustee={trustee} action={action} />
     </>
   );

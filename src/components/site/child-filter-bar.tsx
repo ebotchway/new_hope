@@ -43,7 +43,7 @@ export function ChildFilterBar({ locations }: { locations: string[] }) {
         defaultValue={searchParams.get("gender") ?? "ANY"}
         onValueChange={(v: string | null) => setParam("gender", v)}
       >
-        <SelectTrigger className="w-40 bg-white">
+        <SelectTrigger className="w-40 bg-card">
           <SelectValue placeholder="Gender">{(v: string) => GENDER_LABELS[v] ?? v}</SelectValue>
         </SelectTrigger>
         <SelectContent>
@@ -59,7 +59,7 @@ export function ChildFilterBar({ locations }: { locations: string[] }) {
           defaultValue={searchParams.get("location") ?? "ANY"}
           onValueChange={(v: string | null) => setParam("location", v)}
         >
-          <SelectTrigger className="w-48 bg-white">
+          <SelectTrigger className="w-48 bg-card">
             <SelectValue placeholder="Location">{(v: string) => (v === "ANY" ? "Any location" : v)}</SelectValue>
           </SelectTrigger>
           <SelectContent>
@@ -78,7 +78,7 @@ export function ChildFilterBar({ locations }: { locations: string[] }) {
         defaultValue={searchParams.get("sort") ?? "featured"}
         onValueChange={(v: string | null) => setParam("sort", v)}
       >
-        <SelectTrigger className="w-40 bg-white">
+        <SelectTrigger className="w-40 bg-card">
           <SelectValue placeholder="Sort">{(v: string) => SORT_LABELS[v] ?? v}</SelectValue>
         </SelectTrigger>
         <SelectContent>

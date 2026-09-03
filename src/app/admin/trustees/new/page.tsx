@@ -13,7 +13,10 @@ export default function NewTrusteePage() {
 
   return (
     <>
-      <AdminPageHeader title="Add a Trustee" />
+      <AdminPageHeader
+        title="Add a Trustee"
+        breadcrumbs={[{ label: "Trustees", href: "/admin/trustees" }, { label: "Add Trustee" }]}
+      />
       <TrusteeForm action={action} />
     </>
   );

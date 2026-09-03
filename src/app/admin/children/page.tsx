@@ -20,6 +20,7 @@ export default async function AdminChildrenPage() {
       <AdminPageHeader
         title="Children"
         description="Manage the profiles shown on the Sponsor a Child page."
+        breadcrumbs={[{ label: "Children" }]}
         action={
           <Button asChild>
             <Link href="/admin/children/new">
@@ -30,7 +31,7 @@ export default async function AdminChildrenPage() {
         }
       />
 
-      <div className="rounded-xl border bg-white">
+      <div className="rounded-xl border bg-card">
         <Table>
           <TableHeader>
             <TableRow>

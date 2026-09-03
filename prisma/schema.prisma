@@ -111,11 +111,29 @@ model Child {
 
   sponsorships Sponsorship[]
   donations    Donation[]
+  updates      ChildUpdate[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@map("children")
+}
+
+model ChildUpdate {
+  id       String  @id @default(cuid())
+  childId  String
+  child    Child   @relation(fields: [childId], references: [id], onDelete: Cascade)
+
+  title    String
+  body     String  @db.Text
+  imageUrl String?
+
+  published Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("child_updates")
 }
 
 enum SponsorshipType {
@@ -172,6 +190,11 @@ enum DonationStatus {
   REFUNDED
 }
 
+enum PaymentMethod {
+  CARD
+  MOBILE_MONEY
+}
+
 model Donation {
   id String @id @default(cuid())
 
@@ -193,6 +216,7 @@ model Donation {
   frequency    DonationFrequency
   designation  DonationDesignation @default(GENERAL)
   status       DonationStatus      @default(PENDING)
+  paymentMethod PaymentMethod      @default(CARD)
 
   emailUpdates    Boolean @default(true)
   smsUpdates      Boolean @default(false)
@@ -202,6 +226,10 @@ model Donation {
   stripePaymentIntentId   String? @unique
   stripeSubscriptionId    String? @unique
   stripeCustomerId        String?
+
+  /// Human-friendly reference the donor is asked to quote (e.g. "LH-4F82Q") when paying by
+  /// mobile money, so staff can match the MoMo SMS/statement line to this donation.
+  momoReference String? @unique
 
   receiptSentAt DateTime?
 
@@ -317,6 +345,11 @@ model SiteSettings {
 
   contactEmail String?
   contactPhone String?
+
+  /// Mobile money merchant details shown to donors who choose to pay via MoMo instead of card.
+  momoProvider String? @default("MTN Mobile Money")
+  momoNumber   String?
+  momoName     String?
 
   updatedAt DateTime @updatedAt
 

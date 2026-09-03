@@ -33,12 +33,16 @@ export function SignupForm() {
       return;
     }
     setFormError(null);
-    const result = await registerAction(values);
-    if (result.success) {
-      router.push("/");
-      router.refresh();
-    } else {
-      setFormError(result.error);
+    try {
+      const result = await registerAction(values);
+      if (result.success) {
+        router.push("/");
+        router.refresh();
+      } else {
+        setFormError(result.error);
+      }
+    } catch {
+      setFormError("Couldn't reach the server — check your connection and try again.");
     }
   }
 

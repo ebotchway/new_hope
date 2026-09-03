@@ -9,7 +9,11 @@ export default async function AdminSettingsPage() {
 
   return (
     <>
-      <AdminPageHeader title="Site Settings" description="Control the homepage hero, mission, and contact details." />
+      <AdminPageHeader
+        title="Site Settings"
+        description="Control the homepage hero, mission, and contact details."
+        breadcrumbs={[{ label: "Site Settings" }]}
+      />
       <SettingsForm settings={settings} />
     </>
   );

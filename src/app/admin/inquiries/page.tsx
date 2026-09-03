@@ -12,9 +12,13 @@ export default async function AdminInquiriesPage() {
 
   return (
     <>
-      <AdminPageHeader title="Partnership Inquiries" description="People who want to become a Brightener." />
+      <AdminPageHeader
+        title="Partnership Inquiries"
+        description="People who want to become a Brightener."
+        breadcrumbs={[{ label: "Inquiries" }]}
+      />
 
-      <div className="rounded-xl border bg-white">
+      <div className="rounded-xl border bg-card">
         <Table>
           <TableHeader>
             <TableRow>

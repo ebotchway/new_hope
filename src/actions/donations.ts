@@ -1,5 +1,6 @@
 "use server";
 
+import { randomUUID } from "node:crypto";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
@@ -8,6 +9,10 @@ import { donationSchema } from "@/lib/validations";
 export type CheckoutResult =
   | { success: true; url: string }
   | { success: false; error: string };
+
+function generateMomoReference() {
+  return `LH-${randomUUID().slice(0, 6).toUpperCase()}`;
+}
 
 export async function createDonationCheckout(values: unknown): Promise<CheckoutResult> {
   const parsed = donationSchema.safeParse(values);
@@ -37,12 +42,18 @@ export async function createDonationCheckout(values: unknown): Promise<CheckoutR
       amountCents: data.amountCents,
       frequency: data.frequency,
       designation: data.designation,
+      paymentMethod: data.paymentMethod,
       emailUpdates: data.emailUpdates,
       smsUpdates: data.smsUpdates,
       whatsappUpdates: data.whatsappUpdates,
       status: "PENDING",
+      ...(data.paymentMethod === "MOBILE_MONEY" ? { momoReference: generateMomoReference() } : {}),
     },
   });
+
+  if (data.paymentMethod === "MOBILE_MONEY") {
+    return { success: true, url: `${appUrl}/donate/mobile-money/${donation.id}` };
+  }
 
   const productName = child
     ? `Sponsorship for ${child.name}`

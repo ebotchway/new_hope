@@ -13,7 +13,10 @@ export default function NewHistoryEventPage() {
 
   return (
     <>
-      <AdminPageHeader title="Add a History Event" />
+      <AdminPageHeader
+        title="Add a History Event"
+        breadcrumbs={[{ label: "History", href: "/admin/history" }, { label: "Add Event" }]}
+      />
       <HistoryEventForm action={action} />
     </>
   );

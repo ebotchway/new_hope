@@ -1,11 +1,12 @@
+
 export const metadata = { title: "Privacy Policy" };
 
 export default function PrivacyPage() {
   return (
-    <section className="px-4 py-20">
+    <section className="px-4 py-24">
       <div className="mx-auto max-w-3xl">
-        <h1 className="text-3xl font-bold text-brand-navy">Privacy Policy</h1>
-        <div className="mt-6 space-y-4 text-sm leading-relaxed text-muted-foreground">
+        <h1 className="text-4xl font-bold text-foreground">Privacy Policy</h1>
+        <div className="mt-8 space-y-5 rounded-3xl bg-secondary p-8 text-sm leading-relaxed text-muted-foreground sm:p-10">
           <p>
             LivingHope collects only the information needed to process donations, manage child
             sponsorships, and communicate with our supporters — including your name, email,

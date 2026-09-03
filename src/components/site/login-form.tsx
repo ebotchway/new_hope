@@ -27,12 +27,16 @@ export function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
 
   async function onSubmit(values: FormValues) {
     setFormError(null);
-    const result = await loginAction(values);
-    if (result.success) {
-      router.push(callbackUrl ?? "/");
-      router.refresh();
-    } else {
-      setFormError(result.error);
+    try {
+      const result = await loginAction(values);
+      if (result.success) {
+        router.push(callbackUrl ?? "/");
+        router.refresh();
+      } else {
+        setFormError(result.error);
+      }
+    } catch {
+      setFormError("Couldn't reach the server — check your connection and try again.");
     }
   }
 
