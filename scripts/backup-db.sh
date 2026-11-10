@@ -93,15 +93,15 @@ echo "[+] Database backup verified successfully: ${BACKUP_FILE} (${FILESIZE})"
 # Optional Media backup
 if [ "${INCLUDE_MEDIA}" = true ]; then
   MEDIA_BACKUP_FILE="${BACKUP_DIR}/livinghope_media_${TIMESTAMP}.tar.gz"
-  echo "[3/3] Backing up media uploads..."
-  if [ -d "public/uploads" ]; then
-    tar -czf "${MEDIA_BACKUP_FILE}" -C public uploads
+  echo "[3/3] Backing up media uploads and site images..."
+  if [ -d "public/uploads" ] || [ -d "public/images" ]; then
+    tar -czf "${MEDIA_BACKUP_FILE}" -C public uploads images
     echo "[+] Media backup created: ${MEDIA_BACKUP_FILE}"
   else
-    echo "[*] Notice: public/uploads directory does not exist locally; checking container uploads..."
+    echo "[*] Notice: public directories do not exist locally; checking container uploads..."
     APP_CONTAINER=$(docker ps --filter "name=app" --format "{{.Names}}" | head -n 1)
     if [ -n "${APP_CONTAINER}" ]; then
-      docker exec -i "${APP_CONTAINER}" tar -czf - -C /app/public uploads > "${MEDIA_BACKUP_FILE}" 2>/dev/null || true
+      docker exec -i "${APP_CONTAINER}" tar -czf - -C /app/public uploads images > "${MEDIA_BACKUP_FILE}" 2>/dev/null || true
       if [ -s "${MEDIA_BACKUP_FILE}" ]; then
         echo "[+] Media backup extracted from container: ${MEDIA_BACKUP_FILE}"
       else

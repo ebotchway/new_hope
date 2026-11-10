@@ -24,11 +24,16 @@ CONTAINER_NAME=""
 CONFIRM_RESTORE=false
 TEST_RESTORE=false
 SKIP_PRE_SNAPSHOT=false
+RESTORE_MEDIA_FILE=""
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --file)
       BACKUP_FILE="$2"
+      shift 2
+      ;;
+    --restore-media)
+      RESTORE_MEDIA_FILE="$2"
       shift 2
       ;;
     --target-db)
@@ -53,7 +58,7 @@ while [[ $# -gt 0 ]]; do
       ;;
     *)
       echo "[-] Error: Unknown option: $1" >&2
-      echo "Usage: $0 --file <path.sql.gz> [--test-restore | --confirm-restore] [--target-db <name>] [--container <name>]" >&2
+      echo "Usage: $0 --file <path.sql.gz> [--restore-media <path.tar.gz>] [--test-restore | --confirm-restore] [--target-db <name>] [--container <name>]" >&2
       exit 1
       ;;
   esac
@@ -172,6 +177,28 @@ gunzip -c "${BACKUP_FILE}" | docker exec -i "${CONTAINER_NAME}" psql -U livingho
 echo "[5/5] Verifying post-restoration integrity..."
 USER_COUNT=$(docker exec -i "${CONTAINER_NAME}" psql -U livinghope -d "${TARGET_DB}" -t -c 'SELECT COUNT(*) FROM users;' 2>/dev/null | tr -d ' ' || echo "0")
 echo "[+] Live database restored successfully. Active user count: ${USER_COUNT}"
+
+# Optional Media Restoration
+if [ -n "${RESTORE_MEDIA_FILE}" ]; then
+  echo "============================================================"
+  echo "Restoring Media Assets from '${RESTORE_MEDIA_FILE}'..."
+  if [ ! -f "${RESTORE_MEDIA_FILE}" ]; then
+    echo "[-] Error: Media backup file '${RESTORE_MEDIA_FILE}' not found." >&2
+    exit 1
+  fi
+  if ! tar -tzf "${RESTORE_MEDIA_FILE}" >/dev/null 2>&1; then
+    echo "[-] Error: Media archive '${RESTORE_MEDIA_FILE}' failed gzip integrity test." >&2
+    exit 1
+  fi
+  tar -xzf "${RESTORE_MEDIA_FILE}" -C public/
+  echo "[+] Extracted media files to public/"
+  APP_CONTAINER=$(docker ps --filter "name=app" --format "{{.Names}}" | head -n 1)
+  if [ -n "${APP_CONTAINER}" ]; then
+    docker cp public/uploads "${APP_CONTAINER}:/app/public/" || true
+    docker cp public/images "${APP_CONTAINER}:/app/public/" || true
+    echo "[+] Synced restored media files to '${APP_CONTAINER}'"
+  fi
+fi
 
 echo "============================================================"
 echo "✓ Production restoration operation completed successfully."

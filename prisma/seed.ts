@@ -44,6 +44,7 @@ async function main() {
       location: "Accra, Ghana",
       status: "AVAILABLE" as const,
       featured: true,
+      photoUrl: "/uploads/children/amara.webp",
     },
     {
       slug: "kwame",
@@ -54,6 +55,7 @@ async function main() {
       location: "Tema, Ghana",
       status: "AVAILABLE" as const,
       featured: false,
+      photoUrl: "/uploads/children/kwame.webp",
     },
     {
       slug: "efua",
@@ -64,11 +66,16 @@ async function main() {
       location: "Kumasi, Ghana",
       status: "AVAILABLE" as const,
       featured: false,
+      photoUrl: "/uploads/children/efua.webp",
     },
   ];
 
   for (const child of children) {
-    await prisma.child.upsert({ where: { slug: child.slug }, create: child, update: {} });
+    await prisma.child.upsert({
+      where: { slug: child.slug },
+      create: child,
+      update: { photoUrl: child.photoUrl },
+    });
   }
 
   const stories = [

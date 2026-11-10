@@ -263,6 +263,7 @@ export const DEFAULT_WHAT_WE_DO_SECTIONS: CmsSection[] = [
           description:
             "Mobile outreach teams visit market stalls and traffic junctions to build trust, provide immediate first aid and food, and invite children to daytime drop-in centres.",
           metrics: "Over 600 children engaged annually",
+          imageUrl: "/images/programmes/outreach.webp",
         },
         {
           title: "Formal School Enrollment",
@@ -270,6 +271,7 @@ export const DEFAULT_WHAT_WE_DO_SECTIONS: CmsSection[] = [
           description:
             "We pay school enrollment fees, purchase prescribed uniforms and textbooks, provide desks and bags, and pair students with after-school remedial tutors.",
           metrics: "450+ students currently enrolled in basic school",
+          imageUrl: "/images/programmes/education.webp",
         },
         {
           title: "Vocational Skills & Apprenticeships",
@@ -277,6 +279,15 @@ export const DEFAULT_WHAT_WE_DO_SECTIONS: CmsSection[] = [
           description:
             "Older youth learn carpentry, masonry, sewing, coding, and culinary arts under certified master craftspeople to secure independent, dignified employment.",
           metrics: "85+ certified graduates working independently",
+          imageUrl: "/images/programmes/vocational.webp",
+        },
+        {
+          title: "Nutrition & Medical Care",
+          category: "Healthcare",
+          description:
+            "Nutritious daily meals, health screenings, vaccinations, and comprehensive clinical care for every child enrolled in our welfare programmes.",
+          metrics: "1,200+ clinical consultations funded",
+          imageUrl: "/images/programmes/health.webp",
         },
       ],
     },
