@@ -27,6 +27,11 @@ export async function getCmsPage(
 
     // 1. PAGE EXISTS IN DATABASE
     if (page) {
+      // 1.0 Strict Archive Enforcement: Archived pages are offline and never rendered
+      if (page.status === "ARCHIVED") {
+        return null;
+      }
+
       // 1.1 Staff Preview Mode
       if (isStaff) {
         let activeRevision = null;
@@ -35,13 +40,13 @@ export async function getCmsPage(
             where: { id: options.previewRevisionId },
           });
         }
+        if (!activeRevision && page.revisions.length > 0) {
+          activeRevision = page.revisions[0];
+        }
         if (!activeRevision && page.publishedRevisionId) {
           activeRevision = await prisma.cmsRevision.findUnique({
             where: { id: page.publishedRevisionId },
           });
-        }
-        if (!activeRevision && page.revisions.length > 0) {
-          activeRevision = page.revisions[0];
         }
 
         if (activeRevision && Array.isArray(activeRevision.sections)) {
@@ -68,11 +73,6 @@ export async function getCmsPage(
       }
 
       // 1.2 Public Visitor Mode - Strict status enforcement
-      // If page is ARCHIVED: it was intentionally taken offline. Never show static fallback!
-      if (page.status === "ARCHIVED") {
-        return null;
-      }
-
       // If page is DRAFT: it is unpublished. Never leak draft content or show static fallback!
       if (page.status === "DRAFT") {
         return null;

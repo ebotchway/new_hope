@@ -1,5 +1,6 @@
 "use client";
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import Image from "next/image";
 import {
@@ -7,14 +8,13 @@ import {
   Plus,
   Trash2,
   Image as ImageIcon,
-  Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { CmsSection } from "@/lib/cms-types";
 import { MediaPickerDialog } from "./media-picker-dialog";
 
@@ -35,7 +35,7 @@ export function SectionPropertyEditor({ section, onChange }: SectionPropertyEdit
       props: {
         ...props,
         [key]: value,
-      },
+      } as unknown as typeof section.props,
     });
   };
 
@@ -407,7 +407,7 @@ export function SectionPropertyEditor({ section, onChange }: SectionPropertyEdit
             </div>
 
             {Array.isArray(props.cards) &&
-              props.cards.map((card: any, idx: number) => (
+              (props.cards as any[]).map((card: any, idx: number) => (
                 <Card key={idx} className="p-3 rounded-xl border border-border/80 space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-muted-foreground">Card #{idx + 1}</span>
@@ -418,7 +418,7 @@ export function SectionPropertyEditor({ section, onChange }: SectionPropertyEdit
                       onClick={() => {
                         updateProp(
                           "cards",
-                          props.cards.filter((_: any, i: number) => i !== idx)
+                          (props.cards as any[]).filter((_: any, i: number) => i !== idx)
                         );
                       }}
                       className="size-6 text-muted-foreground hover:text-destructive"
@@ -429,9 +429,9 @@ export function SectionPropertyEditor({ section, onChange }: SectionPropertyEdit
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     <Input
-                      value={card.title || ""}
+                      value={String(card.title || "")}
                       onChange={(e) => {
-                        const updated = [...props.cards];
+                        const updated = [...(props.cards as Record<string, unknown>[])];
                         updated[idx].title = e.target.value;
                         updateProp("cards", updated);
                       }}
@@ -612,7 +612,7 @@ export function SectionPropertyEditor({ section, onChange }: SectionPropertyEdit
             </div>
 
             {Array.isArray(props.programmes) &&
-              props.programmes.map((prog: any, idx: number) => (
+              (props.programmes as any[]).map((prog: any, idx: number) => (
                 <Card key={idx} className="p-3 rounded-xl border border-border/80 space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-muted-foreground">Programme #{idx + 1}</span>
@@ -623,7 +623,7 @@ export function SectionPropertyEditor({ section, onChange }: SectionPropertyEdit
                       onClick={() => {
                         updateProp(
                           "programmes",
-                          props.programmes.filter((_: any, i: number) => i !== idx)
+                          (props.programmes as any[]).filter((_: any, i: number) => i !== idx)
                         );
                       }}
                       className="size-6 text-muted-foreground hover:text-destructive"
@@ -634,9 +634,9 @@ export function SectionPropertyEditor({ section, onChange }: SectionPropertyEdit
 
                   <div className="grid grid-cols-2 gap-2">
                     <Input
-                      value={prog.title || ""}
+                      value={String(prog.title || "")}
                       onChange={(e) => {
-                        const updated = [...props.programmes];
+                        const updated = [...(props.programmes as Record<string, unknown>[])];
                         updated[idx].title = e.target.value;
                         updateProp("programmes", updated);
                       }}
@@ -837,7 +837,7 @@ export function SectionPropertyEditor({ section, onChange }: SectionPropertyEdit
             </div>
 
             {Array.isArray(props.items) &&
-              props.items.map((item: any, idx: number) => (
+              (props.items as any[]).map((item: any, idx: number) => (
                 <Card key={idx} className="p-3 rounded-xl border border-border/80 space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-muted-foreground">FAQ #{idx + 1}</span>
@@ -848,7 +848,7 @@ export function SectionPropertyEditor({ section, onChange }: SectionPropertyEdit
                       onClick={() => {
                         updateProp(
                           "items",
-                          props.items.filter((_: any, i: number) => i !== idx)
+                          (props.items as any[]).filter((_: any, i: number) => i !== idx)
                         );
                       }}
                       className="size-6 text-muted-foreground hover:text-destructive"
@@ -858,9 +858,9 @@ export function SectionPropertyEditor({ section, onChange }: SectionPropertyEdit
                   </div>
 
                   <Input
-                    value={item.question || ""}
+                    value={String(item.question || "")}
                     onChange={(e) => {
-                      const updated = [...props.items];
+                      const updated = [...(props.items as Record<string, unknown>[])];
                       updated[idx].question = e.target.value;
                       updateProp("items", updated);
                     }}

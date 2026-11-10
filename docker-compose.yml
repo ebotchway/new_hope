@@ -19,10 +19,14 @@ services:
   app:
     build: .
     restart: unless-stopped
+    init: true
     command: sh -c "npx prisma migrate deploy && exec npm run start"
     env_file: .env
     environment:
       DATABASE_URL: "postgresql://livinghope:livinghope@db:5432/livinghope?schema=public"
+      NODE_ENV: "production"
+      PORT: "3010"
+      STORAGE_DRIVER: "local"
     ports:
       - "3010:3010"
     volumes:
@@ -31,7 +35,7 @@ services:
       db:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3010 >/dev/null 2>&1 || exit 1"]
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3010/api/health >/dev/null 2>&1 || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 12

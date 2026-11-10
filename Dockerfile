@@ -22,7 +22,11 @@ RUN npm run build
 # 3. Production runner stage
 FROM base AS runner
 ENV NODE_ENV=production
+RUN apk add --no-cache curl wget libc6-compat
 RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs
+
+# Ensure persistent uploads directory exists and is owned by non-root nextjs user
+RUN mkdir -p /app/public/uploads && chown -R nextjs:nodejs /app/public/uploads
 
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/package-lock.json ./package-lock.json
@@ -37,5 +41,8 @@ USER nextjs
 EXPOSE 3010
 ENV PORT=3010
 ENV HOSTNAME="0.0.0.0"
+
+HEALTHCHECK --interval=15s --timeout=5s --start-period=30s --retries=3 \
+  CMD wget -qO- http://127.0.0.1:3010/api/health >/dev/null 2>&1 || exit 1
 
 CMD ["npm", "run", "start"]

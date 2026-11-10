@@ -4,6 +4,7 @@ import { prisma } from "../prisma";
 import { getCmsPage } from "../cms-loader";
 import { requireStaff, requireAdmin } from "../session";
 import type { CmsSection } from "../cms-types";
+import type { Prisma } from "@/generated/prisma/client";
 
 test("CMS End-to-End Lifecycle & Draft Isolation", async (t) => {
   const testSlug = `test-page-${Date.now()}`;
@@ -26,6 +27,7 @@ test("CMS End-to-End Lifecycle & Draft Isolation", async (t) => {
       {
         id: "hero-1",
         type: "hero",
+        enabled: true,
         props: {
           badge: "Initial Version",
           title: "Initial Published Campaign Title",
@@ -39,10 +41,8 @@ test("CMS End-to-End Lifecycle & Draft Isolation", async (t) => {
       data: {
         pageId: page.id,
         revisionNumber: 1,
-        title: "Initial Published Campaign",
-        sections: initialSections,
+        sections: initialSections as unknown as Prisma.InputJsonValue,
         changelog: "Initial release",
-        isPublished: true,
       },
     });
     initialRevId = revision1.id;
@@ -56,7 +56,8 @@ test("CMS End-to-End Lifecycle & Draft Isolation", async (t) => {
     // Verify public view
     const publicPage = await getCmsPage(testSlug, { isStaffPreview: false });
     assert.ok(publicPage !== null);
-    assert.equal(publicPage?.sections[0]?.props?.title, "Initial Published Campaign Title");
+    const heroProps = (publicPage?.sections[0]?.props as unknown) as Record<string, unknown>;
+    assert.equal(heroProps?.title, "Initial Published Campaign Title");
   });
 
   await t.test("2. Save Draft Revision - Draft Isolation Check", async () => {
@@ -64,6 +65,7 @@ test("CMS End-to-End Lifecycle & Draft Isolation", async (t) => {
       {
         id: "hero-1",
         type: "hero",
+        enabled: true,
         props: {
           badge: "Work In Progress",
           title: "SECRET DRAFT CAMPAIGN TITLE",
@@ -77,10 +79,8 @@ test("CMS End-to-End Lifecycle & Draft Isolation", async (t) => {
       data: {
         pageId,
         revisionNumber: 2,
-        title: "Draft Update with Secret Info",
-        sections: draftSections,
+        sections: draftSections as unknown as Prisma.InputJsonValue,
         changelog: "Draft modifications",
-        isPublished: false,
       },
     });
     draftRevId = revision2.id;
@@ -88,8 +88,9 @@ test("CMS End-to-End Lifecycle & Draft Isolation", async (t) => {
     // Public website must still see the PUBLISHED revision (Draft Isolation)
     const publicView = await getCmsPage(testSlug, { isStaffPreview: false });
     assert.ok(publicView !== null);
+    const publicHeroProps = (publicView?.sections[0]?.props as unknown) as Record<string, unknown>;
     assert.equal(
-      publicView?.sections[0]?.props?.title,
+      publicHeroProps?.title,
       "Initial Published Campaign Title",
       "Draft leaked to public website!"
     );
@@ -97,8 +98,9 @@ test("CMS End-to-End Lifecycle & Draft Isolation", async (t) => {
     // Staff preview must see the DRAFT revision
     const staffView = await getCmsPage(testSlug, { isStaffPreview: true });
     assert.ok(staffView !== null);
+    const staffHeroProps = (staffView?.sections[0]?.props as unknown) as Record<string, unknown>;
     assert.equal(
-      staffView?.sections[0]?.props?.title,
+      staffHeroProps?.title,
       "SECRET DRAFT CAMPAIGN TITLE",
       "Staff preview failed to show latest draft"
     );
@@ -106,29 +108,20 @@ test("CMS End-to-End Lifecycle & Draft Isolation", async (t) => {
 
   await t.test("3. Publish Draft Revision", async () => {
     // Publish revision 2
-    await prisma.$transaction([
-      prisma.cmsRevision.updateMany({
-        where: { pageId },
-        data: { isPublished: false },
-      }),
-      prisma.cmsRevision.update({
-        where: { id: draftRevId },
-        data: { isPublished: true },
-      }),
-      prisma.cmsPage.update({
-        where: { id: pageId },
-        data: {
-          publishedRevisionId: draftRevId,
-          status: "PUBLISHED",
-          publishedAt: new Date(),
-        },
-      }),
-    ]);
+    await prisma.cmsPage.update({
+      where: { id: pageId },
+      data: {
+        publishedRevisionId: draftRevId,
+        status: "PUBLISHED",
+        publishedAt: new Date(),
+      },
+    });
 
     // Public website should immediately serve the new revision
     const publicViewAfterPublish = await getCmsPage(testSlug, { isStaffPreview: false });
     assert.ok(publicViewAfterPublish !== null);
-    assert.equal(publicViewAfterPublish?.sections[0]?.props?.title, "SECRET DRAFT CAMPAIGN TITLE");
+    const publishedHeroProps = (publicViewAfterPublish?.sections[0]?.props as unknown) as Record<string, unknown>;
+    assert.equal(publishedHeroProps?.title, "SECRET DRAFT CAMPAIGN TITLE");
   });
 
   await t.test("4. Unpublish Page - Fail-Safe Check", async () => {
@@ -184,28 +177,19 @@ test("CMS End-to-End Lifecycle & Draft Isolation", async (t) => {
 
   await t.test("7. Restore Revision", async () => {
     // Set status back to published and point publishedRevisionId back to initialRevId
-    await prisma.$transaction([
-      prisma.cmsRevision.updateMany({
-        where: { pageId },
-        data: { isPublished: false },
-      }),
-      prisma.cmsRevision.update({
-        where: { id: initialRevId },
-        data: { isPublished: true },
-      }),
-      prisma.cmsPage.update({
-        where: { id: pageId },
-        data: {
-          publishedRevisionId: initialRevId,
-          status: "PUBLISHED",
-          publishedAt: new Date(),
-        },
-      }),
-    ]);
+    await prisma.cmsPage.update({
+      where: { id: pageId },
+      data: {
+        publishedRevisionId: initialRevId,
+        status: "PUBLISHED",
+        publishedAt: new Date(),
+      },
+    });
 
     const restoredView = await getCmsPage(testSlug, { isStaffPreview: false });
     assert.ok(restoredView !== null);
-    assert.equal(restoredView?.sections[0]?.props?.title, "Initial Published Campaign Title");
+    const restoredHeroProps = (restoredView?.sections[0]?.props as unknown) as Record<string, unknown>;
+    assert.equal(restoredHeroProps?.title, "Initial Published Campaign Title");
   });
 
   // Cleanup test records

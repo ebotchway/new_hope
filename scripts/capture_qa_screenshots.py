@@ -30,6 +30,18 @@ ADMIN_ROUTES = [
     ("admin-media-library", "/admin/website/media"),
     ("admin-appearance-settings", "/admin/website/appearance"),
     ("admin-seo-audit", "/admin/website/seo"),
+    ("admin-reports-overview", "/admin/reports"),
+    ("admin-reports-financial", "/admin/reports/financial"),
+    ("admin-reports-donations", "/admin/reports/donations"),
+    ("admin-reports-recurring", "/admin/reports/recurring"),
+    ("admin-reports-sponsorships", "/admin/reports/sponsorships"),
+    ("admin-reports-donors", "/admin/reports/donors"),
+    ("admin-reports-children", "/admin/reports/children"),
+    ("admin-reports-momo", "/admin/reports/momo"),
+    ("admin-reports-reconciliation", "/admin/reports/reconciliation"),
+    ("admin-reports-inquiries", "/admin/reports/inquiries"),
+    ("admin-reports-website", "/admin/reports/website"),
+    ("admin-reports-audit-logs", "/admin/reports/audit-logs"),
 ]
 
 def ensure_dirs():
@@ -97,3 +109,4 @@ def run():
 
 if __name__ == "__main__":
     run()
+

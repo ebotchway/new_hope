@@ -6,6 +6,7 @@
     "dev": "next dev -p 3010",
     "build": "next build",
     "start": "next start -p 3010",
+    "test": "tsx --env-file=.env --test src/lib/__tests__/*.test.ts",
     "lint": "eslint",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",

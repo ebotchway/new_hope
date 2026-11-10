@@ -10,7 +10,6 @@ import {
   Mail,
   UserCog,
   Settings,
-  ExternalLink,
   Globe,
   Sparkles,
   FileText,
@@ -18,6 +17,12 @@ import {
   Image as ImageIcon,
   Palette,
   Search,
+  RefreshCw,
+  HeartHandshake,
+  GraduationCap,
+  Smartphone,
+  ShieldCheck,
+  ExternalLink,
 } from "lucide-react";
 import { requireStaff } from "@/lib/session";
 import { Logo } from "@/components/site/logo";
@@ -28,6 +33,23 @@ const NAV_SECTIONS = [
   {
     title: "Overview",
     items: [{ href: "/admin", label: "Dashboard", icon: LayoutDashboard }],
+  },
+  {
+    title: "Reports & Analytics",
+    items: [
+      { href: "/admin/reports", label: "Overview", icon: BarChart3 },
+      { href: "/admin/reports/financial", label: "Financial Reports", icon: HandCoins },
+      { href: "/admin/reports/donations", label: "Donation Ledger", icon: FileText },
+      { href: "/admin/reports/recurring", label: "Recurring Giving", icon: RefreshCw },
+      { href: "/admin/reports/sponsorships", label: "Sponsorships", icon: HeartHandshake },
+      { href: "/admin/reports/donors", label: "Donors & Retention", icon: Users2 },
+      { href: "/admin/reports/children", label: "Beneficiaries", icon: GraduationCap },
+      { href: "/admin/reports/momo", label: "MoMo Reconciliation", icon: Smartphone },
+      { href: "/admin/reports/reconciliation", label: "Payment Audit", icon: ShieldCheck },
+      { href: "/admin/reports/inquiries", label: "Inquiries", icon: Mail },
+      { href: "/admin/reports/website", label: "Content Reports", icon: Globe },
+      { href: "/admin/reports/audit-logs", label: "Audit Logs", icon: History },
+    ],
   },
   {
     title: "Website Management",

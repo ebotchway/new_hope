@@ -1,26 +1,28 @@
 "use client";
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
-import { GitCompare, ArrowRight, RotateCcw, Plus, Trash2, CheckCircle2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { GitCompare, History } from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { CmsSection } from "@/lib/cms-types";
 import { compareRevisions } from "@/actions/admin/cms";
 
 interface RevisionDiffDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  pageId: string;
+  pageId?: string;
   currentSections: CmsSection[];
-  targetRevisionId: string | null;
-  targetRevisionNumber: number | null;
-  onRestore: (revisionId: string, revisionNumber: number) => void;
+  targetRevisionId?: string | null;
+  targetRevisionNumber?: number | null;
+  onRestore?: (revisionId: string, revisionNumber: number) => void;
 }
 
 export function RevisionDiffDialog({
@@ -35,16 +37,25 @@ export function RevisionDiffDialog({
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (open && targetRevisionId) {
-      setLoading(true);
-      // Fetch target revision sections
-      compareRevisions(targetRevisionId, targetRevisionId).then((res) => {
+    if (!open || !targetRevisionId) return;
+    let cancelled = false;
+
+    queueMicrotask(() => {
+      if (!cancelled) setLoading(true);
+    });
+
+    compareRevisions(targetRevisionId, targetRevisionId).then((res) => {
+      if (!cancelled) {
         setLoading(false);
         if (res.success && res.data) {
           setTargetSections(res.data.revA.sections || []);
         }
-      });
-    }
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
   }, [open, targetRevisionId]);
 
   return (
@@ -58,24 +69,36 @@ export function RevisionDiffDialog({
             </DialogTitle>
             {targetRevisionId && targetRevisionNumber && (
               <Button
+                variant="outline"
                 size="sm"
+                className="gap-2 rounded-xl text-amber-700 border-amber-300 hover:bg-amber-50"
                 onClick={() => {
-                  onRestore(targetRevisionId, targetRevisionNumber);
-                  onOpenChange(false);
+                  if (
+                    confirm(
+                      `Are you sure you want to restore Revision #${targetRevisionNumber}? This will replace the working draft.`
+                    )
+                  ) {
+                    onRestore?.(targetRevisionId, targetRevisionNumber);
+                    onOpenChange(false);
+                  }
                 }}
-                className="rounded-xl bg-brand-primary hover:bg-brand-primary-hover shadow-sm"
               >
-                <RotateCcw className="mr-1.5 size-3.5" />
-                <span>Restore Revision #{targetRevisionNumber}</span>
+                <History className="size-4" />
+                Restore Revision #{targetRevisionNumber}
               </Button>
             )}
           </div>
+          <DialogDescription>
+            Side-by-side comparison between your current working draft and the selected historical revision.
+          </DialogDescription>
         </DialogHeader>
 
         {loading ? (
-          <div className="p-12 text-center text-muted-foreground">Loading revision details...</div>
+          <div className="py-12 text-center text-muted-foreground text-sm">
+            Loading revision data for comparison…
+          </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+          <div className="grid md:grid-cols-2 gap-6 pt-4">
             {/* Left: Current Draft */}
             <div className="space-y-3">
               <div className="flex items-center justify-between pb-2 border-b">
@@ -86,7 +109,8 @@ export function RevisionDiffDialog({
               <div className="space-y-2">
                 {currentSections.map((s, idx) => {
                   const props = (s.props || {}) as Record<string, any>;
-                  const title = props.heading || props.title || s.type;
+                  const title = String(props.heading || props.title || s.type);
+                  const subtitle = String(props.subtitle || props.subheading || props.content || "Configured");
 
                   return (
                     <div
@@ -101,9 +125,7 @@ export function RevisionDiffDialog({
                           {s.type}
                         </Badge>
                       </div>
-                      <p className="text-muted-foreground text-[11px] truncate">
-                        {props.subtitle || props.subheading || props.content || "Configured"}
-                      </p>
+                      <p className="text-muted-foreground text-[11px] truncate">{subtitle}</p>
                     </div>
                   );
                 })}
@@ -122,7 +144,8 @@ export function RevisionDiffDialog({
               <div className="space-y-2">
                 {targetSections.map((s, idx) => {
                   const props = (s.props || {}) as Record<string, any>;
-                  const title = props.heading || props.title || s.type;
+                  const title = String(props.heading || props.title || s.type);
+                  const subtitle = String(props.subtitle || props.subheading || props.content || "Configured");
 
                   return (
                     <div
@@ -133,13 +156,11 @@ export function RevisionDiffDialog({
                         <span className="font-bold text-foreground">
                           #{idx + 1} {title}
                         </span>
-                        <Badge variant="outline" className="text-[10px] uppercase">
+                        <Badge variant="secondary" className="text-[10px] uppercase">
                           {s.type}
                         </Badge>
                       </div>
-                      <p className="text-muted-foreground text-[11px] truncate">
-                        {props.subtitle || props.subheading || props.content || "Configured"}
-                      </p>
+                      <p className="text-muted-foreground text-[11px] truncate">{subtitle}</p>
                     </div>
                   );
                 })}
