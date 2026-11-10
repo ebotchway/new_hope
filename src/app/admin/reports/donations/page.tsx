@@ -120,14 +120,16 @@ export default async function DonationLedgerPage(props: DonationLedgerPageProps)
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card className="rounded-2xl border-border/80 bg-card p-4">
           <span className="text-xs text-muted-foreground font-medium uppercase tracking-wide">
-            Filtered Total Volume
+            {searchParams.method === "MOBILE_MONEY" ? "Filtered MoMo Volume (GHS)" : "Filtered Card Volume (USD)"}
           </span>
           <div className="text-2xl font-bold font-heading text-foreground mt-1">
-            {formatMoney(totalFilteredUsdCents)}
+            {searchParams.method === "MOBILE_MONEY"
+              ? `GH₵${((aggregate._sum.amountGhsCents ?? 0) / 100).toFixed(2)}`
+              : formatMoney(totalFilteredUsdCents)}
           </div>
-          {aggregate._sum.amountGhsCents && aggregate._sum.amountGhsCents > 0 && (
+          {searchParams.method !== "MOBILE_MONEY" && aggregate._sum.amountGhsCents && aggregate._sum.amountGhsCents > 0 && (
             <p className="text-xs text-muted-foreground mt-0.5">
-              Includes ₵{(aggregate._sum.amountGhsCents / 100).toFixed(2)} MoMo
+              + GH₵{((aggregate._sum.amountGhsCents ?? 0) / 100).toFixed(2)} MoMo
             </p>
           )}
         </Card>

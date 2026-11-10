@@ -10,6 +10,18 @@ services:
       - "5442:5432"
     volumes:
       - db-data:/var/lib/postgresql/data
+    networks:
+      - livinghope-network
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U livinghope"]
       interval: 5s
@@ -20,20 +32,33 @@ services:
     build: .
     restart: unless-stopped
     init: true
-    command: sh -c "npx prisma migrate deploy && exec npm run start"
+    command: sh -c "if [ \"$${RUN_MIGRATIONS_ON_STARTUP:-false}\" = \"true\" ]; then npx prisma migrate deploy; fi; exec npm run start"
     env_file: .env
     environment:
       DATABASE_URL: "postgresql://livinghope:livinghope@db:5432/livinghope?schema=public"
       NODE_ENV: "production"
       PORT: "3010"
       STORAGE_DRIVER: "local"
+      RUN_MIGRATIONS_ON_STARTUP: "false"
     ports:
       - "3010:3010"
     volumes:
       - uploads:/app/public/uploads
+    networks:
+      - livinghope-network
     depends_on:
       db:
         condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 1024M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3010/api/health >/dev/null 2>&1 || exit 1"]
       interval: 10s
@@ -44,3 +69,7 @@ services:
 volumes:
   db-data:
   uploads:
+
+networks:
+  livinghope-network:
+    driver: bridge

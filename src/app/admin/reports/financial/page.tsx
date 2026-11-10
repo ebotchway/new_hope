@@ -105,7 +105,7 @@ export default async function FinancialReportsPage(props: FinancialPageProps) {
         <Card className="rounded-2xl border-border/80 shadow-sm bg-card border-brand-primary/30">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-xs font-semibold text-brand-primary uppercase tracking-wide">
-              Net Settled Revenue (USD)
+              Est. Net Revenue (USD)
             </CardTitle>
             <CheckCircle2 className="size-4 text-brand-primary" />
           </CardHeader>
@@ -114,7 +114,7 @@ export default async function FinancialReportsPage(props: FinancialPageProps) {
               {formatMoney(data.totals.netUsdAfterFeesCents)}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              Gross minus refunds & estimated fees
+              Gross minus refunds & estimated provider fees
             </p>
           </CardContent>
         </Card>
