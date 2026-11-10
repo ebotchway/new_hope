@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PageHero } from "@/components/site/page-hero";
@@ -93,7 +94,7 @@ export default async function BecomeABrightenerPage(
                             : "mt-auto w-full rounded-full bg-brand-navy text-white hover:bg-brand-navy-dark"
                         }
                       >
-                        <a href={`/become-a-brightener?type=${option.type}#inquire`}>Learn More</a>
+                        <Link href={`/become-a-brightener?type=${option.type}#inquire`}>Inquire About {option.title}</Link>
                       </Button>
                     </CardContent>
                   </Card>

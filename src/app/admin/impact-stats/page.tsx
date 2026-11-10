@@ -6,65 +6,70 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { DeleteButton } from "@/components/admin/delete-button";
 import { SortableListShell, SortableRow } from "@/components/admin/sortable-list";
+import { requireStaff } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { deleteImpactStat } from "@/actions/admin/impact-stats";
 import { reorderImpactStats } from "@/actions/admin/reorder";
 
-export const metadata = { title: "Impact Stats" };
+export const metadata = { title: "Impact Stats — LivingHope Admin" };
 
 export default async function AdminImpactStatsPage() {
+  await requireStaff();
   const stats = await prisma.impactStat.findMany({ orderBy: { order: "asc" } });
 
   return (
     <>
       <AdminPageHeader
-        title="Impact Stats"
-        description="Big numbers shown on the About page impact band. Drag to reorder."
+        title="Impact Statistics"
+        description="Key performance and community metrics displayed on the About and Impact pages. Drag to reorder."
         breadcrumbs={[{ label: "Impact Stats" }]}
         action={
           <Button asChild>
             <Link href="/admin/impact-stats/new">
               <Plus className="size-4" />
-              Add stat
+              Add Metric
             </Link>
           </Button>
         }
       />
       <SortableListShell ids={stats.map((s) => s.id)} onReorder={reorderImpactStats}>
-        <div className="rounded-xl border bg-card">
+        <div className="overflow-hidden rounded-2xl border bg-card shadow-xs">
           <Table>
             <TableHeader>
-              <TableRow>
+              <TableRow className="bg-secondary/40">
                 <TableHead className="w-8" />
-                <TableHead>Value</TableHead>
-                <TableHead>Label</TableHead>
+                <TableHead>Value / Number</TableHead>
+                <TableHead>Description Label</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead className="w-24" />
+                <TableHead className="w-24 text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {stats.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="py-10 text-center text-sm text-muted-foreground">
-                    No stats yet.
+                  <TableCell colSpan={5} className="py-12 text-center text-sm text-muted-foreground">
+                    No impact statistics recorded yet.
                   </TableCell>
                 </TableRow>
               ) : (
                 stats.map((stat) => (
                   <SortableRow key={stat.id} id={stat.id}>
-                    <TableCell>
-                      <Link href={`/admin/impact-stats/${stat.id}`} className="font-medium">
+                    <TableCell className="font-bold text-base text-brand-navy dark:text-blue-400">
+                      <Link href={`/admin/impact-stats/${stat.id}`} className="hover:underline">
                         {stat.value}
                       </Link>
                     </TableCell>
-                    <TableCell className="max-w-sm truncate text-muted-foreground">{stat.label}</TableCell>
+                    <TableCell className="text-sm font-medium">{stat.label}</TableCell>
                     <TableCell>
                       <Badge variant={stat.published ? "default" : "secondary"} className={stat.published ? "bg-brand-navy" : ""}>
                         {stat.published ? "Published" : "Draft"}
                       </Badge>
                     </TableCell>
-                    <TableCell>
-                      <DeleteButton action={deleteImpactStat.bind(null, stat.id)} confirmMessage={`Delete "${stat.value}"?`} />
+                    <TableCell className="text-right">
+                      <DeleteButton
+                        action={deleteImpactStat.bind(null, stat.id)}
+                        confirmMessage={`Delete "${stat.label}"?`}
+                      />
                     </TableCell>
                   </SortableRow>
                 ))

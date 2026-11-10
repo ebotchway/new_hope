@@ -1,22 +1,19 @@
-import Link from "next/link";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { ForgotPasswordForm } from "@/components/site/forgot-password-form";
 
-export const metadata = { title: "Reset Password" };
+export const metadata = { title: "Forgot Password" };
 
 export default function ForgotPasswordPage() {
   return (
-    <Card className="w-full max-w-sm">
-      <CardHeader>
-        <CardTitle className="text-center text-xl">Reset your password</CardTitle>
+    <Card className="w-full max-w-sm border shadow-sm">
+      <CardHeader className="text-center">
+        <CardTitle className="text-xl">Reset your password</CardTitle>
+        <CardDescription>
+          Enter your registered email and we&apos;ll send you a link to reset your account.
+        </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4 text-center text-sm text-muted-foreground">
-        <p>
-          Password reset via email isn&apos;t enabled yet. Please contact the LivingHope team
-          directly to regain access to your account.
-        </p>
-        <Link href="/login" className="font-medium text-foreground hover:underline">
-          Back to log in
-        </Link>
+      <CardContent>
+        <ForgotPasswordForm />
       </CardContent>
     </Card>
   );

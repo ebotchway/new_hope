@@ -6,65 +6,73 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { DeleteButton } from "@/components/admin/delete-button";
 import { SortableListShell, SortableRow } from "@/components/admin/sortable-list";
+import { requireStaff } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { deleteStory } from "@/actions/admin/stories";
 import { reorderStories } from "@/actions/admin/reorder";
 
-export const metadata = { title: "Stories" };
+export const metadata = { title: "Stories — LivingHope Admin" };
 
 export default async function AdminStoriesPage() {
+  await requireStaff();
   const stories = await prisma.story.findMany({ orderBy: { order: "asc" } });
 
   return (
     <>
       <AdminPageHeader
-        title="Stories"
-        description="Testimonial cards shown in the homepage carousel. Drag to reorder."
+        title="Beneficiary Stories"
+        description="Testimonial cards featured in the homepage carousel. Drag handles to reorder."
         breadcrumbs={[{ label: "Stories" }]}
         action={
           <Button asChild>
             <Link href="/admin/stories/new">
               <Plus className="size-4" />
-              Add story
+              Add Story
             </Link>
           </Button>
         }
       />
       <SortableListShell ids={stories.map((s) => s.id)} onReorder={reorderStories}>
-        <div className="rounded-xl border bg-card">
+        <div className="overflow-hidden rounded-2xl border bg-card shadow-xs">
           <Table>
             <TableHeader>
-              <TableRow>
+              <TableRow className="bg-secondary/40">
                 <TableHead className="w-8" />
                 <TableHead>Name</TableHead>
                 <TableHead>Quote</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead className="w-24" />
+                <TableHead className="w-24 text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {stories.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="py-10 text-center text-sm text-muted-foreground">
-                    No stories yet.
+                  <TableCell colSpan={5} className="py-12 text-center text-sm text-muted-foreground">
+                    No stories added yet. Create your first beneficiary story card.
                   </TableCell>
                 </TableRow>
               ) : (
                 stories.map((story) => (
                   <SortableRow key={story.id} id={story.id}>
-                    <TableCell>
-                      <Link href={`/admin/stories/${story.id}`} className="font-medium">
+                    <TableCell className="font-semibold">
+                      <Link href={`/admin/stories/${story.id}`} className="hover:underline">
                         {story.name}
+                        {story.age ? ` (${story.age})` : ""}
                       </Link>
                     </TableCell>
-                    <TableCell className="max-w-sm truncate text-muted-foreground">{story.quote}</TableCell>
+                    <TableCell className="max-w-md truncate text-xs text-muted-foreground">
+                      &ldquo;{story.quote}&rdquo;
+                    </TableCell>
                     <TableCell>
                       <Badge variant={story.published ? "default" : "secondary"} className={story.published ? "bg-brand-navy" : ""}>
                         {story.published ? "Published" : "Draft"}
                       </Badge>
                     </TableCell>
-                    <TableCell>
-                      <DeleteButton action={deleteStory.bind(null, story.id)} confirmMessage={`Delete ${story.name}'s story?`} />
+                    <TableCell className="text-right">
+                      <DeleteButton
+                        action={deleteStory.bind(null, story.id)}
+                        confirmMessage={`Delete story for "${story.name}"?`}
+                      />
                     </TableCell>
                   </SortableRow>
                 ))

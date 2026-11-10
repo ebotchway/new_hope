@@ -26,6 +26,8 @@ function YoutubeIcon(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
+import { getCmsNavItems } from "@/lib/cms-loader";
+
 const NAV_LINKS = [
   { href: "/what-we-do", label: "What we Do" },
   { href: "/sponsor-a-child", label: "Sponsor a Child" },
@@ -35,7 +37,13 @@ const NAV_LINKS = [
 ];
 
 export async function SiteFooter() {
-  const settings = await prisma.siteSettings.findUnique({ where: { id: 1 } }).catch(() => null);
+  const [settings, footerNav, legalNav] = await Promise.all([
+    prisma.siteSettings.findUnique({ where: { id: 1 } }).catch(() => null),
+    getCmsNavItems("FOOTER_COL1"),
+    getCmsNavItems("FOOTER_LEGAL"),
+  ]);
+
+  const navLinks = footerNav.length > 0 ? footerNav : NAV_LINKS;
 
   const socials = [
     { href: settings?.facebookUrl, icon: FacebookIcon, label: "Facebook" },
@@ -50,7 +58,7 @@ export async function SiteFooter() {
           <Logo light tagline size="lg" />
 
           <nav className="flex flex-wrap items-center justify-center gap-x-7 gap-y-2">
-            {NAV_LINKS.map((link) => (
+            {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
@@ -82,12 +90,28 @@ export async function SiteFooter() {
         <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-7 text-xs text-white/60 sm:flex-row">
           <p>Copyright © {new Date().getFullYear()} LivingHope. All Rights Reserved</p>
           <div className="flex items-center gap-4">
-            <Link href="/privacy" className="hover:text-white">
-              Privacy Policy
-            </Link>
-            <Link href="/terms" className="hover:text-white">
-              Terms &amp; Conditions
-            </Link>
+            {legalNav.length > 0 ? (
+              legalNav.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  target={link.isExternal ? "_blank" : undefined}
+                  rel={link.isExternal ? "noopener noreferrer" : undefined}
+                  className="hover:text-white"
+                >
+                  {link.label}
+                </Link>
+              ))
+            ) : (
+              <>
+                <Link href="/privacy" className="hover:text-white">
+                  Privacy Policy
+                </Link>
+                <Link href="/terms" className="hover:text-white">
+                  Terms &amp; Conditions
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>

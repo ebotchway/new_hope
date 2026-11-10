@@ -11,6 +11,13 @@ import {
   UserCog,
   Settings,
   ExternalLink,
+  Globe,
+  Sparkles,
+  FileText,
+  Navigation,
+  Image as ImageIcon,
+  Palette,
+  Search,
 } from "lucide-react";
 import { requireStaff } from "@/lib/session";
 import { Logo } from "@/components/site/logo";
@@ -21,6 +28,18 @@ const NAV_SECTIONS = [
   {
     title: "Overview",
     items: [{ href: "/admin", label: "Dashboard", icon: LayoutDashboard }],
+  },
+  {
+    title: "Website Management",
+    items: [
+      { href: "/admin/website", label: "Overview", icon: Globe },
+      { href: "/admin/website/homepage", label: "Homepage Builder", icon: Sparkles },
+      { href: "/admin/website/pages", label: "Pages", icon: FileText },
+      { href: "/admin/website/navigation", label: "Navigation & Menus", icon: Navigation },
+      { href: "/admin/website/media", label: "Media Library", icon: ImageIcon },
+      { href: "/admin/website/appearance", label: "Appearance & Branding", icon: Palette },
+      { href: "/admin/website/seo", label: "SEO & Social", icon: Search },
+    ],
   },
   {
     title: "Programs",

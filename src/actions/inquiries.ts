@@ -13,6 +13,22 @@ export async function submitPartnershipInquiry(
     return { success: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
   }
 
-  await prisma.partnershipInquiry.create({ data: parsed.data });
+  // Anti-bot honeypot check
+  if (parsed.data.companyHoneypot) {
+    return { success: true };
+  }
+
+  const data = parsed.data;
+
+  await prisma.partnershipInquiry.create({
+    data: {
+      ...data,
+      name: data.name.trim(),
+      email: data.email.toLowerCase().trim(),
+      phone: data.phone?.trim() || null,
+      message: data.message?.trim() || null,
+    },
+  });
+
   return { success: true };
 }

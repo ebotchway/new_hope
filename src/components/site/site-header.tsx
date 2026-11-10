@@ -23,7 +23,9 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ThemeToggle } from "@/components/theme-toggle";
 
-const NAV_LINKS = [
+import { getCmsNavItems } from "@/lib/cms-loader";
+
+const NAV_LINKS: Array<{ href: string; label: string; isExternal?: boolean }> = [
   { href: "/what-we-do", label: "What we Do" },
   { href: "/sponsor-a-child", label: "Sponsor a Child" },
   { href: "/become-a-brightener", label: "Become a Brightener" },
@@ -32,9 +34,17 @@ const NAV_LINKS = [
 ];
 
 export async function SiteHeader() {
-  const session = await auth();
+  const [session, cmsNavItems] = await Promise.all([
+    auth(),
+    getCmsNavItems("HEADER"),
+  ]);
   const user = session?.user;
   const isStaff = user?.role === "ADMIN" || user?.role === "STAFF";
+
+  const navLinks =
+    cmsNavItems.length > 0
+      ? cmsNavItems.map((i) => ({ href: i.href, label: i.label, isExternal: i.isExternal }))
+      : NAV_LINKS;
 
   return (
     <header className="sticky top-0 z-50 bg-background pt-5 pb-1.5 px-4">
@@ -42,10 +52,12 @@ export async function SiteHeader() {
         <Logo light size="lg" className="shrink-0" />
 
         <nav className="hidden items-center gap-8 lg:flex">
-          {NAV_LINKS.map((link) => (
+          {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
+              target={link.isExternal ? "_blank" : undefined}
+              rel={link.isExternal ? "noopener noreferrer" : undefined}
               className="text-[15px] font-medium text-white/85 transition-colors hover:text-white"
             >
               {link.label}
@@ -137,10 +149,12 @@ export async function SiteHeader() {
               </SheetTitle>
             </SheetHeader>
             <nav className="flex flex-col gap-1 px-4">
-              {NAV_LINKS.map((link) => (
+              {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
+                  target={link.isExternal ? "_blank" : undefined}
+                  rel={link.isExternal ? "noopener noreferrer" : undefined}
                   className="rounded-lg px-3 py-2 text-sm font-medium text-foreground hover:bg-muted"
                 >
                   {link.label}
@@ -150,8 +164,11 @@ export async function SiteHeader() {
             <div className="mt-4 flex flex-col gap-2 px-4">
               {user ? (
                 <>
+                  <Button asChild variant="outline" className="w-full justify-start">
+                    <Link href="/account">My account</Link>
+                  </Button>
                   {isStaff && (
-                    <Button asChild variant="outline">
+                    <Button asChild variant="outline" className="w-full justify-start">
                       <Link href="/admin">Admin dashboard</Link>
                     </Button>
                   )}

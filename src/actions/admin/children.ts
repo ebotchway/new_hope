@@ -31,6 +31,7 @@ function parseChildForm(formData: FormData) {
     location: formData.get("location") || undefined,
     status: formData.get("status") || "AVAILABLE",
     featured: formData.get("featured") === "on",
+    archived: formData.get("archived") === "on",
     fundingGoalCents: Math.round(Number(formData.get("fundingGoalCents") || 0) * 100),
   });
 }
@@ -94,13 +95,47 @@ export async function updateChild(id: string, formData: FormData): Promise<Actio
   return { success: true };
 }
 
+export async function toggleArchiveChild(id: string, archived: boolean): Promise<ActionResult> {
+  await requireStaff();
+  const child = await prisma.child.findUnique({ where: { id } });
+  if (!child) return { success: false, error: "Child not found" };
+
+  await prisma.child.update({
+    where: { id },
+    data: { archived },
+  });
+
+  revalidatePath("/admin/children");
+  revalidatePath("/sponsor-a-child");
+  revalidatePath(`/sponsor-a-child/${child.slug}`);
+  return { success: true };
+}
+
 export async function deleteChild(id: string): Promise<ActionResult> {
   await requireStaff();
+
+  // Check if sponsorships or donations exist before attempting delete
+  const [sponsorshipsCount, donationsCount] = await Promise.all([
+    prisma.sponsorship.count({ where: { childId: id } }),
+    prisma.donation.count({ where: { childId: id } }),
+  ]);
+
+  if (sponsorshipsCount > 0 || donationsCount > 0) {
+    return {
+      success: false,
+      error: `Cannot permanently delete this child because they have ${sponsorshipsCount} sponsorship(s) and ${donationsCount} donation(s) linked. Archive the child instead to protect financial history.`,
+    };
+  }
+
   try {
     await prisma.child.delete({ where: { id } });
   } catch {
-    return { success: false, error: "Could not delete this child (they may have sponsorship history)." };
+    return {
+      success: false,
+      error: "Could not delete this child record. Ensure all linked updates and dependencies are resolved.",
+    };
   }
+
   revalidatePath("/admin/children");
   revalidatePath("/sponsor-a-child");
   return { success: true };

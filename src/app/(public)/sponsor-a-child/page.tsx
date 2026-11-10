@@ -42,7 +42,7 @@ export default async function SponsorAChildPage(props: PageProps<"/sponsor-a-chi
   const sort = typeof searchParams.sort === "string" ? searchParams.sort : "featured";
 
   const allLocations = await prisma.child.findMany({
-    where: { status: "AVAILABLE", location: { not: null } },
+    where: { status: "AVAILABLE", archived: false, location: { not: null } },
     select: { location: true },
     distinct: ["location"],
   });
@@ -50,6 +50,7 @@ export default async function SponsorAChildPage(props: PageProps<"/sponsor-a-chi
   const children = await prisma.child.findMany({
     where: {
       status: "AVAILABLE",
+      archived: false,
       ...(gender ? { gender: gender as Gender } : {}),
       ...(location ? { location } : {}),
     },

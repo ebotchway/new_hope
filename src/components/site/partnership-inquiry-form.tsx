@@ -38,6 +38,7 @@ export function PartnershipInquiryForm({ defaultType }: { defaultType?: FormValu
       email: "",
       phone: "",
       message: "",
+      companyHoneypot: "",
     },
   });
 
@@ -68,6 +69,14 @@ export function PartnershipInquiryForm({ defaultType }: { defaultType?: FormValu
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="grid gap-5 rounded-2xl bg-secondary p-6 sm:p-8">
+      <input
+        type="text"
+        {...register("companyHoneypot")}
+        tabIndex={-1}
+        autoComplete="off"
+        className="sr-only"
+        aria-hidden="true"
+      />
       <div className="grid gap-2">
         <Label htmlFor="type">Partnership type</Label>
         <Select value={watch("type")} onValueChange={(v) => setValue("type", v as FormValues["type"])}>

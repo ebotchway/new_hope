@@ -19,23 +19,30 @@ enum Role {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String    @unique
-  emailVerified DateTime?
-  image         String?
-  phone         String?
-  passwordHash  String?
-  role          Role      @default(DONOR)
+  id                   String    @id @default(cuid())
+  name                 String?
+  email                String    @unique
+  emailVerified        DateTime?
+  image                String?
+  phone                String?
+  passwordHash         String?
+  role                 Role      @default(DONOR)
+  resetPasswordToken   String?   @unique
+  resetPasswordExpires DateTime?
 
   accounts      Account[]
   sessions      Session[]
   sponsorships  Sponsorship[]
   donations     Donation[]
+  cmsRevisions  CmsRevision[]
+  cmsAuditLogs  CmsAuditLog[]
+  cmsMediaAssets CmsMediaAsset[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([role])
+  @@index([createdAt])
   @@map("users")
 }
 
@@ -56,6 +63,7 @@ model Account {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@index([userId])
   @@map("accounts")
 }
 
@@ -67,6 +75,7 @@ model Session {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([userId])
   @@map("sessions")
 }
 
@@ -104,6 +113,7 @@ model Child {
   location    String?
   status      ChildStatus @default(AVAILABLE)
   featured    Boolean     @default(false)
+  archived    Boolean     @default(false)
   order       Int         @default(0)
 
   /// Optional funding goal (in cents) to show a sponsorship progress bar; 0 = no goal shown.
@@ -116,6 +126,9 @@ model Child {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([status])
+  @@index([featured, order])
+  @@index([archived])
   @@map("children")
 }
 
@@ -133,6 +146,7 @@ model ChildUpdate {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([childId, published])
   @@map("child_updates")
 }
 
@@ -148,9 +162,13 @@ enum SponsorshipStatus {
 }
 
 model Sponsorship {
-  id     String @id @default(cuid())
-  userId String
+  id      String  @id @default(cuid())
+  userId  String?
   childId String
+
+  guestName  String?
+  guestEmail String?
+  guestPhone String?
 
   type   SponsorshipType
   status SponsorshipStatus @default(ACTIVE)
@@ -161,12 +179,15 @@ model Sponsorship {
   startDate DateTime  @default(now())
   endDate   DateTime?
 
-  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  child Child @relation(fields: [childId], references: [id], onDelete: Cascade)
+  user  User?  @relation(fields: [userId], references: [id], onDelete: SetNull)
+  child Child  @relation(fields: [childId], references: [id], onDelete: Restrict)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([userId])
+  @@index([childId])
+  @@index([status])
   @@map("sponsorships")
 }
 
@@ -223,19 +244,30 @@ model Donation {
   whatsappUpdates Boolean @default(false)
 
   stripeCheckoutSessionId String? @unique
+  stripeInvoiceId         String? @unique
   stripePaymentIntentId   String? @unique
-  stripeSubscriptionId    String? @unique
+  stripeSubscriptionId    String?
   stripeCustomerId        String?
 
   /// Human-friendly reference the donor is asked to quote (e.g. "LH-4F82Q") when paying by
   /// mobile money, so staff can match the MoMo SMS/statement line to this donation.
-  momoReference String? @unique
+  momoReference       String?   @unique
+  momoVerifiedAt      DateTime?
+  momoVerifiedBy      String?
+  momoRejectionReason String?
+  exchangeRate        Float?
+  amountGhsCents      Int?
 
   receiptSentAt DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([userId])
+  @@index([childId])
+  @@index([status, createdAt])
+  @@index([paymentMethod, status])
+  @@index([stripeSubscriptionId])
   @@map("donations")
 }
 
@@ -268,6 +300,7 @@ model PartnershipInquiry {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([status, createdAt])
   @@map("partnership_inquiries")
 }
 
@@ -286,6 +319,7 @@ model Story {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([published, order])
   @@map("stories")
 }
 
@@ -299,6 +333,7 @@ model ImpactStat {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([published, order])
   @@map("impact_stats")
 }
 
@@ -314,6 +349,7 @@ model HistoryEvent {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([published, order])
   @@map("history_events")
 }
 
@@ -328,6 +364,7 @@ model Trustee {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([published, order])
   @@map("trustees")
 }
 
@@ -347,11 +384,160 @@ model SiteSettings {
   contactPhone String?
 
   /// Mobile money merchant details shown to donors who choose to pay via MoMo instead of card.
-  momoProvider String? @default("MTN Mobile Money")
-  momoNumber   String?
-  momoName     String?
+  momoProvider     String? @default("MTN Mobile Money")
+  momoNumber       String?
+  momoName         String?
+  momoRateUsdToGhs Float?  @default(15.5)
+  momoInstructions String? @db.Text
 
   updatedAt DateTime @updatedAt
 
   @@map("site_settings")
+}
+
+// ---------- CMS (Phase 2 Website Management) ----------
+
+enum PageStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum NavMenu {
+  HEADER
+  FOOTER_COL1
+  FOOTER_COL2
+  FOOTER_COL3
+  FOOTER_LEGAL
+}
+
+model CmsPage {
+  id                  String      @id @default(cuid())
+  slug                String      @unique
+  title               String
+  publicTitle         String?
+  description         String?
+  status              PageStatus  @default(DRAFT)
+  publishedRevisionId String?
+  isSystem            Boolean     @default(false)
+  seoTitle            String?
+  seoDescription      String?
+  ogImageUrl          String?
+  canonicalUrl        String?
+  noIndex             Boolean     @default(false)
+  publishedAt         DateTime?
+
+  revisions           CmsRevision[]
+  auditLogs           CmsAuditLog[]
+
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+
+  @@index([status])
+  @@index([slug])
+  @@map("cms_pages")
+}
+
+model CmsRevision {
+  id             String    @id @default(cuid())
+  pageId         String
+  revisionNumber Int
+  authorId       String?
+  authorName     String?
+  sections       Json
+  changelog      String?
+  createdAt      DateTime  @default(now())
+
+  page           CmsPage   @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  author         User?     @relation(fields: [authorId], references: [id], onDelete: SetNull)
+
+  @@unique([pageId, revisionNumber])
+  @@index([pageId])
+  @@index([authorId])
+  @@map("cms_revisions")
+}
+
+model CmsAuditLog {
+  id        String    @id @default(cuid())
+  pageId    String?
+  userId    String?
+  userName  String?
+  action    String
+  details   Json?
+  createdAt DateTime  @default(now())
+
+  page      CmsPage?  @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  user      User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([pageId])
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("cms_audit_logs")
+}
+
+model CmsMediaAsset {
+  id           String    @id @default(cuid())
+  url          String    @unique
+  filename     String
+  originalName String
+  mimeType     String
+  sizeBytes    Int
+  width        Int?
+  height       Int?
+  altText      String?
+  caption      String?
+  folder       String    @default("general")
+  uploadedBy   String?
+
+  uploader     User?     @relation(fields: [uploadedBy], references: [id], onDelete: SetNull)
+
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([folder])
+  @@index([mimeType])
+  @@index([createdAt])
+  @@index([uploadedBy])
+  @@map("cms_media_assets")
+}
+
+model CmsNavItem {
+  id          String      @id @default(cuid())
+  menu        NavMenu     @default(HEADER)
+  label       String
+  href        String
+  order       Int         @default(0)
+  isExternal  Boolean     @default(false)
+  published   Boolean     @default(true)
+  parentId    String?
+
+  parent      CmsNavItem? @relation("NavItemHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
+  children    CmsNavItem[] @relation("NavItemHierarchy")
+
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([menu, published, order])
+  @@map("cms_nav_items")
+}
+
+model CmsAppearance {
+  id             Int      @id @default(1)
+  primaryColor   String   @default("#0f766e")
+  secondaryColor String   @default("#d97706")
+  accentColor    String   @default("#f59e0b")
+  fontHeading    String   @default("font-heading")
+  fontBody       String   @default("font-sans")
+  buttonRadius   String   @default("rounded-xl")
+  containerWidth String   @default("max-w-7xl")
+  headerSticky   Boolean  @default(true)
+  footerTheme    String   @default("dark")
+  logoUrl        String?
+  logoDarkUrl    String?
+  faviconUrl     String?
+
+  updatedAt      DateTime @updatedAt
+
+  @@map("cms_appearance")
 }

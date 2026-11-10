@@ -25,6 +25,8 @@ export async function updateSiteSettings(
     momoProvider: formData.get("momoProvider") || undefined,
     momoNumber: formData.get("momoNumber") || undefined,
     momoName: formData.get("momoName") || undefined,
+    momoRateUsdToGhs: formData.get("momoRateUsdToGhs") || 15.5,
+    momoInstructions: formData.get("momoInstructions") || undefined,
   });
 
   if (!parsed.success) {

@@ -22,7 +22,7 @@ export default async function ChildDetailPage(props: PageProps<"/sponsor-a-child
   const { slug } = await props.params;
   const child = await prisma.child.findUnique({ where: { slug } });
 
-  if (!child) notFound();
+  if (!child || child.archived) notFound();
 
   const age = calculateAge(child.dateOfBirth);
   const isAvailable = child.status === "AVAILABLE";

@@ -1,13 +1,15 @@
 import { notFound } from "next/navigation";
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { StoryForm } from "@/components/admin/story-form";
+import { requireStaff } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { updateStory } from "@/actions/admin/stories";
 import type { ActionResult } from "@/actions/inquiries";
 
-export const metadata = { title: "Edit Story" };
+export const metadata = { title: "Edit Story — LivingHope Admin" };
 
 export default async function EditStoryPage(props: PageProps<"/admin/stories/[id]">) {
+  await requireStaff();
   const { id } = await props.params;
   const story = await prisma.story.findUnique({ where: { id } });
   if (!story) notFound();
