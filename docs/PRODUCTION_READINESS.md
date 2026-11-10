@@ -119,3 +119,4 @@ docker compose up -d --build app
 - **Daily Backups:** Configure cron job executing `./scripts/backup-db.sh --include-media --retention-days 30` daily at 02:00 AM UTC.
 - **Monitoring:** Ingest `/api/health` probes every 60 seconds via UptimeRobot, Datadog, or Prometheus/Alertmanager.
 - **Media Backups:** Offload `./backups/*.sql.gz` and `./backups/*.tar.gz` to an encrypted, off-site S3 bucket using `rclone` or AWS CLI.
+

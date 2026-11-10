@@ -56,3 +56,4 @@ Automated Playwright captures confirmed:
 - **Desktop ($1440\times900$):** 4-column KPI cards, full ledger tables, side navigation intact.
 - **Tablet ($768\times1024$):** 2-column KPI cards, horizontal scroll wrappers on large tables, compact header.
 - **Mobile ($375\times812$):** 1-column KPI cards, hamburger navigation flyout, responsive filter wrapping, zero horizontal viewport overflow.
+

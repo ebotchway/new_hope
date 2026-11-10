@@ -124,3 +124,4 @@ In the event of database corruption, ransomware, or catastrophic host hardware f
    ```bash
    ./scripts/docker-healthcheck.sh http://localhost:3010/api/health
    ```
+

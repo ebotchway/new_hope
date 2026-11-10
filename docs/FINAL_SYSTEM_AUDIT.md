@@ -84,3 +84,4 @@
 | DevOps | Destructive DB restore script | Critical | RESOLVED (Safety gates & isolated test mode) |
 | DevOps | Unbounded Docker container logs | Low | RESOLVED (json-file 10MB x 3 rotation) |
 | Reliability | Build-time DB connection failure | Medium | RESOLVED (`force-dynamic` layout) |
+

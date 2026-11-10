@@ -41,3 +41,4 @@ echo "[3/3] Migration verification complete."
 echo "============================================================"
 echo "✓ Schema migrations deployed successfully."
 echo "============================================================"
+

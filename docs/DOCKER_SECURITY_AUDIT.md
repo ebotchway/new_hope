@@ -89,3 +89,4 @@ Maximum log disk usage is capped at 30 MB per container.
 | Health Probes | Active health check on port 3010 | **PASS** |
 | Attack Surface | Alpine Linux minimal runtime | **PASS** |
 | Overall Security Rating | **PRODUCTION-GRADE COMPLIANT** | **PASS** |
+
