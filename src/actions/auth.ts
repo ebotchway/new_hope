@@ -30,7 +30,6 @@ export async function loginAction(values: unknown): Promise<ActionResult> {
     if (error instanceof CredentialsSignin) {
       return { success: false, error: "Invalid email or password" };
     }
-    // Check if cause is CredentialsSignin or invalid credentials message
     const errMessage = error instanceof Error ? error.message : "";
     if (errMessage.includes("CredentialsSignin") || errMessage.includes("CallbackRouteError")) {
       return { success: false, error: "Invalid email or password" };
@@ -39,8 +38,19 @@ export async function loginAction(values: unknown): Promise<ActionResult> {
   }
 }
 
-export async function signInWithGoogle(callbackUrl?: string) {
+export async function signInWithGoogle(callbackUrl?: string): Promise<{ success: boolean; error?: string }> {
+  const googleClientId = process.env.AUTH_GOOGLE_ID?.trim() || process.env.GOOGLE_CLIENT_ID?.trim();
+  const googleClientSecret = process.env.AUTH_GOOGLE_SECRET?.trim() || process.env.GOOGLE_CLIENT_SECRET?.trim();
+
+  if (!googleClientId || !googleClientSecret) {
+    return {
+      success: false,
+      error: "Google Sign-In is temporarily unavailable. Missing OAuth client configuration. Please use email & password or contact the system administrator.",
+    };
+  }
+
   await signIn("google", { redirectTo: callbackUrl ?? "/" });
+  return { success: true };
 }
 
 export async function registerAction(values: unknown): Promise<ActionResult> {
@@ -63,14 +73,9 @@ export async function registerAction(values: unknown): Promise<ActionResult> {
       name: name.trim(),
       email: normalizedEmail,
       passwordHash,
+      role: "DONOR",
     },
   });
-
-  try {
-    await signIn("credentials", { email: normalizedEmail, password, redirect: false });
-  } catch {
-    // Account was created; user can log in on the login screen
-  }
 
   return { success: true };
 }

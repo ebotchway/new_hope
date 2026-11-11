@@ -34,6 +34,58 @@ export function StoryCarousel({ stories }: { stories: Story[] }) {
 
   if (stories.length === 0) return null;
 
+  // Single story presentation: centered, spacious, balanced card with rich quotation
+  if (stories.length === 1) {
+    const story = stories[0];
+    return (
+      <div className="mx-auto max-w-3xl">
+        <div className="flex flex-col sm:flex-row overflow-hidden rounded-2xl border border-border/80 bg-card shadow-sm">
+          <div className="relative sm:w-2/5 shrink-0 bg-secondary/50 min-h-56 sm:min-h-full">
+            {story.imageUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={story.imageUrl} alt={story.name} className="h-full w-full object-cover" />
+            ) : (
+              <div className="flex h-full min-h-48 items-center justify-center p-6">
+                <Avatar className="size-20 border-2 border-brand-gold">
+                  <AvatarFallback className="bg-brand-navy text-2xl font-bold text-white">
+                    {story.name.slice(0, 1)}
+                  </AvatarFallback>
+                </Avatar>
+              </div>
+            )}
+            {story.mediaUrl && (
+              <button
+                type="button"
+                aria-label={`Play ${story.name}'s story`}
+                className="absolute inset-0 flex items-center justify-center bg-black/25 transition-colors hover:bg-black/35"
+              >
+                <span className="flex size-12 items-center justify-center rounded-full bg-white/95 shadow-md">
+                  <Play className="size-5 fill-brand-navy text-brand-navy ml-0.5" />
+                </span>
+              </button>
+            )}
+          </div>
+          <div className="flex flex-1 flex-col justify-center gap-4 p-6 sm:p-8">
+            <span className="text-3xl text-brand-gold font-serif leading-none select-none">“</span>
+            <p className="text-base sm:text-lg leading-relaxed text-foreground -mt-3 italic">
+              {story.quote}
+            </p>
+            <div className="flex items-center gap-2 border-t pt-3">
+              <span className="text-sm font-bold text-brand-navy dark:text-blue-300">{story.name}</span>
+              {story.age && (
+                <span className="text-xs text-muted-foreground font-medium">· {story.age} years old</span>
+              )}
+              <span className="ml-auto inline-flex items-center rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-700 dark:text-emerald-300">
+                Sponsored Student
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Multi-story presentation: scrollable cards with carousel dots
   return (
     <div>
       <div
@@ -84,22 +136,20 @@ export function StoryCarousel({ stories }: { stories: Story[] }) {
         ))}
       </div>
 
-      {stories.length > 1 && (
-        <div className="mt-6 flex items-center justify-center gap-2">
-          {stories.map((story, index) => (
-            <button
-              key={story.id}
-              type="button"
-              aria-label={`Go to story ${index + 1}`}
-              onClick={() => scrollToIndex(index)}
-              className={cn(
-                "size-2 rounded-full transition-all",
-                active === index ? "w-5 bg-brand-navy" : "bg-muted-foreground/30"
-              )}
-            />
-          ))}
-        </div>
-      )}
+      <div className="mt-6 flex items-center justify-center gap-2">
+        {stories.map((story, index) => (
+          <button
+            key={story.id}
+            type="button"
+            aria-label={`Go to story ${index + 1}`}
+            onClick={() => scrollToIndex(index)}
+            className={cn(
+              "size-2 rounded-full transition-all",
+              active === index ? "w-5 bg-brand-navy" : "bg-muted-foreground/30"
+            )}
+          />
+        ))}
+      </div>
     </div>
   );
 }

@@ -53,7 +53,7 @@ export function CmsFeaturedStoriesSection({
         )}
 
         {props.showRecentDonors && recentDonations.length > 0 && (
-          <div className="mt-16">
+          <div className="mt-8 sm:mt-10">
             <RecentActivityTicker entries={recentDonations} />
           </div>
         )}

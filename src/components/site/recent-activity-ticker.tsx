@@ -18,25 +18,25 @@ export function RecentActivityTicker({ entries }: { entries: Entry[] }) {
   const items = [...entries, ...entries];
 
   return (
-    <div className="flex items-stretch border-y bg-secondary/60">
-      <div className="flex shrink-0 items-center gap-1.5 border-r bg-secondary px-4 py-3 text-xs font-semibold tracking-wide text-foreground uppercase">
+    <div className="flex items-stretch rounded-xl border border-border/80 bg-secondary/50 overflow-hidden shadow-2xs">
+      <div className="flex shrink-0 items-center gap-1.5 border-r border-border/70 bg-secondary px-3.5 py-2.5 text-[11px] font-semibold tracking-wide text-foreground uppercase">
         <span className="relative flex size-2">
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-75" />
           <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
         </span>
-        Live
+        Recent Support
       </div>
       <div
         className="group flex flex-1 overflow-hidden"
-        style={{ maskImage: "linear-gradient(to right, transparent, black 8%, black 92%, transparent)" }}
+        style={{ maskImage: "linear-gradient(to right, transparent, black 6%, black 94%, transparent)" }}
       >
-        <div className="flex shrink-0 animate-[marquee_32s_linear_infinite] items-center gap-8 py-3 pl-8 group-hover:paused">
+        <div className="flex shrink-0 animate-[marquee_32s_linear_infinite] items-center gap-8 py-2.5 pl-6 group-hover:paused">
           {items.map((entry, i) => (
-            <div key={`${entry.id}-${i}`} className="flex shrink-0 items-center gap-2 whitespace-nowrap text-sm">
-              <HeartHandshake className="size-3.5 shrink-0 text-foreground" />
-              <span className="font-medium">{formatDonorDisplayName(entry.donorName, entry.anonymous)}</span>
+            <div key={`${entry.id}-${i}`} className="flex shrink-0 items-center gap-2 whitespace-nowrap text-xs">
+              <HeartHandshake className="size-3.5 shrink-0 text-brand-primary" />
+              <span className="font-semibold text-foreground">{formatDonorDisplayName(entry.donorName, entry.anonymous)}</span>
               <span className="text-muted-foreground">
-                gave {formatMoney(entry.amountCents, entry.currency)}
+                contributed {formatMoney(entry.amountCents, entry.currency)}
                 {entry.childName ? ` for ${entry.childName}` : ""} · {timeAgo(entry.createdAt)}
               </span>
             </div>

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Lock, Mail, AlertCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,11 +19,18 @@ export function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<FormValues>({ resolver: zodResolver(loginSchema) });
+  } = useForm<FormValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
 
   async function onSubmit(values: FormValues) {
     setFormError(null);
@@ -36,46 +43,102 @@ export function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
         setFormError(result.error);
       }
     } catch {
-      setFormError("Couldn't reach the server — check your connection and try again.");
+      setFormError("Couldn't reach the authentication server. Please check your network connection.");
     }
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div className="grid gap-2">
-        <Label htmlFor="email">Email</Label>
-        <Input id="email" type="email" placeholder="Email" {...register("email")} />
-        {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
+      {formError && (
+        <div className="flex items-start gap-2.5 rounded-xl border border-destructive/20 bg-destructive/10 p-3.5 text-xs text-destructive">
+          <AlertCircle className="size-4 shrink-0 mt-0.5" />
+          <p className="leading-relaxed">{formError}</p>
+        </div>
+      )}
+
+      {/* Email input field */}
+      <div className="space-y-1.5">
+        <Label htmlFor="email" className="text-xs font-semibold text-foreground">
+          Email Address
+        </Label>
+        <div className="relative">
+          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-muted-foreground">
+            <Mail className="size-4" />
+          </div>
+          <Input
+            id="email"
+            type="email"
+            autoComplete="email"
+            placeholder="e.g. supporter@example.com"
+            className="h-12 pl-10 rounded-xl bg-background border-border/80 text-sm focus-visible:ring-brand-primary"
+            {...register("email")}
+          />
+        </div>
+        {errors.email && (
+          <p className="text-xs text-destructive font-medium">{errors.email.message}</p>
+        )}
       </div>
 
-      <div className="grid gap-2">
-        <Label htmlFor="password">Password</Label>
+      {/* Password input field */}
+      <div className="space-y-1.5">
+        <div className="flex items-center justify-between">
+          <Label htmlFor="password" className="text-xs font-semibold text-foreground">
+            Password
+          </Label>
+          <Link
+            href="/forgot-password"
+            className="text-xs font-medium text-brand-primary hover:underline hover:text-brand-primary-hover"
+          >
+            Forgot password?
+          </Link>
+        </div>
         <div className="relative">
-          <Input id="password" type={showPassword ? "text" : "password"} {...register("password")} />
+          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-muted-foreground">
+            <Lock className="size-4" />
+          </div>
+          <Input
+            id="password"
+            type={showPassword ? "text" : "password"}
+            autoComplete="current-password"
+            placeholder="••••••••••••"
+            className="h-12 pl-10 pr-10 rounded-xl bg-background border-border/80 text-sm focus-visible:ring-brand-primary"
+            {...register("password")}
+          />
           <button
             type="button"
             onClick={() => setShowPassword((v) => !v)}
-            className="absolute inset-y-0 right-3 flex items-center text-muted-foreground"
+            aria-label={showPassword ? "Hide password" : "Show password"}
+            className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground hover:text-foreground transition-colors"
           >
             {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
           </button>
         </div>
-        {errors.password && <p className="text-xs text-destructive">{errors.password.message}</p>}
-        <Link href="/forgot-password" className="justify-self-end text-xs text-muted-foreground hover:underline">
-          Forget your Password?
-        </Link>
+        {errors.password && (
+          <p className="text-xs text-destructive font-medium">{errors.password.message}</p>
+        )}
       </div>
 
-      {formError && <p className="text-sm text-destructive">{formError}</p>}
-
-      <Button type="submit" disabled={isSubmitting} className="w-full">
-        {isSubmitting ? "Logging in…" : "Log in"}
+      {/* Submit Button */}
+      <Button
+        type="submit"
+        disabled={isSubmitting}
+        className="w-full h-12 rounded-xl bg-brand-navy hover:bg-brand-navy-dark text-white font-semibold text-sm shadow-md transition-all flex items-center justify-center gap-2 mt-2"
+      >
+        {isSubmitting ? (
+          <>
+            <Loader2 className="size-4 animate-spin" />
+            <span>Verifying credentials...</span>
+          </>
+        ) : (
+          <span>Log in to Account</span>
+        )}
       </Button>
 
-      <p className="text-center text-sm text-muted-foreground">
-        Don&apos;t have any account?{" "}
-        <Link href="/signup" className="font-medium text-foreground hover:underline">
-          Sign Up
+      {/* Sign-up invitation */}
+      <p className="text-center text-xs text-muted-foreground pt-2">
+        Don&apos;t have an account yet?{" "}
+        <Link href="/signup" className="font-semibold text-brand-navy hover:underline dark:text-blue-400">
+          Sign up to join our mission
         </Link>
       </p>
     </form>

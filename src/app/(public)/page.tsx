@@ -2,6 +2,9 @@ import { prisma } from "@/lib/prisma";
 import { formatMoney } from "@/lib/format";
 import { getCmsPage } from "@/lib/cms-loader";
 import { CmsSectionRenderer } from "@/components/cms/section-renderer";
+import { CmsPartnershipCtaSection } from "@/components/cms/sections/partnership-cta-section";
+import { CmsDonationCtaSection } from "@/components/cms/sections/donation-cta-section";
+import type { PartnershipCtaSectionProps, DonationCtaSectionProps } from "@/lib/cms-types";
 import type { Metadata } from "next";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -88,9 +91,22 @@ export default async function HomePage() {
 
   const sections = cmsPage?.sections || [];
 
+  // Detect whether both partnership_cta and donation_cta exist to render as a balanced side-by-side grid
+  const partnershipSec = sections.find((s) => s.type === "partnership_cta" && s.enabled);
+  const donationSec = sections.find((s) => s.type === "donation_cta" && s.enabled);
+  const shouldPairCtas = Boolean(partnershipSec && donationSec);
+
+  // Group or filter sections
+  const renderedSections = sections.filter((s) => {
+    if (shouldPairCtas && (s.type === "partnership_cta" || s.type === "donation_cta")) {
+      return false; // Handled specially in paired grid below
+    }
+    return true;
+  });
+
   return (
     <div className="space-y-4 pb-12">
-      {sections.map((section) => (
+      {renderedSections.map((section) => (
         <CmsSectionRenderer
           key={section.id}
           section={section}
@@ -100,6 +116,18 @@ export default async function HomePage() {
           recentDonations={recentDonationEntries}
         />
       ))}
+
+      {/* Coordinated Two-Column CTA Section */}
+      {shouldPairCtas && partnershipSec && donationSec && (
+        <section className="px-4 py-8 sm:py-12">
+          <div className="mx-auto max-w-7xl">
+            <div className="grid gap-6 lg:grid-cols-2 items-stretch">
+              <CmsPartnershipCtaSection props={partnershipSec.props as PartnershipCtaSectionProps} />
+              <CmsDonationCtaSection props={donationSec.props as DonationCtaSectionProps} />
+            </div>
+          </div>
+        </section>
+      )}
     </div>
   );
 }

@@ -309,7 +309,8 @@ export async function getCmsNavItems(menu: NavMenu): Promise<NavItemWithChildren
       { id: "def_wwd", menu: "HEADER", label: "What We Do", href: "/what-we-do", order: 2, isExternal: false, children: [] },
       { id: "def_sponsor", menu: "HEADER", label: "Sponsor a Child", href: "/sponsor-a-child", order: 3, isExternal: false, children: [] },
       { id: "def_brightener", menu: "HEADER", label: "Become a Brightener", href: "/become-a-brightener", order: 4, isExternal: false, children: [] },
-      { id: "def_contact", menu: "HEADER", label: "Contact", href: "/#contact", order: 5, isExternal: false, children: [] },
+      { id: "def_donate", menu: "HEADER", label: "Make a Donation", href: "/donate", order: 5, isExternal: false, children: [] },
+      { id: "def_contact", menu: "HEADER", label: "Contact Us", href: "/contact", order: 6, isExternal: false, children: [] },
     ];
   }
 
