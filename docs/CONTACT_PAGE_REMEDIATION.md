@@ -91,3 +91,4 @@ FROM partnership_inquiries WHERE email='elena.rostova@example.org';
 All submitted inquiries are immediately accessible to authorized staff:
 - Inquiries list: `/admin/inquiries` (filtered by General Inquiries or Brightener Applications)
 - Inquiry reporting: `/admin/reports/inquiries` (metrics on volume, response time, and status).
+

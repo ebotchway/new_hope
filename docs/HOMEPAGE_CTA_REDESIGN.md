@@ -73,3 +73,4 @@ In `src/app/(public)/page.tsx`, we introduced intelligent section pairing:
   - Tablet: `docs/screenshots/tablet/home.png`
   - Mobile: `docs/screenshots/mobile/home.png`
 - Button click-through destinations tested and routing properly to `/become-a-brightener` and `/donate`.
+

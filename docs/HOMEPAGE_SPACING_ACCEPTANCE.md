@@ -57,3 +57,4 @@ Inspection of full-page snapshots confirms:
 - `docs/screenshots/desktop/home.png`: Well-proportioned vertical cadence; balanced quote card; cohesive two-column CTA grid; consistent typography.
 - `docs/screenshots/tablet/home.png`: Smooth scaling without overlapping or excessive gaps.
 - `docs/screenshots/mobile/home.png`: Touch-friendly spacing, no horizontal overflow, and legible typography throughout.
+

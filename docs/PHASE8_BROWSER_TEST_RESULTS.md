@@ -93,3 +93,4 @@ All test runs completed successfully with zero unhandled exceptions and full-pag
 | Mobile | Signup Page | `docs/screenshots/mobile/signup.png` | Verified |
 | Mobile | Forgot Password | `docs/screenshots/mobile/forgot-password.png` | Verified |
 | Mobile | Admin Inquiries | `docs/screenshots/mobile/admin-inquiries.png` | Verified |
+

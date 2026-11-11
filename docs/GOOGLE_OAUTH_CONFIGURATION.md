@@ -125,3 +125,4 @@ Once credentials are set, perform the following verification:
 4. **Verify Role Isolation:**
    - Google authentication will never elevate a user's role to `ADMIN` or `STAFF`.
    - Existing staff/admin accounts signing in with an identical Google email address will not automatically link unless verified, preventing account takeover.
+

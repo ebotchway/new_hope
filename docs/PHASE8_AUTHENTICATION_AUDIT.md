@@ -169,3 +169,4 @@ Automated test suite `src/lib/__tests__/phase8-auth-and-contact.test.ts` execute
 - Verifies new Google users receive role `DONOR` and cannot escalate to `ADMIN`.
 
 **Result:** All 5 auth tests pass; total suite 71/71 tests passing.
+

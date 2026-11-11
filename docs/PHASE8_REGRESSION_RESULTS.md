@@ -90,3 +90,4 @@ Both containers running in `docker-compose.yml` verified as healthy:
 - **`new_hope-db-1`:** PostgreSQL 16 (Port 5442) — `healthy`
 - **`new_hope-app-1`:** Next.js 16 Production Server (Port 3010) — `healthy`
 - **Volume Persistence:** Database data volume (`postgres_data`) and media assets (`cms_media`) verified mounted and persistent.
+

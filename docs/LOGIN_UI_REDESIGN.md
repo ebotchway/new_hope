@@ -59,3 +59,4 @@ Prior to Phase 8, the authentication pages suffered from several design and inte
 - Visual regression verified across desktop, tablet, and mobile viewports.
 - All 71 automated tests passing.
 - Interactive states (hover, focus-visible ring, loading spinner, error alert) verified in headless Chromium.
+
