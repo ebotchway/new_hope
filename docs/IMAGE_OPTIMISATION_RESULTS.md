@@ -65,3 +65,4 @@ ETag: W/"..."
 Accept-Ranges: bytes
 ```
 Downstream edge proxies or CDNs can cache immutable assets for up to 31,536,000 seconds (1 year) based on unique content hash digests.
+

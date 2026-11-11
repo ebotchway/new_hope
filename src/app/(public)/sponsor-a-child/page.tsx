@@ -84,13 +84,13 @@ export default async function SponsorAChildPage(props: PageProps<"/sponsor-a-chi
         </div>
       </PageHero>
 
-      <section id="how-it-works" className="px-4 py-24">
+      <section id="how-it-works" className="px-4 py-8 sm:py-12">
         <div className="mx-auto max-w-6xl">
           <Reveal>
-            <SectionHeading eyebrow="The Process" title="How Child Sponsorship Works" className="mb-12" />
+            <SectionHeading eyebrow="The Process" title="How Child Sponsorship Works" className="mb-6 sm:mb-8" />
           </Reveal>
           <Reveal delay={0.1}>
-            <div className="relative mb-14 aspect-21/9 overflow-hidden rounded-3xl shadow-sm">
+            <div className="relative mb-8 aspect-21/9 overflow-hidden rounded-2xl shadow-sm">
               <Image
                 src={PLACEHOLDER_IMAGES.brightenerHero}
                 alt="Children who could be sponsored"
@@ -100,11 +100,11 @@ export default async function SponsorAChildPage(props: PageProps<"/sponsor-a-chi
               />
             </div>
           </Reveal>
-          <RevealGroup className="grid gap-8 sm:grid-cols-4">
+          <RevealGroup className="grid gap-6 sm:grid-cols-4">
             {STEPS.map((step) => (
-              <RevealItem key={step.title} className="flex flex-col items-center gap-4 text-center">
-                <span className="flex size-14 items-center justify-center rounded-2xl bg-brand-navy/10">
-                  <step.icon className="size-6 text-foreground" />
+              <RevealItem key={step.title} className="flex flex-col items-center gap-3 text-center">
+                <span className="flex size-12 items-center justify-center rounded-xl bg-brand-navy/10">
+                  <step.icon className="size-5 text-foreground" />
                 </span>
                 <h3 className="text-base font-semibold text-foreground">{step.title}</h3>
                 <p className="text-sm text-muted-foreground">{step.body}</p>
@@ -114,18 +114,18 @@ export default async function SponsorAChildPage(props: PageProps<"/sponsor-a-chi
         </div>
       </section>
 
-      <section className="bg-secondary px-4 py-24">
+      <section className="bg-secondary px-4 py-8 sm:py-12">
         <div className="mx-auto max-w-4xl">
           <Reveal>
-            <SectionHeading eyebrow="What's Included" title="When You Sponsor a Child's Education" className="mb-12" />
+            <SectionHeading eyebrow="What's Included" title="When You Sponsor a Child's Education" className="mb-6 sm:mb-8" />
           </Reveal>
-          <RevealGroup className="space-y-4">
+          <RevealGroup className="space-y-3">
             {BENEFITS.map((benefit) => (
               <RevealItem
                 key={benefit}
-                className="flex items-start gap-4 rounded-2xl bg-card p-4 text-sm shadow-sm sm:text-base"
+                className="flex items-start gap-3.5 rounded-xl bg-card p-3.5 text-sm shadow-xs sm:text-base"
               >
-                <Badge className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-brand-navy p-0 text-white">
+                <Badge className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-brand-navy p-0 text-white text-xs">
                   ✓
                 </Badge>
                 {benefit}
@@ -135,7 +135,7 @@ export default async function SponsorAChildPage(props: PageProps<"/sponsor-a-chi
         </div>
       </section>
 
-      <section id="available-children" className="px-4 py-24">
+      <section id="available-children" className="px-4 py-8 sm:py-12">
         <div className="mx-auto max-w-6xl">
           <Reveal>
             <SectionHeading
@@ -171,7 +171,7 @@ export default async function SponsorAChildPage(props: PageProps<"/sponsor-a-chi
                               className="object-cover transition-transform duration-500 group-hover:scale-105"
                             />
                           ) : (
-                            <ChildPhotoPlaceholder />
+                            <ChildPhotoPlaceholder name={child.name} />
                           )}
                         </div>
                         <CardContent className="p-6">

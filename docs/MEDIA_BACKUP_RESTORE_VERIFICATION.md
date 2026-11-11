@@ -78,3 +78,4 @@ Timestamp:        20261110_213234
 | **Step 3: Database Restore** | Production DB | Schema & table restore from backup | Zero SQL syntax errors, tables populated | 100% relational state restored | **PASSED** |
 | **Step 4: Media Archive Restore** | Container Volume | Extract tar.gz and sync to `/app/public/` | All photos present on disk and container | Amara, Kwame, Efua & CMS assets restored | **PASSED** |
 | **Step 5: End-to-End HTTP Probe** | Next.js Server (Port 3010) | HTTP GET `/images/home/hero.webp` & `/uploads/children/amara.webp` | HTTP 200 with matching Content-Length | HTTP 200 OK (145,058 & 34,620 bytes) | **PASSED** |
+

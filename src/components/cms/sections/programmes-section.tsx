@@ -6,20 +6,20 @@ import { PLACEHOLDER_IMAGES } from "@/lib/placeholder-images";
 
 export function CmsProgrammesSection({ props }: { props: ProgrammesSectionProps }) {
   return (
-    <section className="px-4 py-16 sm:py-24">
+    <section className="px-4 py-8 sm:py-12">
       <div className="mx-auto max-w-7xl">
-        <div className="mx-auto max-w-2xl text-center mb-12 sm:mb-16">
-          <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl font-heading">
+        <div className="mx-auto max-w-2xl text-center mb-8 sm:mb-10">
+          <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl lg:text-4xl font-heading">
             {props.heading}
           </h2>
           {props.subheading && (
-            <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
+            <p className="mt-2.5 text-sm leading-relaxed text-muted-foreground sm:text-base">
               {props.subheading}
             </p>
           )}
         </div>
 
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {props.programmes.map((prog, idx) => (
             <Card
               key={idx}

@@ -40,7 +40,7 @@ export default async function ChildDetailPage(props: PageProps<"/sponsor-a-child
           {child.photoUrl ? (
             <Image src={child.photoUrl} alt={child.name} fill sizes="(min-width: 640px) 40vw, 90vw" className="object-cover" />
           ) : (
-            <ChildPhotoPlaceholder />
+            <ChildPhotoPlaceholder name={child.name} className="size-full min-h-72" />
           )}
         </Reveal>
 

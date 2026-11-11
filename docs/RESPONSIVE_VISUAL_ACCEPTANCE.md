@@ -37,3 +37,4 @@
 2. **Touch Targets:** All interactive buttons, navigation links, and form selects maintain minimum bounding dimensions of 44 × 44 pt (exceeding iOS Human Interface Guidelines and Android Material Design specifications).
 3. **Typography & Readability:** Text does not truncate awkwardly or overflow outside cards at any tested viewport. Responsive Tailwind utilities (`sm:text-4xl lg:text-5xl font-heading`) ensure titles remain legible and proportionate.
 4. **Dark Mode & Contrast Compliance:** Hero overlays utilize dark neutral gradients (`bg-gradient-to-b from-black/65 via-black/40 to-black/75`) ensuring text contrast against underlying photography exceeds the 7.0:1 WCAG AAA threshold for all body and title elements.
+

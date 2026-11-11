@@ -77,3 +77,4 @@ LivingHope's child sponsorship portal adheres to strict child safeguarding stand
 - **Static & Dynamic Serving:**
   - Static site assets served directly from `public/images/`.
   - User-uploaded and CMS-managed media stored in `public/uploads/` mounted to persistent Docker volumes.
+

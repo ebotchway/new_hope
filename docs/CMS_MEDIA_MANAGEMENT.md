@@ -103,3 +103,4 @@ Replacing an image in a draft page revision does **not** alter the live publishe
 | **Denial of Service (Oversized Files)** | 10 MB maximum file size limit enforced prior to stream processing. | **Enforced & Verified** |
 | **Path Traversal Attacks** | Unique generated filenames (UUID / CUID); rejection of `../` in upload path strings. | **Enforced & Verified** |
 | **Access Control** | Admin role required for media library mutations (`ADMIN` or `SUPERADMIN`). | **Enforced & Verified** |
+

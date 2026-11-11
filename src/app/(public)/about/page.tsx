@@ -43,27 +43,27 @@ export default async function AboutPage() {
 
       {/* Database Milestones History */}
       {history.length > 0 && (
-        <section className="px-4 py-16 bg-muted/20">
+        <section className="px-4 py-8 sm:py-12 bg-muted/20">
           <div className="mx-auto max-w-5xl">
             <Reveal>
               <SectionHeading
                 eyebrow="Milestones"
                 title="Our Journey"
                 subtitle="The major milestones that shaped our path to impacting hundreds of children"
-                className="mb-12"
+                className="mb-6 sm:mb-8"
               />
             </Reveal>
-            <div className="space-y-8">
+            <div className="space-y-4 sm:space-y-6">
               {history.map((event) => (
-                <div key={event.id} className="rounded-2xl border border-border/70 bg-card p-6 sm:p-8 shadow-xs">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/50 pb-4 mb-4">
-                    <h3 className="text-xl font-bold font-heading">{event.title}</h3>
-                    <span className="font-mono text-xs font-semibold px-3 py-1 rounded-full bg-brand-primary/10 text-brand-primary w-fit">
+                <div key={event.id} className="rounded-xl border border-border/70 bg-card p-5 sm:p-6 shadow-xs">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/50 pb-3 mb-3">
+                    <h3 className="text-lg font-bold font-heading">{event.title}</h3>
+                    <span className="font-mono text-xs font-semibold px-2.5 py-0.5 rounded-full bg-brand-primary/10 text-brand-primary w-fit">
                       {event.year}
                     </span>
                   </div>
                   {event.bulletPoints && event.bulletPoints.length > 0 && (
-                    <ul className="space-y-2 text-sm text-muted-foreground">
+                    <ul className="space-y-1.5 text-sm text-muted-foreground">
                       {event.bulletPoints.map((pt, i) => (
                         <li key={i} className="flex items-start gap-2">
                           <span className="text-brand-primary">•</span>
@@ -81,26 +81,26 @@ export default async function AboutPage() {
 
       {/* Leadership Trustees */}
       {trustees.length > 0 && (
-        <section className="px-4 py-16">
+        <section className="px-4 py-8 sm:py-12">
           <div className="mx-auto max-w-6xl">
             <Reveal>
               <SectionHeading
                 eyebrow="Leadership"
                 title="Board of Trustees"
                 subtitle="Fiduciary leadership and oversight ensuring ethical stewardship and programmatic integrity"
-                className="mb-12"
+                className="mb-6 sm:mb-8"
               />
             </Reveal>
-            <RevealGroup className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-6">
+            <RevealGroup className="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-6">
               {trustees.map((trustee) => (
                 <RevealItem key={trustee.id} className="text-center">
-                  <Avatar className="mx-auto size-24 rounded-2xl shadow-sm transition-transform duration-300 hover:scale-105">
+                  <Avatar className="mx-auto size-20 rounded-2xl shadow-xs transition-transform duration-300 hover:scale-105">
                     <AvatarImage src={trustee.photoUrl ?? undefined} alt={trustee.name} className="rounded-2xl" />
                     <AvatarFallback className="rounded-2xl bg-brand-navy text-lg text-white">
                       {trustee.name.slice(0, 1)}
                     </AvatarFallback>
                   </Avatar>
-                  <p className="mt-3 text-sm font-bold font-heading">{trustee.name}</p>
+                  <p className="mt-2.5 text-sm font-bold font-heading">{trustee.name}</p>
                   {trustee.title && <p className="text-xs text-muted-foreground">{trustee.title}</p>}
                 </RevealItem>
               ))}
@@ -111,7 +111,7 @@ export default async function AboutPage() {
 
       {/* Recent Community Supporters */}
       {recentDonors.length > 0 && (
-        <section className="px-4 py-12 bg-muted/30">
+        <section className="px-4 py-8 sm:py-10 bg-muted/30">
           <div className="mx-auto max-w-4xl">
             <Reveal>
               <SectionHeading

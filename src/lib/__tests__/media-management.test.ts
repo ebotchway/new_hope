@@ -94,28 +94,7 @@ describe("Phase 6 — Complete Media Management & Asset Integrity", () => {
     }
   });
 
-  it("3. Beneficiary Portrait Integrity — Child Photos Exist and Are Valid", () => {
-    const childPhotos = [
-      "public/uploads/children/amara.webp",
-      "public/uploads/children/kwame.webp",
-      "public/uploads/children/efua.webp",
-    ];
-
-    for (const relPath of childPhotos) {
-      const fullPath = path.join(process.cwd(), relPath);
-      assert.ok(
-        fs.existsSync(fullPath),
-        `Beneficiary portrait '${relPath}' must exist on disk`
-      );
-      const stat = fs.statSync(fullPath);
-      assert.ok(
-        stat.size > 5000,
-        `Beneficiary portrait '${relPath}' must be a high-quality asset (>5KB), got ${stat.size} bytes`
-      );
-    }
-  });
-
-  it("4. Database Child Record Photo URL Verification", async () => {
+  it("3. Beneficiary Safeguarding — No Unrelated Stock Photos Assigned to Named Children", async () => {
     const children = await prisma.child.findMany({
       where: { slug: { in: ["amara", "kwame", "efua"] } },
     });
@@ -123,21 +102,23 @@ describe("Phase 6 — Complete Media Management & Asset Integrity", () => {
     assert.equal(children.length, 3, "Expected 3 seeded children in database");
 
     for (const child of children) {
-      assert.ok(
-        child.photoUrl !== null && child.photoUrl.length > 0,
-        `Child '${child.slug}' must have a non-null photoUrl`
-      );
-      assert.match(
+      // Ethical Safeguarding: Named beneficiaries must not be assigned unverified stock photos
+      assert.equal(
         child.photoUrl,
-        /^\/uploads\/children\/.*\.webp$/,
-        `Child '${child.slug}' photoUrl must match WebP upload path`
-      );
-      const filePath = path.join(process.cwd(), "public", child.photoUrl.replace(/^\//, ""));
-      assert.ok(
-        fs.existsSync(filePath),
-        `File referenced by child '${child.slug}' (${child.photoUrl}) must exist on disk`
+        null,
+        `Child '${child.slug}' must have null photoUrl to display the dignified neutral safeguarding placeholder`
       );
     }
+  });
+
+  it("4. Neutral Safeguarding Asset & Placeholder Verification", () => {
+    const placeholderAsset = path.join(process.cwd(), "public/images/placeholders/child-avatar.webp");
+    assert.ok(
+      fs.existsSync(placeholderAsset),
+      "Neutral child avatar placeholder must exist on disk"
+    );
+    const stat = fs.statSync(placeholderAsset);
+    assert.ok(stat.size > 1024, "Neutral placeholder must be a valid image");
   });
 
   it("5. CmsMediaAsset Database Registry & Metadata Accuracy", async () => {
@@ -189,3 +170,4 @@ describe("Phase 6 — Complete Media Management & Asset Integrity", () => {
     assert.equal(isUploadValid("image/webp", 15 * 1024 * 1024), false); // Exceeds 10MB
   });
 });
+

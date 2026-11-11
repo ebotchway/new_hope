@@ -27,24 +27,24 @@ export function CmsImpactStatsSection({
         ];
 
   return (
-    <section className="px-4 py-12">
-      <div className="mx-auto max-w-7xl rounded-3xl bg-linear-to-br from-slate-900 via-emerald-950 to-slate-900 px-6 py-12 text-white shadow-xl sm:px-12 sm:py-16">
-        <div className="mx-auto max-w-2xl text-center mb-10">
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl font-heading text-white">
+    <section className="px-4 py-6 sm:py-8">
+      <div className="mx-auto max-w-7xl rounded-2xl bg-linear-to-br from-slate-900 via-emerald-950 to-slate-900 px-5 py-8 text-white shadow-lg sm:px-10 sm:py-10">
+        <div className="mx-auto max-w-2xl text-center mb-6 sm:mb-8">
+          <h2 className="text-2xl font-bold tracking-tight sm:text-3xl font-heading text-white">
             {props.heading}
           </h2>
           {props.subheading && (
-            <p className="mt-3 text-base text-emerald-200/80 sm:text-lg">{props.subheading}</p>
+            <p className="mt-2 text-sm text-emerald-200/80 sm:text-base">{props.subheading}</p>
           )}
         </div>
 
-        <div className="grid grid-cols-2 gap-6 md:grid-cols-4 lg:gap-8">
+        <div className="grid grid-cols-2 gap-3.5 md:grid-cols-4 lg:gap-5">
           {stats.map((stat, idx) => (
             <div
               key={idx}
-              className="flex flex-col items-center justify-center rounded-2xl bg-white/5 p-6 text-center backdrop-blur-xs ring-1 ring-white/10"
+              className="flex flex-col items-center justify-center rounded-xl bg-white/5 p-4 text-center backdrop-blur-xs ring-1 ring-white/10"
             >
-              <span className="text-3xl font-extrabold tracking-tight text-amber-400 sm:text-4xl lg:text-5xl font-heading">
+              <span className="text-2xl font-extrabold tracking-tight text-amber-400 sm:text-3xl lg:text-4xl font-heading">
                 {stat.prefix}
                 {stat.value}
                 {stat.suffix}

@@ -17,10 +17,10 @@ export function CmsRichTextSection({ props }: { props: RichTextSectionProps }) {
   const isBrand = props.backgroundColor === "brand";
 
   return (
-    <section className="px-4 py-12">
+    <section className="px-4 py-6 sm:py-8">
       <div
         className={cn(
-          "mx-auto rounded-3xl p-8 sm:p-14 shadow-xs",
+          "mx-auto rounded-2xl p-6 sm:p-10 shadow-xs",
           widthClasses[props.containerWidth || "default"],
           bgClasses[props.backgroundColor || "white"]
         )}

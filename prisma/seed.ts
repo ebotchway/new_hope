@@ -44,7 +44,7 @@ async function main() {
       location: "Accra, Ghana",
       status: "AVAILABLE" as const,
       featured: true,
-      photoUrl: "/uploads/children/amara.webp",
+      photoUrl: null, // Neutral safeguarding placeholder used until authorized parental/guardian photography is verified
     },
     {
       slug: "kwame",
@@ -55,7 +55,7 @@ async function main() {
       location: "Tema, Ghana",
       status: "AVAILABLE" as const,
       featured: false,
-      photoUrl: "/uploads/children/kwame.webp",
+      photoUrl: null,
     },
     {
       slug: "efua",
@@ -66,7 +66,7 @@ async function main() {
       location: "Kumasi, Ghana",
       status: "AVAILABLE" as const,
       featured: false,
-      photoUrl: "/uploads/children/efua.webp",
+      photoUrl: null,
     },
   ];
 

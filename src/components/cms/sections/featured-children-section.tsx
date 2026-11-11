@@ -30,15 +30,15 @@ export function CmsFeaturedChildrenSection({
   const displayChildren = childrenData.slice(0, props.maxCount || 3);
 
   return (
-    <section className="px-4 py-16 sm:py-24">
+    <section className="px-4 py-8 sm:py-12">
       <div className="mx-auto max-w-7xl">
-        <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-end mb-12 sm:mb-16">
+        <div className="flex flex-col items-start justify-between gap-3 md:flex-row md:items-end mb-8 sm:mb-10">
           <div>
-            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl font-heading">
+            <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl lg:text-4xl font-heading">
               {props.heading}
             </h2>
             {props.subheading && (
-              <p className="mt-3 text-base text-muted-foreground sm:text-lg max-w-2xl">
+              <p className="mt-2 text-sm text-muted-foreground sm:text-base max-w-2xl">
                 {props.subheading}
               </p>
             )}
@@ -79,7 +79,7 @@ export function CmsFeaturedChildrenSection({
                         className="object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                     ) : (
-                      <ChildPhotoPlaceholder className="size-full" />
+                      <ChildPhotoPlaceholder name={child.name} className="size-full" />
                     )}
                     <Badge className="absolute top-3 right-3 bg-brand-primary text-white backdrop-blur-xs font-semibold">
                       Awaiting Sponsor

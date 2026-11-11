@@ -96,3 +96,4 @@ In accordance with Phase 5 Docker hardening:
 - The Next.js container executes under non-root UID `10001` (`USER nextjs`).
 - Upload directories in `public/uploads` maintain permissions `0755` with read/write access for the `nextjs` process.
 - Direct path execution prevents privilege escalation or unauthorized file deletion.
+

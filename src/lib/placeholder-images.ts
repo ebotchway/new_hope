@@ -15,6 +15,7 @@ export const PLACEHOLDER_IMAGES = {
   streetChild: "/images/home/street-child.webp",
   partnershipBanner: "/images/home/partnership-banner.webp",
   teamField: "/images/about/team-field.webp",
+  contactHero: "/images/about/team-field.webp",
   childAvatar: "/images/placeholders/child-avatar.webp",
   fallback: "/images/placeholders/fallback.webp",
 } as const;

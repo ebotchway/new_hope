@@ -289,18 +289,29 @@ enum InquiryStatus {
 }
 
 model PartnershipInquiry {
-  id      String          @id @default(cuid())
-  type    PartnershipType
-  name    String
-  email   String
-  phone   String?
-  message String?         @db.Text
-  status  InquiryStatus   @default(NEW)
+  id                  String          @id @default(cuid())
+  type                PartnershipType
+  name                String
+  email               String
+  phone               String?
+  message             String?         @db.Text
+  status              InquiryStatus   @default(NEW)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  // Extended Phase 7 fields for differentiated Brightener paths & general inquiry separation
+  organization        String?
+  role                String?
+  skills              String?
+  availability        String?
+  preferredFrequency  String?
+  subject             String?
+  category            String?         @default("BRIGHTENER_REGISTRATION")
+  metadata            Json?
+
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
 
   @@index([status, createdAt])
+  @@index([category])
   @@map("partnership_inquiries")
 }
 

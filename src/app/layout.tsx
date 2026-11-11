@@ -27,6 +27,13 @@ export const metadata: Metadata = {
   },
   description:
     "LivingHope transforms the lives of street-dwelling children through education, mentorship, and community support.",
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/brand/livinghope-symbol.svg", type: "image/svg+xml" },
+    ],
+    apple: "/brand/livinghope-symbol.png",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

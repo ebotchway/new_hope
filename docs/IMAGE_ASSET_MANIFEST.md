@@ -60,3 +60,4 @@ ORDER BY folder, filename;
 - Total active records: **16 assets**
 - Searchable folders: `home`, `about`, `programmes`, `sponsorship`, `partnerships`, `children`, `placeholders`, `general`.
 - Editable via Admin CMS: `/admin/website/media`
+

@@ -34,6 +34,7 @@ const NAV_LINKS = [
   { href: "/become-a-brightener", label: "Become a Brightener" },
   { href: "/donate", label: "Make a Donation" },
   { href: "/about", label: "About Us" },
+  { href: "/contact", label: "Contact Us" },
 ];
 
 export async function SiteFooter() {
@@ -52,10 +53,10 @@ export async function SiteFooter() {
   ].filter((s) => s.href);
 
   return (
-    <footer className="mt-28 bg-brand-navy text-white">
-      <div className="mx-auto max-w-7xl px-6 py-18">
-        <div className="flex flex-col items-center gap-7 text-center">
-          <Logo light tagline size="lg" />
+    <footer className="mt-12 sm:mt-16 bg-brand-navy text-white">
+      <div className="mx-auto max-w-7xl px-5 py-10 sm:py-12">
+        <div className="flex flex-col items-center gap-5 text-center">
+          <Logo light tagline size="md" />
 
           <nav className="flex flex-wrap items-center justify-center gap-x-7 gap-y-2">
             {navLinks.map((link) => (

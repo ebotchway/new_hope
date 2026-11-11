@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <rect width="128" height="128" rx="28" fill="#0B132B"/>
+  <!-- Stylized L letterform in lavender-grey -->
+  <path d="M34 32 H46 V80 H82 V92 H34 Z" fill="#E2E8F0"/>
+  <!-- Distinctive solid red circular letterform -->
+  <circle cx="84" cy="46" r="20" fill="#DC2626"/>
+</svg>

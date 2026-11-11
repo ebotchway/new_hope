@@ -30,7 +30,7 @@ export default async function DonatePage(props: PageProps<"/donate">) {
         imageUrl={child?.photoUrl ?? PLACEHOLDER_IMAGES.donateHero}
       />
 
-      <section className="px-4 py-16 sm:py-24">
+      <section className="px-4 py-8 sm:py-12">
         <div className="mx-auto max-w-xl">
           <Reveal>
             <DonationForm

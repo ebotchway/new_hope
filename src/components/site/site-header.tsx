@@ -31,6 +31,7 @@ const NAV_LINKS: Array<{ href: string; label: string; isExternal?: boolean }> = 
   { href: "/become-a-brightener", label: "Become a Brightener" },
   { href: "/donate", label: "Make a Donation" },
   { href: "/about", label: "About Us" },
+  { href: "/contact", label: "Contact Us" },
 ];
 
 export async function SiteHeader() {
@@ -47,11 +48,11 @@ export async function SiteHeader() {
       : NAV_LINKS;
 
   return (
-    <header className="sticky top-0 z-50 bg-background pt-5 pb-1.5 px-4">
-      <div className="mx-auto flex max-w-7xl items-center justify-between rounded-2xl bg-brand-navy px-6 py-4.5 text-white shadow-lg shadow-brand-navy/10 sm:px-8">
-        <Logo light size="lg" className="shrink-0" />
+    <header className="sticky top-0 z-50 bg-background pt-2.5 pb-1 px-4">
+      <div className="mx-auto flex max-w-7xl items-center justify-between rounded-2xl bg-brand-navy px-5 py-3 text-white shadow-md shadow-brand-navy/10 sm:px-7">
+        <Logo light size="md" className="shrink-0" />
 
-        <nav className="hidden items-center gap-8 lg:flex">
+        <nav className="hidden items-center gap-6 lg:flex">
           {navLinks.map((link) => (
             <Link
               key={link.href}

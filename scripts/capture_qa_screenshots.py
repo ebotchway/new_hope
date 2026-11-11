@@ -18,11 +18,13 @@ PUBLIC_ROUTES = [
     ("sponsor-a-child", "/sponsor-a-child"),
     ("sponsor-child-detail", "/sponsor-a-child/amara"),
     ("become-a-brightener", "/become-a-brightener"),
+    ("contact", "/contact"),
     ("donate", "/donate"),
 ]
 
 ADMIN_ROUTES = [
     ("admin-dashboard", "/admin"),
+    ("admin-inquiries", "/admin/inquiries"),
     ("admin-website-overview", "/admin/website"),
     ("admin-homepage-builder", "/admin/website/homepage"),
     ("admin-pages-manager", "/admin/website/pages"),

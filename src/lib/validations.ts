@@ -26,6 +26,38 @@ export const partnershipInquirySchema = z.object({
   companyHoneypot: z.string().optional(),
 });
 
+export const brightenerRegistrationSchema = z.object({
+  type: z.enum(["INDIVIDUAL", "GROUP", "CORPORATE", "CHURCH", "WILL_GIFT", "VOLUNTEER"]),
+  name: z.string().min(2, "Full name is required").max(100),
+  email: z.string().email("A valid email address is required"),
+  phone: z.string().max(30).optional(),
+  organization: z.string().max(120).optional(),
+  role: z.string().max(80).optional(),
+  skills: z.string().max(250).optional(),
+  availability: z.string().max(100).optional(),
+  preferredFrequency: z.string().max(50).optional(),
+  areasOfInterest: z.array(z.string()).optional(),
+  message: z.string().max(2000).optional(),
+  agreementAccepted: z.boolean().refine((val) => val === true, {
+    message: "You must accept the partnership terms and safeguarding code",
+  }),
+  companyHoneypot: z.string().optional(),
+});
+
+export const generalInquirySchema = z.object({
+  name: z.string().min(2, "Full name is required").max(100),
+  email: z.string().email("A valid email address is required"),
+  phone: z.string().max(30).optional(),
+  subject: z.string().min(3, "Subject must be at least 3 characters").max(150),
+  inquiryType: z
+    .enum(["GENERAL", "SPONSORSHIP", "DONATION", "VOLUNTEER", "VISIT", "MEDIA", "OTHER"]),
+  message: z.string().min(10, "Message must be at least 10 characters").max(3000),
+  companyHoneypot: z.string().optional(),
+});
+
+export type BrightenerRegistrationInput = z.infer<typeof brightenerRegistrationSchema>;
+export type GeneralInquiryInput = z.infer<typeof generalInquirySchema>;
+
 export const signupSchema = z
   .object({
     name: z.string().min(2, "Name is required").max(100),

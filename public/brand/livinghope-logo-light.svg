@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 70" width="300" height="70">
+  <g transform="translate(0, 8)">
+    <!-- Livinghope Wordmark in Brand Navy -->
+    <text x="0" y="36" font-family="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" font-weight="700" font-size="34" fill="#0F172A" letter-spacing="-0.5">Livingh</text>
+    <!-- Distinctive solid red circular letterform for 'o' -->
+    <circle cx="145" cy="24.5" r="12" fill="#DC2626"/>
+    <!-- 'pe' in Livinghope -->
+    <text x="163" y="36" font-family="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" font-weight="700" font-size="34" fill="#0F172A" letter-spacing="-0.5">pe</text>
+    
+    <!-- Tagline with thin decorative flanking rules -->
+    <g transform="translate(0, 56)">
+      <line x1="2" y1="-3.5" x2="38" y2="-3.5" stroke="#64748B" stroke-width="1" opacity="0.8"/>
+      <text x="150" y="0" text-anchor="middle" font-family="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" font-weight="600" font-size="9.5" fill="#475569" letter-spacing="3.2">BRIGHTEN THE FUTURE</text>
+      <line x1="262" y1="-3.5" x2="298" y2="-3.5" stroke="#64748B" stroke-width="1" opacity="0.8"/>
+    </g>
+  </g>
+</svg>

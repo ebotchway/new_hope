@@ -16,9 +16,9 @@ export function CtaBanner({
   className?: string;
 }) {
   return (
-    <section className={cn("px-4 py-20 sm:py-28", className)}>
+    <section className={cn("px-4 py-8 sm:py-12", className)}>
       <div
-        className="relative mx-auto max-w-5xl overflow-hidden rounded-3xl bg-brand-navy px-6 py-16 text-center text-white sm:px-16 sm:py-20"
+        className="relative mx-auto max-w-5xl overflow-hidden rounded-2xl bg-brand-navy px-6 py-10 text-center text-white sm:px-12 sm:py-12"
         style={{
           backgroundImage:
             "radial-gradient(120% 140% at 15% -10%, color-mix(in oklch, var(--brand-navy-dark) 60%, transparent), transparent 60%)",

@@ -38,20 +38,20 @@ export function CmsCardGridSection({ props }: { props: CardGridSectionProps }) {
   }[props.columns || 3];
 
   return (
-    <section className="px-4 py-16 sm:py-24 bg-muted/20">
+    <section className="px-4 py-8 sm:py-12 bg-muted/20">
       <div className="mx-auto max-w-7xl">
-        <div className="mx-auto max-w-2xl text-center mb-12 sm:mb-16">
-          <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl font-heading">
+        <div className="mx-auto max-w-2xl text-center mb-8 sm:mb-10">
+          <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl lg:text-4xl font-heading">
             {props.heading}
           </h2>
           {props.subheading && (
-            <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
+            <p className="mt-2.5 text-sm leading-relaxed text-muted-foreground sm:text-base">
               {props.subheading}
             </p>
           )}
         </div>
 
-        <div className={cn("grid gap-6 sm:gap-8", colClass)}>
+        <div className={cn("grid gap-4 sm:gap-6", colClass)}>
           {props.cards.map((card, idx) => {
             const IconComponent = card.icon ? ICON_MAP[card.icon] || Sparkles : Sparkles;
 

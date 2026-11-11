@@ -10,11 +10,11 @@ export function CmsHeroSection({ props }: { props: HeroSectionProps }) {
   const bgImage = props.imageUrl || PLACEHOLDER_IMAGES.homeHero;
 
   return (
-    <section className="px-4 pt-2">
-      <div className="relative mx-auto max-w-7xl overflow-hidden rounded-3xl shadow-xl">
+    <section className="px-4 pt-1.5">
+      <div className="relative mx-auto max-w-7xl overflow-hidden rounded-2xl shadow-lg">
         <div
           className={cn(
-            "relative flex min-h-135 justify-center pt-20 sm:min-h-165 sm:pt-28",
+            "relative flex min-h-80 justify-center pt-12 sm:min-h-108 sm:pt-20",
             isLeft ? "items-start text-left" : "items-center text-center"
           )}
         >
@@ -26,28 +26,28 @@ export function CmsHeroSection({ props }: { props: HeroSectionProps }) {
             sizes="(max-width: 1280px) 100vw, 1280px"
             className="object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/65 via-black/40 to-black/75" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/45 to-black/80" />
 
           <div
             className={cn(
-              "relative z-10 max-w-4xl px-6 text-white pb-16",
+              "relative z-10 max-w-4xl px-5 text-white pb-10 sm:pb-14",
               isLeft ? "mr-auto text-left" : "mx-auto text-center"
             )}
           >
             {props.badge && (
-              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-semibold tracking-wide backdrop-blur-md">
+              <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3.5 py-1 text-xs font-semibold tracking-wide backdrop-blur-md">
                 <span className="size-2 rounded-full bg-amber-400 animate-pulse" />
                 {props.badge}
               </div>
             )}
 
-            <h1 className="text-4xl font-extrabold tracking-tight text-balance sm:text-6xl lg:text-7xl drop-shadow-sm font-heading">
+            <h1 className="text-3xl font-extrabold tracking-tight text-balance sm:text-5xl lg:text-6xl drop-shadow-sm font-heading">
               {props.title}
             </h1>
 
             <p
               className={cn(
-                "mt-6 text-lg leading-relaxed text-white/90 sm:text-xl",
+                "mt-4 text-base leading-relaxed text-white/90 sm:text-lg lg:text-xl",
                 !isLeft && "mx-auto max-w-2xl"
               )}
             >
@@ -57,7 +57,7 @@ export function CmsHeroSection({ props }: { props: HeroSectionProps }) {
             {(props.primaryCta || props.secondaryCta) && (
               <div
                 className={cn(
-                  "mt-8 flex flex-wrap gap-4",
+                  "mt-6 flex flex-wrap gap-3.5",
                   isLeft ? "justify-start" : "justify-center"
                 )}
               >
@@ -65,7 +65,7 @@ export function CmsHeroSection({ props }: { props: HeroSectionProps }) {
                   <Button
                     asChild
                     size="lg"
-                    className="bg-brand-primary text-white hover:bg-brand-primary-hover shadow-lg text-base h-12 px-7 rounded-xl"
+                    className="bg-brand-primary text-white hover:bg-brand-primary-hover shadow-md text-base h-11 px-6 rounded-xl"
                   >
                     <Link href={props.primaryCta.href}>{props.primaryCta.label}</Link>
                   </Button>
@@ -75,7 +75,7 @@ export function CmsHeroSection({ props }: { props: HeroSectionProps }) {
                     asChild
                     size="lg"
                     variant="outline"
-                    className="border-white/30 bg-white/10 text-white backdrop-blur-sm hover:bg-white/25 hover:border-white text-base h-12 px-7 rounded-xl"
+                    className="border-white/30 bg-white/10 text-white backdrop-blur-sm hover:bg-white/25 hover:border-white text-base h-11 px-6 rounded-xl"
                   >
                     <Link href={props.secondaryCta.href}>{props.secondaryCta.label}</Link>
                   </Button>
