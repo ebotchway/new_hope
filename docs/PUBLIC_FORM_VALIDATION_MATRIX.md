@@ -38,3 +38,4 @@ When submitted, server actions verify `companyHoneypot`:
 - If empty: Proceeds with standard database persistence.
 
 Verified via automated test `silently drops spam honeypot submissions without writing to database` in `src/lib/__tests__/inquiries-and-branding.test.ts`.
+

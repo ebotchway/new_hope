@@ -141,3 +141,4 @@ def generate_raster_assets():
 
 generate_raster_assets()
 print("All official branding assets successfully generated!")
+

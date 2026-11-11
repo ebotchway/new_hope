@@ -42,3 +42,4 @@ The vector mark was directly integrated into `src/components/site/logo.tsx` with
 - Correct text anchoring and alignment between `Livingh`, the red circle `o`, and `pe`.
 - Tagline "BRIGHTEN THE FUTURE" flanked by precision vector line dividers (`strokeWidth="1.2"`).
 - Applied throughout `SiteHeader`, `SiteFooter`, and Administrative side navigation.
+

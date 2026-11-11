@@ -35,3 +35,4 @@ Visual review confirmed that:
 - No stock portraits are displayed for named children (`amara`, `kwame`, `efua`).
 - Dignified silhouette badge reads: `Photo Protected • LivingHope Child Safeguarding`.
 - Donor trust is reinforced by transparently explaining why child identities are guarded.
+

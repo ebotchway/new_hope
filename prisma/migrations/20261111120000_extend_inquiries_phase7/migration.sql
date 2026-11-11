@@ -11,3 +11,4 @@ ALTER TABLE "partnership_inquiries"
 
 -- CreateIndex
 CREATE INDEX IF NOT EXISTS "partnership_inquiries_category_idx" ON "partnership_inquiries"("category");
+

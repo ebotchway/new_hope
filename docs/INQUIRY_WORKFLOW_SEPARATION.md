@@ -56,3 +56,4 @@ Previously, the platform lacked an independent public contact desk. Visitors wis
 ### Inquiries Pipeline Report (`/admin/reports/inquiries`)
 - Segregated analytical metrics tracking Brightener registrations vs general contact desk inquiries.
 - Breakdown by engagement category (Individual, Volunteer, Corporate, Church, Legacy, General).
+

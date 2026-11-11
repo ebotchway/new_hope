@@ -42,3 +42,4 @@ Upon selecting a pathway, the form dynamically morphs to present tailored fields
    - `category = "BRIGHTENER_REGISTRATION"`
    - `status = "NEW"`
    - Tailored metadata, skills, and organization details recorded for administrator follow-up.
+
