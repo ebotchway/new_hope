@@ -63,7 +63,7 @@ export const DEFAULT_HOMEPAGE_SECTIONS: CmsSection[] = [
         "LivingHope provides a secure sanctuary, immediate health interventions, daily nutritious meals, and the loving support needed to re-enter formal schooling.",
       ],
       imageUrl: "/images/placeholders/street-child.webp",
-      imageAlt: "Street child looking with hope toward a better future",
+      imageAlt: "Vulnerable child by the roadside in Kuntanase, Ghana looking with hope toward a better future",
       imagePosition: "right",
       bulletPoints: [
         "Safe shelter and daily warm meals",
@@ -185,7 +185,7 @@ export const DEFAULT_ABOUT_SECTIONS: CmsSection[] = [
         "Our team consists of passionate Ghanaian social workers, certified teachers, counsellors, and international volunteers united by a shared vision of zero children living or working on the streets.",
       ],
       imageUrl: "/images/placeholders/team-field.webp",
-      imageAlt: "LivingHope field workers interacting with children",
+      imageAlt: "Ghanaian teacher assisting a young student with reading mentorship",
       imagePosition: "left",
       bulletPoints: [
         "100% field-tested transparency and financial accountability",

@@ -32,9 +32,13 @@ COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
+COPY --from=builder /app/scripts ./scripts
 
 # Ensure persistent uploads directory exists and is owned by non-root nextjs user
 RUN mkdir -p /app/public/uploads && chown -R nextjs:nodejs /app/public/uploads
+
+# Keep a defaults copy of initial uploads so volume mounts can initialize authentic assets
+RUN mkdir -p /app/public-defaults && cp -r /app/public/uploads /app/public-defaults/
 
 USER nextjs
 
