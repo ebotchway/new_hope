@@ -93,11 +93,32 @@ export async function finalizeSuccessfulDonation(
       }
     }
 
-    // Mark child as SPONSORED
-    await prisma.child.update({
-      where: { id: donation.childId },
-      data: { status: "SPONSORED" },
-    });
+    // Determine whether child should transition to SPONSORED status:
+    // 1. Monthly recurring sponsorship fully sponsors the child.
+    // 2. Or if fundingGoalCents > 0, cumulative gifts meet or exceed the goal.
+    let shouldMarkSponsored = donation.frequency === "MONTHLY";
+
+    if (!shouldMarkSponsored && donation.child?.fundingGoalCents && donation.child.fundingGoalCents > 0) {
+      const aggregate = await prisma.donation.aggregate({
+        where: {
+          childId: donation.childId,
+          status: "SUCCEEDED",
+          designation: "CHILD_SPONSORSHIP",
+        },
+        _sum: { amountCents: true },
+      });
+      const totalRaised = aggregate._sum.amountCents ?? 0;
+      if (totalRaised >= donation.child.fundingGoalCents) {
+        shouldMarkSponsored = true;
+      }
+    }
+
+    if (shouldMarkSponsored) {
+      await prisma.child.update({
+        where: { id: donation.childId },
+        data: { status: "SPONSORED" },
+      });
+    }
   }
 
   // Send donation receipt (isolated failure boundary)

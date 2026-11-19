@@ -16,15 +16,31 @@ export default async function AccountPage() {
   const session = await auth();
   if (!session?.user) redirect("/login?callbackUrl=/account");
 
+  const userEmail = session.user.email?.toLowerCase().trim();
+
   const [donations, sponsorships, user] = await Promise.all([
     prisma.donation.findMany({
-      where: { userId: session.user.id },
+      where: userEmail
+        ? {
+            OR: [
+              { userId: session.user.id },
+              { donorEmail: { equals: userEmail, mode: "insensitive" } },
+            ],
+          }
+        : { userId: session.user.id },
       include: { child: true },
       orderBy: { createdAt: "desc" },
-      take: 25,
+      take: 50,
     }),
     prisma.sponsorship.findMany({
-      where: { userId: session.user.id },
+      where: userEmail
+        ? {
+            OR: [
+              { userId: session.user.id },
+              { guestEmail: { equals: userEmail, mode: "insensitive" } },
+            ],
+          }
+        : { userId: session.user.id },
       include: { child: true },
       orderBy: { createdAt: "desc" },
     }),

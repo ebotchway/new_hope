@@ -23,6 +23,7 @@ import {
   Smartphone,
   ShieldCheck,
   ExternalLink,
+  Archive,
 } from "lucide-react";
 import { requireStaff } from "@/lib/session";
 import { Logo } from "@/components/site/logo";
@@ -84,7 +85,8 @@ const NAV_SECTIONS = [
     title: "Administration",
     items: [
       { href: "/admin/users", label: "Users", icon: UserCog },
-      { href: "/admin/settings", label: "Site Settings", icon: Settings },
+      { href: "/admin/settings", label: "Site & Payments", icon: Settings },
+      { href: "/admin/settings/backups", label: "Backups & Restore", icon: Archive },
     ],
   },
 ];

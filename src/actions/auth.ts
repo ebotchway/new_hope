@@ -49,7 +49,16 @@ export async function signInWithGoogle(callbackUrl?: string): Promise<{ success:
     };
   }
 
-  await signIn("google", { redirectTo: callbackUrl ?? "/" });
+  const safeCallback =
+    callbackUrl &&
+    typeof callbackUrl === "string" &&
+    callbackUrl.startsWith("/") &&
+    !callbackUrl.startsWith("//") &&
+    !callbackUrl.startsWith("/\\")
+      ? callbackUrl
+      : "/";
+
+  await signIn("google", { redirectTo: safeCallback });
   return { success: true };
 }
 

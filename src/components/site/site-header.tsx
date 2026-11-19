@@ -26,7 +26,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { getCmsNavItems } from "@/lib/cms-loader";
 
 const NAV_LINKS: Array<{ href: string; label: string; isExternal?: boolean }> = [
-  { href: "/what-we-do", label: "What we Do" },
+  { href: "/what-we-do", label: "What We Do" },
   { href: "/sponsor-a-child", label: "Sponsor a Child" },
   { href: "/become-a-brightener", label: "Become a Brightener" },
   { href: "/donate", label: "Make a Donation" },

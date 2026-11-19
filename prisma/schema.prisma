@@ -401,6 +401,12 @@ model SiteSettings {
   momoRateUsdToGhs Float?  @default(15.5)
   momoInstructions String? @db.Text
 
+  /// Stripe Payment Gateway configuration
+  stripePublishableKey String?
+  stripeSecretKey      String?
+  stripeWebhookSecret  String?
+  stripeMode           String? @default("test")
+
   updatedAt DateTime @updatedAt
 
   @@map("site_settings")

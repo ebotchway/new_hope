@@ -29,7 +29,7 @@ function YoutubeIcon(props: React.SVGProps<SVGSVGElement>) {
 import { getCmsNavItems } from "@/lib/cms-loader";
 
 const NAV_LINKS = [
-  { href: "/what-we-do", label: "What we Do" },
+  { href: "/what-we-do", label: "What We Do" },
   { href: "/sponsor-a-child", label: "Sponsor a Child" },
   { href: "/become-a-brightener", label: "Become a Brightener" },
   { href: "/donate", label: "Make a Donation" },

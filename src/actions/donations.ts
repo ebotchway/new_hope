@@ -3,7 +3,7 @@
 import { randomUUID } from "node:crypto";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { stripe } from "@/lib/stripe";
+import { getStripeClient } from "@/lib/stripe";
 import { donationSchema } from "@/lib/validations";
 
 export type CheckoutResult =
@@ -81,7 +81,8 @@ export async function createDonationCheckout(values: unknown): Promise<CheckoutR
       : "LivingHope General Donation";
 
   try {
-    const checkoutSession = await stripe.checkout.sessions.create({
+    const stripeClient = await getStripeClient();
+    const checkoutSession = await stripeClient.checkout.sessions.create({
       mode: data.frequency === "MONTHLY" ? "subscription" : "payment",
       customer_email: data.donorEmail.toLowerCase().trim(),
       line_items: [

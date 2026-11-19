@@ -410,6 +410,7 @@ export async function getSponsorshipReport() {
     prisma.child.count({ where: { status: "GRADUATED", archived: false } }),
     prisma.child.count({ where: { archived: true } }),
     prisma.sponsorship.findMany({
+      where: { status: "ACTIVE" },
       orderBy: { createdAt: "desc" },
       include: {
         child: { select: { name: true, slug: true, location: true, school: true } },

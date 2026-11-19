@@ -15,6 +15,15 @@ import type { z } from "zod";
 
 type FormValues = z.infer<typeof loginSchema>;
 
+function getSafeCallbackUrl(url?: string): string {
+  if (!url || typeof url !== "string") return "/";
+  const trimmed = url.trim();
+  if (trimmed.startsWith("/") && !trimmed.startsWith("//") && !trimmed.startsWith("/\\")) {
+    return trimmed;
+  }
+  return "/";
+}
+
 export function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
@@ -37,7 +46,8 @@ export function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
     try {
       const result = await loginAction(values);
       if (result.success) {
-        router.push(callbackUrl ?? "/");
+        const safeDestination = getSafeCallbackUrl(callbackUrl);
+        router.push(safeDestination);
         router.refresh();
       } else {
         setFormError(result.error);

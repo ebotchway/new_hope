@@ -18,9 +18,9 @@ const INQUIRY_TOPICS = [
   { value: "GENERAL", label: "General Information & Inquiries" },
   { value: "SPONSORSHIP", label: "Child Sponsorship Questions" },
   { value: "DONATION", label: "Donations, Tax Receipts & Wire Transfers" },
-  { value: "VOLUNTEERING", label: "Volunteer Opportunities & Requirements" },
-  { value: "VISITING", label: "Visiting Our Center in Accra" },
-  { value: "MEDIA_PRESS", label: "Media, Press & Academic Research" },
+  { value: "VOLUNTEER", label: "Volunteer Opportunities & Requirements" },
+  { value: "VISIT", label: "Visiting Our Center in Accra" },
+  { value: "MEDIA", label: "Media, Press & Academic Research" },
   { value: "OTHER", label: "Other Inquiries" },
 ];
 

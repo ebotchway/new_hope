@@ -93,12 +93,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         });
         if (dbUser) {
           token.role = dbUser.role;
+        } else {
+          // User was deleted or suspended: immediately invalidate session credentials
+          token.id = undefined;
+          token.role = undefined;
         }
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
+        if (!token.id) {
+          // Return unauthenticated session when user has been deleted from database
+          return { ...session, user: undefined as unknown as typeof session.user, expires: new Date(0).toISOString() };
+        }
         session.user.id = token.id as string;
         session.user.role = (token.role as "DONOR" | "STAFF" | "ADMIN") ?? "DONOR";
       }

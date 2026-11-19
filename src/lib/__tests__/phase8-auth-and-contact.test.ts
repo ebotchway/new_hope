@@ -43,18 +43,22 @@ describe("Phase 8: Authentication Configuration & Google OAuth Resilience", () =
 });
 
 describe("Phase 8: Contact Page & General Inquiry Verification", () => {
-  it("validates valid contact inquiries with required fields", () => {
-    const valid = {
-      name: "Kwesi Appiah",
-      email: "kwesi@example.com",
-      phone: "+233240000000",
-      inquiryType: "GENERAL" as const,
-      subject: "Center Visit Clearance",
-      message: "I am traveling to Accra next month and would like to arrange a center visit.",
-    };
+  it("validates valid contact inquiries with required fields across all enum options", () => {
+    const types = ["GENERAL", "SPONSORSHIP", "DONATION", "VOLUNTEER", "VISIT", "MEDIA", "OTHER"] as const;
 
-    const res = generalInquirySchema.safeParse(valid);
-    assert.strictEqual(res.success, true);
+    for (const t of types) {
+      const valid = {
+        name: "Kwesi Appiah",
+        email: "kwesi@example.com",
+        phone: "+233240000000",
+        inquiryType: t,
+        subject: `Inquiry topic: ${t}`,
+        message: "Detailed message regarding our upcoming outreach partnership.",
+      };
+
+      const res = generalInquirySchema.safeParse(valid);
+      assert.strictEqual(res.success, true, `Expected inquiryType "${t}" to be valid`);
+    }
   });
 
   it("persists contact inquiry with category GENERAL_INQUIRY and verifies admin queryability", async () => {
@@ -80,6 +84,26 @@ describe("Phase 8: Contact Page & General Inquiry Verification", () => {
 
     // Clean up
     await prisma.partnershipInquiry.delete({ where: { id: record.id } });
+  });
+});
+
+describe("Phase 8: Security and Routing Integrity", () => {
+  it("protects system static routes from being hijacked by CMS pages", async () => {
+    const { isReservedSlug } = await import("@/lib/cms-validations");
+    const requiredReserved = [
+      "sponsor-a-child",
+      "become-a-brightener",
+      "contact",
+      "privacy",
+      "terms",
+      "donate",
+      "account",
+      "admin",
+    ];
+
+    for (const slug of requiredReserved) {
+      assert.strictEqual(isReservedSlug(slug), true, `Slug "${slug}" must be reserved`);
+    }
   });
 });
 

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type Stripe from "stripe";
-import { stripe } from "@/lib/stripe";
+import { getStripeClient, getStripeWebhookSecret } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
 import { finalizeSuccessfulDonation } from "@/lib/donation-fulfillment";
 import { sendDonationReceipt } from "@/lib/email";
@@ -8,16 +8,17 @@ import { sendDonationReceipt } from "@/lib/email";
 export async function POST(request: Request) {
   const body = await request.text();
   const signature = request.headers.get("stripe-signature");
-  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  const webhookSecret = await getStripeWebhookSecret();
 
   if (!signature || !webhookSecret) {
-    console.error("Stripe webhook: missing signature or STRIPE_WEBHOOK_SECRET");
+    console.error("Stripe webhook: missing signature or webhook secret configuration");
     return NextResponse.json({ error: "Webhook not configured" }, { status: 400 });
   }
 
   let event: Stripe.Event;
   try {
-    event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
+    const stripeClient = await getStripeClient();
+    event = stripeClient.webhooks.constructEvent(body, signature, webhookSecret);
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Unknown error";
     console.error("Stripe webhook signature verification failed:", message);
@@ -97,6 +98,15 @@ export async function POST(request: Request) {
           break;
         }
 
+        // Determine payment intent ID for this invoice payment across Stripe API versions
+        const invRaw = invoice as unknown as { payment_intent?: string | { id?: string } };
+        const invoicePaymentIntentId =
+          typeof invRaw.payment_intent === "string"
+            ? invRaw.payment_intent
+            : typeof invRaw.payment_intent === "object" && invRaw.payment_intent !== null && "id" in invRaw.payment_intent
+              ? (invRaw.payment_intent as { id: string }).id
+              : undefined;
+
         // Create renewal donation record with unique invoiceId
         const renewal = await prisma.donation.create({
           data: {
@@ -114,6 +124,7 @@ export async function POST(request: Request) {
             emailUpdates: original.emailUpdates,
             smsUpdates: original.smsUpdates,
             whatsappUpdates: original.whatsappUpdates,
+            stripePaymentIntentId: invoicePaymentIntentId,
             stripeInvoiceId: invoice.id,
             stripeSubscriptionId: subscriptionId,
             stripeCustomerId:

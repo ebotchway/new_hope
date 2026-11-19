@@ -49,8 +49,15 @@ export const generalInquirySchema = z.object({
   email: z.string().email("A valid email address is required"),
   phone: z.string().max(30).optional(),
   subject: z.string().min(3, "Subject must be at least 3 characters").max(150),
-  inquiryType: z
-    .enum(["GENERAL", "SPONSORSHIP", "DONATION", "VOLUNTEER", "VISIT", "MEDIA", "OTHER"]),
+  inquiryType: z.enum([
+    "GENERAL",
+    "SPONSORSHIP",
+    "DONATION",
+    "VOLUNTEER",
+    "VISIT",
+    "MEDIA",
+    "OTHER",
+  ]),
   message: z.string().min(10, "Message must be at least 10 characters").max(3000),
   companyHoneypot: z.string().optional(),
 });
@@ -154,4 +161,8 @@ export const siteSettingsSchema = z.object({
   momoName: z.string().optional(),
   momoRateUsdToGhs: z.coerce.number().positive().default(15.5),
   momoInstructions: z.string().optional(),
+  stripePublishableKey: z.string().trim().optional().or(z.literal("")),
+  stripeSecretKey: z.string().trim().optional().or(z.literal("")),
+  stripeWebhookSecret: z.string().trim().optional().or(z.literal("")),
+  stripeMode: z.enum(["test", "live"]).default("test"),
 });

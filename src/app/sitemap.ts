@@ -43,6 +43,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.9,
     },
     {
+      url: `${baseUrl}/contact`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
       url: `${baseUrl}/terms`,
       lastModified: new Date(),
       changeFrequency: "yearly",
@@ -60,7 +66,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let childRoutes: MetadataRoute.Sitemap = [];
   try {
     const children = await prisma.child.findMany({
-      where: { status: "AVAILABLE" },
+      where: { status: "AVAILABLE", archived: false },
       select: { slug: true, updatedAt: true },
     });
     childRoutes = children.map((c) => ({
@@ -73,13 +79,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error("Error generating sitemap child routes:", error);
   }
 
-  // Dynamic published custom CMS pages
+  // Dynamic published custom CMS pages (excluding un-indexed and future scheduled pages)
   let cmsRoutes: MetadataRoute.Sitemap = [];
   try {
+    const now = new Date();
     const pages = await prisma.cmsPage.findMany({
       where: {
         status: "PUBLISHED",
+        noIndex: false,
         slug: { notIn: ["home", "about", "what-we-do"] },
+        OR: [{ publishedAt: null }, { publishedAt: { lte: now } }],
       },
       select: { slug: true, updatedAt: true },
     });

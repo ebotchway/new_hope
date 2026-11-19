@@ -25,16 +25,16 @@ ENV NODE_ENV=production
 RUN apk add --no-cache curl wget libc6-compat
 RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs
 
-# Ensure persistent uploads directory exists and is owned by non-root nextjs user
-RUN mkdir -p /app/public/uploads && chown -R nextjs:nodejs /app/public/uploads
-
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/package-lock.json ./package-lock.json
-COPY --from=builder /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
+
+# Ensure persistent uploads directory exists and is owned by non-root nextjs user
+RUN mkdir -p /app/public/uploads && chown -R nextjs:nodejs /app/public/uploads
 
 USER nextjs
 

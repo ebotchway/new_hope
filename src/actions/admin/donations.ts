@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { requireStaff, requireAdmin } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { finalizeSuccessfulDonation } from "@/lib/donation-fulfillment";
-import { stripe } from "@/lib/stripe";
+import { getStripeClient } from "@/lib/stripe";
 import type { ActionResult } from "@/actions/inquiries";
 
 /** Manual reconciliation for Mobile Money donations: staff confirm the transfer landed. */
@@ -73,13 +73,33 @@ export async function refundDonation(id: string): Promise<ActionResult> {
     return { success: false, error: "Only succeeded donations can be refunded" };
   }
 
-  // If paid via Stripe and has payment intent, issue Stripe refund
-  if (donation.paymentMethod === "CARD" && donation.stripePaymentIntentId) {
+  // If paid via Stripe and has payment intent (or invoice), issue Stripe refund
+  if (donation.paymentMethod === "CARD") {
+    let paymentIntentId = donation.stripePaymentIntentId;
+
     try {
-      await stripe.refunds.create({
-        payment_intent: donation.stripePaymentIntentId,
-        reason: "requested_by_customer",
-      });
+      const stripeClient = await getStripeClient();
+
+      if (!paymentIntentId && donation.stripeInvoiceId) {
+        try {
+          const inv = await stripeClient.invoices.retrieve(donation.stripeInvoiceId);
+          const invRaw = inv as unknown as { payment_intent?: string | { id?: string } };
+          if (typeof invRaw.payment_intent === "string") {
+            paymentIntentId = invRaw.payment_intent;
+          } else if (invRaw.payment_intent && typeof invRaw.payment_intent === "object" && "id" in invRaw.payment_intent) {
+            paymentIntentId = (invRaw.payment_intent as { id: string }).id;
+          }
+        } catch (invErr) {
+          console.warn("Could not retrieve Stripe invoice for refund:", invErr);
+        }
+      }
+
+      if (paymentIntentId) {
+        await stripeClient.refunds.create({
+          payment_intent: paymentIntentId,
+          reason: "requested_by_customer",
+        });
+      }
     } catch (stripeErr: unknown) {
       console.error("Stripe refund call failed:", stripeErr);
       return { success: false, error: "Stripe refund failed. Please inspect Stripe dashboard." };

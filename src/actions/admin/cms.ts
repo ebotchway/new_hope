@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { requireStaff } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@/generated/prisma/client";
-import { uploadFile } from "@/lib/storage";
+import { uploadFile, deleteFile } from "@/lib/storage";
 import {
   isReservedSlug,
   cmsSectionSchema,
@@ -686,6 +686,11 @@ export async function deleteCmsMedia(assetId: string): Promise<ActionResult> {
   const asset = await prisma.cmsMediaAsset.findUnique({ where: { id: assetId } });
   if (!asset) {
     return { success: false, error: "Asset not found" };
+  }
+
+  // Delete physical storage file safely
+  if (asset.url) {
+    await deleteFile(asset.url);
   }
 
   await prisma.cmsMediaAsset.delete({ where: { id: assetId } });

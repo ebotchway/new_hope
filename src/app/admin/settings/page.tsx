@@ -13,8 +13,8 @@ export default async function AdminSettingsPage() {
     <>
       <AdminPageHeader
         title="Site & Payment Settings"
-        description="Configure public content, organization contact details, and Mobile Money rates."
-        breadcrumbs={[{ label: "Site Settings" }]}
+        description="Configure public content, organization contact channels, Ghana Mobile Money, and live Stripe payment credentials."
+        breadcrumbs={[{ label: "Site & Payments" }]}
       />
       <div className="rounded-2xl border bg-card p-6 shadow-xs">
         <SettingsForm settings={settings} />
