@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireStaff } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import { uploadFile } from "@/lib/storage";
+import { uploadFile, deleteFile } from "@/lib/storage";
 import { childUpdateSchema } from "@/lib/validations";
 import type { ActionResult } from "@/actions/inquiries";
 
@@ -13,7 +13,7 @@ export async function createChildUpdate(childId: string, formData: FormData): Pr
   const parsed = childUpdateSchema.safeParse({
     title: formData.get("title"),
     body: formData.get("body"),
-    published: formData.get("published") === "on",
+    published: formData.get("published") === "on" || formData.get("published") === "true",
   });
   if (!parsed.success) return { success: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
 
@@ -33,8 +33,14 @@ export async function createChildUpdate(childId: string, formData: FormData): Pr
 export async function deleteChildUpdate(id: string, childId: string): Promise<ActionResult> {
   await requireStaff();
 
-  const update = await prisma.childUpdate.delete({ where: { id } }).catch(() => null);
-  if (!update) return { success: false, error: "Update not found" };
+  const existing = await prisma.childUpdate.findUnique({ where: { id } });
+  if (!existing) return { success: false, error: "Update not found" };
+
+  if (existing.imageUrl) {
+    await deleteFile(existing.imageUrl);
+  }
+
+  await prisma.childUpdate.delete({ where: { id } }).catch(() => null);
 
   const child = await prisma.child.findUnique({ where: { id: childId } });
 

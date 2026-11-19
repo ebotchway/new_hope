@@ -34,6 +34,8 @@ export async function markMobileMoneyDonationReceived(id: string): Promise<Actio
   revalidatePath("/admin/donations");
   revalidatePath("/admin");
   revalidatePath("/");
+  revalidatePath(`/donate/mobile-money/${id}`);
+  revalidatePath("/account");
   return { success: true };
 }
 
@@ -60,6 +62,7 @@ export async function rejectMobileMoneyDonation(id: string, reason?: string): Pr
 
   revalidatePath("/admin/donations");
   revalidatePath("/admin");
+  revalidatePath(`/donate/mobile-money/${id}`);
   return { success: true };
 }
 
@@ -116,3 +119,5 @@ export async function refundDonation(id: string): Promise<ActionResult> {
   revalidatePath("/");
   return { success: true };
 }
+
+export const issueDonationRefund = refundDonation;

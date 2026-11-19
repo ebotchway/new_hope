@@ -1,0 +1,38 @@
+# LivingHope Platform — Netlify Deployment Configuration
+# Enables seamless zero-config Next.js 16 App Router deployment directly from GitHub.
+
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "20"
+  SECRETS_SCAN_ENABLED = "true"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# Security & Content Headers
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# High-performance caching for static build artifacts
+[[headers]]
+  for = "/_next/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/brand/*"
+  [headers.values]
+    Cache-Control = "public, max-age=86400, stale-while-revalidate=604800"
+
+[[headers]]
+  for = "/api/webhooks/stripe"
+  [headers.values]
+    Cache-Control = "no-store, no-cache, must-revalidate"

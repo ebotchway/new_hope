@@ -20,6 +20,7 @@ export function DeleteButton({
     startTransition(async () => {
       const result = await action();
       if (!result.success) toast.error(result.error);
+      else toast.success("Deleted successfully.");
     });
   }
 

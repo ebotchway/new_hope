@@ -21,18 +21,29 @@ async function main() {
     update: {},
   });
 
-  const adminEmail = "admin@livinghope.org";
-  const adminPassword = "ChangeMe123!";
-  await prisma.user.upsert({
-    where: { email: adminEmail },
-    create: {
-      email: adminEmail,
-      name: "LivingHope Admin",
-      role: "ADMIN",
-      passwordHash: await bcrypt.hash(adminPassword, 12),
-    },
-    update: {},
-  });
+  const adminPassword = "Super@Password1212";
+  const adminHash = await bcrypt.hash(adminPassword, 12);
+  const contributorPassword = "AdomNhyira10";
+  const contributorHash = await bcrypt.hash(contributorPassword, 12);
+
+  const initialUsers = [
+    { email: "admin1@livinghope.org", name: "admin1", role: "ADMIN" as const, passwordHash: adminHash },
+    { email: "admin2@livinghope.org", name: "admin2", role: "ADMIN" as const, passwordHash: adminHash },
+    { email: "admin@livinghope.org", name: "Super Admin", role: "ADMIN" as const, passwordHash: adminHash },
+    { email: "brightnerone@livinghope.org", name: "brightnerone", role: "STAFF" as const, passwordHash: contributorHash },
+    { email: "brightnertwo@livinghope.org", name: "brightnertwo", role: "STAFF" as const, passwordHash: contributorHash },
+    { email: "brightnerthree@livinghope.org", name: "brightnerthree", role: "STAFF" as const, passwordHash: contributorHash },
+    { email: "brightnerfour@livinghope.org", name: "brightnerfour", role: "STAFF" as const, passwordHash: contributorHash },
+    { email: "brightnerfive@livinghope.org", name: "brightnerfive", role: "STAFF" as const, passwordHash: contributorHash },
+  ];
+
+  for (const u of initialUsers) {
+    await prisma.user.upsert({
+      where: { email: u.email },
+      create: u,
+      update: { name: u.name, role: u.role, passwordHash: u.passwordHash },
+    });
+  }
 
   const children = [
     {
@@ -157,7 +168,8 @@ async function main() {
   }
 
   console.log("Seed complete.");
-  console.log(`Admin login: ${adminEmail} / ${adminPassword}`);
+  console.log("Admin accounts: admin1@livinghope.org / admin2@livinghope.org (Password: Super@Password1212)");
+  console.log("Contributor accounts: brightnerone through brightnerfive (Password: AdomNhyira10)");
 }
 
 main()

@@ -23,6 +23,8 @@ export function UserRoleSelect({ id, role }: { id: string; role: Role }) {
           if (!result.success) {
             toast.error(result.error);
             setValue(role); // the change was blocked server-side — don't leave the UI showing it as applied
+          } else {
+            toast.success(`User role updated to ${next}`);
           }
         });
       }}

@@ -12,3 +12,10 @@ export async function updateInquiryStatus(id: string, status: InquiryStatus): Pr
   revalidatePath("/admin/inquiries");
   return { success: true };
 }
+
+export async function deleteInquiry(id: string): Promise<ActionResult> {
+  await requireStaff();
+  await prisma.partnershipInquiry.delete({ where: { id } });
+  revalidatePath("/admin/inquiries");
+  return { success: true };
+}

@@ -12,7 +12,7 @@ function parseForm(formData: FormData) {
     label: formData.get("label"),
     value: formData.get("value"),
     order: formData.get("order") || 0,
-    published: formData.get("published") === "on",
+    published: formData.get("published") === "on" || formData.get("published") === "true",
   });
 }
 

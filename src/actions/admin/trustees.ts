@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireStaff } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import { uploadFile } from "@/lib/storage";
+import { uploadFile, deleteFile } from "@/lib/storage";
 import { trusteeSchema } from "@/lib/validations";
 import type { ActionResult } from "@/actions/inquiries";
 
@@ -13,7 +13,7 @@ function parseForm(formData: FormData) {
     name: formData.get("name"),
     title: formData.get("title") || undefined,
     order: formData.get("order") || 0,
-    published: formData.get("published") === "on",
+    published: formData.get("published") === "on" || formData.get("published") === "true",
   });
 }
 
@@ -50,6 +50,10 @@ export async function updateTrustee(id: string, formData: FormData): Promise<Act
 
 export async function deleteTrustee(id: string): Promise<ActionResult> {
   await requireStaff();
+  const existing = await prisma.trustee.findUnique({ where: { id } });
+  if (existing?.photoUrl) {
+    await deleteFile(existing.photoUrl);
+  }
   await prisma.trustee.delete({ where: { id } });
   revalidatePath("/admin/trustees");
   revalidatePath("/about");

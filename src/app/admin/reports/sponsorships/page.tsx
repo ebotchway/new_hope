@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ReportHeader } from "@/components/admin/reports/report-header";
+import { SponsorshipStatusSelect } from "@/components/admin/sponsorship-status-select";
 import { requireStaff } from "@/lib/session";
 import { getSponsorshipReport } from "@/lib/reports";
 import { formatMoney, formatDate } from "@/lib/format";
@@ -147,12 +148,13 @@ export default async function SponsorshipReportPage() {
                 <TableHead>Tier</TableHead>
                 <TableHead>Pledge</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead className="text-right">Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {data.sponsorshipsList.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-sm text-muted-foreground">
+                  <TableCell colSpan={8} className="text-center py-8 text-sm text-muted-foreground">
                     No active sponsorships recorded in the database.
                   </TableCell>
                 </TableRow>
@@ -197,6 +199,9 @@ export default async function SponsorshipReportPage() {
                         >
                           {sp.status}
                         </Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <SponsorshipStatusSelect id={sp.id} status={sp.status} />
                       </TableCell>
                     </TableRow>
                   );

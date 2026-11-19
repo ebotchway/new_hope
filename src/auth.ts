@@ -32,8 +32,16 @@ const providers = [
         return null;
       }
 
-      const email = rawEmail.toLowerCase().trim();
-      const user = await prisma.user.findUnique({ where: { email } });
+      const identifier = rawEmail.toLowerCase().trim();
+      const user = await prisma.user.findFirst({
+        where: {
+          OR: [
+            { email: identifier },
+            { email: identifier.includes("@") ? identifier : `${identifier}@livinghope.org` },
+            { name: { equals: identifier, mode: "insensitive" } },
+          ],
+        },
+      });
       if (!user?.passwordHash) return null;
 
       const valid = await bcrypt.compare(password, user.passwordHash);

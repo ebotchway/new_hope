@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireStaff } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import { uploadFile } from "@/lib/storage";
+import { uploadFile, deleteFile } from "@/lib/storage";
 import { storySchema } from "@/lib/validations";
 import type { ActionResult } from "@/actions/inquiries";
 
@@ -13,7 +13,7 @@ function parseForm(formData: FormData) {
     name: formData.get("name"),
     age: formData.get("age") || undefined,
     quote: formData.get("quote"),
-    published: formData.get("published") === "on",
+    published: formData.get("published") === "on" || formData.get("published") === "true",
     order: formData.get("order") || 0,
   });
 }
@@ -51,6 +51,10 @@ export async function updateStory(id: string, formData: FormData): Promise<Actio
 
 export async function deleteStory(id: string): Promise<ActionResult> {
   await requireStaff();
+  const existing = await prisma.story.findUnique({ where: { id } });
+  if (existing?.imageUrl) {
+    await deleteFile(existing.imageUrl);
+  }
   await prisma.story.delete({ where: { id } });
   revalidatePath("/admin/stories");
   revalidatePath("/");

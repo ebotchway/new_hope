@@ -19,6 +19,8 @@ export async function generateMetadata(props: DynamicCmsPageProps): Promise<Meta
     title: `${page.seoTitle || page.title} | LivingHope`,
     description: page.seoDescription || page.description || undefined,
     openGraph: page.ogImageUrl ? { images: [page.ogImageUrl] } : undefined,
+    robots: page.noIndex ? { index: false, follow: false } : undefined,
+    alternates: page.canonicalUrl ? { canonical: page.canonicalUrl } : undefined,
   };
 }
 

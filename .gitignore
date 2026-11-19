@@ -58,3 +58,8 @@ next-env.d.ts
 AGENTS.md
 CLAUDE.md
 skills-lock.json
+
+# Local credentials & test users
+test-users.txt
+test-credentials.txt
+*credentials*.txt

@@ -30,8 +30,8 @@ function parseChildForm(formData: FormData) {
     school: formData.get("school") || undefined,
     location: formData.get("location") || undefined,
     status: formData.get("status") || "AVAILABLE",
-    featured: formData.get("featured") === "on",
-    archived: formData.get("archived") === "on",
+    featured: formData.get("featured") === "on" || formData.get("featured") === "true",
+    archived: formData.get("archived") === "on" || formData.get("archived") === "true",
     fundingGoalCents: Math.round(Number(formData.get("fundingGoalCents") || 0) * 100),
   });
 }

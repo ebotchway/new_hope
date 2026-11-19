@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AdminPageHeader } from "@/components/admin/page-header";
-import { ConfirmMomoButton } from "@/components/admin/confirm-momo-button";
+import { DonationActions } from "@/components/admin/donation-actions";
 import { requireStaff } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { formatMoney, formatDate } from "@/lib/format";
@@ -228,9 +228,12 @@ export default async function AdminDonationsPage(props: PageProps<"/admin/donati
                 </TableCell>
 
                 <TableCell className="text-right">
-                  {donation.status === "PENDING" && donation.paymentMethod === "MOBILE_MONEY" && (
-                    <ConfirmMomoButton id={donation.id} />
-                  )}
+                  <DonationActions
+                    id={donation.id}
+                    status={donation.status}
+                    paymentMethod={donation.paymentMethod}
+                    amountFormatted={formatMoney(donation.amountCents, donation.currency)}
+                  />
                 </TableCell>
               </TableRow>
             ))}

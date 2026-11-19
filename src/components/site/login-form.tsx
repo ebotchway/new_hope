@@ -66,10 +66,10 @@ export function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
         </div>
       )}
 
-      {/* Email input field */}
+      {/* Email or username input field */}
       <div className="space-y-1.5">
         <Label htmlFor="email" className="text-xs font-semibold text-foreground">
-          Email Address
+          Email Address or Username
         </Label>
         <div className="relative">
           <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-muted-foreground">
@@ -77,9 +77,9 @@ export function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
           </div>
           <Input
             id="email"
-            type="email"
-            autoComplete="email"
-            placeholder="e.g. supporter@example.com"
+            type="text"
+            autoComplete="username"
+            placeholder="e.g. brightnerone or admin1@livinghope.org"
             className="h-12 pl-10 rounded-xl bg-background border-border/80 text-sm focus-visible:ring-brand-primary"
             {...register("email")}
           />

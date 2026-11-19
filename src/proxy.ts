@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 
-export default auth((req) => {
+export const proxy = auth((req) => {
   const role = req.auth?.user?.role;
   const isStaff = role === "ADMIN" || role === "STAFF";
 
@@ -11,6 +11,8 @@ export default auth((req) => {
     return NextResponse.redirect(url);
   }
 });
+
+export default proxy;
 
 export const config = {
   matcher: ["/admin", "/admin/:path*"],

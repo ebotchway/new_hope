@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireStaff } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import { uploadFile } from "@/lib/storage";
+import { uploadFile, deleteFile } from "@/lib/storage";
 import { historyEventSchema } from "@/lib/validations";
 import type { ActionResult } from "@/actions/inquiries";
 
@@ -14,7 +14,7 @@ function parseForm(formData: FormData) {
     title: formData.get("title"),
     bulletPoints: formData.get("bulletPoints"),
     order: formData.get("order") || 0,
-    published: formData.get("published") === "on",
+    published: formData.get("published") === "on" || formData.get("published") === "true",
   });
   if (!parsed.success) return parsed;
 
@@ -63,6 +63,10 @@ export async function updateHistoryEvent(id: string, formData: FormData): Promis
 
 export async function deleteHistoryEvent(id: string): Promise<ActionResult> {
   await requireStaff();
+  const existing = await prisma.historyEvent.findUnique({ where: { id } });
+  if (existing?.imageUrl) {
+    await deleteFile(existing.imageUrl);
+  }
   await prisma.historyEvent.delete({ where: { id } });
   revalidatePath("/admin/history");
   revalidatePath("/about");
