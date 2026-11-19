@@ -2,7 +2,7 @@
 # Enables seamless zero-config Next.js 16 App Router deployment directly from GitHub.
 
 [build]
-  command = "npm run build"
+  command = "if [ -n \"$DATABASE_URL\" ]; then npx prisma migrate deploy || true; npx tsx scripts/seed-test-users.ts || true; fi && npm run build"
   publish = ".next"
 
 [build.environment]

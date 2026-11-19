@@ -11,13 +11,13 @@ This guide outlines how to deploy LivingHope directly to Netlify from your GitHu
 
 ---
 
-## 2. Automated Build Configuration (`netlify.toml`)
+## 2. Automated Build & Database Migration (`netlify.toml`)
 
-The repository includes a preconfigured [netlify.toml](file:///Users/qwaku/Codes/QBE/new_hope/netlify.toml) in the project root:
+The repository includes an intelligent preconfigured [netlify.toml](file:///Users/qwaku/Codes/QBE/new_hope/netlify.toml) in the project root:
 
 ```toml
 [build]
-  command = "npm run build"
+  command = "if [ -n \"$DATABASE_URL\" ]; then npx prisma migrate deploy || true; npx tsx scripts/seed-test-users.ts || true; fi && npm run build"
   publish = ".next"
 
 [build.environment]
@@ -28,7 +28,11 @@ The repository includes a preconfigured [netlify.toml](file:///Users/qwaku/Codes
   package = "@netlify/plugin-nextjs"
 ```
 
-The `build` script in `package.json` automatically runs `prisma generate && next build`, ensuring the Prisma 7 client is always generated before Next.js compiles.
+### How the automated database build works on Netlify:
+1. **Schema Migrations**: If `DATABASE_URL` is configured, Netlify runs `npx prisma migrate deploy`, creating all 20 tables and constraints automatically.
+2. **Account Seeding**: Netlify executes `npx tsx scripts/seed-test-users.ts` to ensure the 2 Admins, 5 Brighteners, and default site settings exist immediately.
+3. **Resilience**: The `|| true` guards ensure that even if the database is temporarily unreachable at build time, the build will not crash.
+4. **Offline Prisma Compilation**: `npm run build` runs `prisma generate && next build`, guaranteeing that Prisma Client types are compiled before Next.js builds.
 
 ---
 

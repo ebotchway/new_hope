@@ -76,6 +76,25 @@ async function seedTestUsers() {
     console.log(`✓ Contributor user: ${user.email} (${user.name}) [Role: ${user.role}]`);
   }
 
+  // 3. Ensure default SiteSettings exists
+  await prisma.siteSettings.upsert({
+    where: { id: 1 },
+    create: {
+      id: 1,
+      heroHeadline: "Transforming Lives Through Education",
+      heroSubheadline: "Providing access to education for a brighter future",
+      missionTitle: "Our Guiding Mission",
+      missionBody:
+        "At LivingHope, we are dedicated to transforming the lives of street children by providing comprehensive access to quality education. We foster environments where every child can discover their innate potential, cultivate their talents, and build a foundation for a brighter, self-sufficient future.",
+      contactEmail: "hello@livinghope.org",
+      stripeMode: "test",
+      momoProvider: "MTN Mobile Money",
+      momoRateUsdToGhs: 15.5,
+    },
+    update: {},
+  });
+  console.log("✓ Site settings verified.");
+
   console.log("\n==================================================");
   console.log("All 7 test accounts seeded successfully!");
   console.log("--------------------------------------------------");
