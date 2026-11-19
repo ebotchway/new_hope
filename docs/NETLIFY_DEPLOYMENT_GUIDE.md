@@ -42,7 +42,8 @@ The repository includes an intelligent preconfigured [netlify.toml](file:///User
 
 [build.environment]
   NODE_VERSION = "20"
-  SECRETS_SCAN_ENABLED = "true"
+  SECRETS_SCAN_OMIT_KEYS = "AUTH_SECRET"
+  SECRETS_SCAN_OMIT_PATHS = ".netlify/**,.next/**"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
