@@ -4,6 +4,7 @@ import Google from "next-auth/providers/google";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
+import { authConfig } from "./auth.config";
 
 // Check whether Google OAuth credentials are meaningfully configured
 const googleClientId = process.env.AUTH_GOOGLE_ID?.trim() || process.env.GOOGLE_CLIENT_ID?.trim();
@@ -59,6 +60,7 @@ const providers = [
 ];
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  ...authConfig,
   adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
   trustHost: true,
@@ -68,6 +70,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   providers,
   callbacks: {
+    ...authConfig.callbacks,
     async signIn({ user, account }) {
       if (account?.provider === "google") {
         if (!user.email) return false;

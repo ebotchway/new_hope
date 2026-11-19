@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * LivingHope Platform — Automated Resilient Database Deployment Script
- * Safely executes Prisma migrations and test user seeding for Supabase, Netlify,
+ * Safely executes Prisma client generation, migrations, and test user seeding for Supabase, Netlify,
  * and Docker environments with automatic pooler detection, session port routing,
  * and strict timeout safeguards.
  */
@@ -13,14 +13,27 @@ const rawDbUrl =
   process.env.DATABASE_URL ||
   process.env.SUPABASE_CONNECT;
 
+// Ensure DATABASE_URL is populated if user provided SUPABASE_CONNECT
+if (!process.env.DATABASE_URL && process.env.SUPABASE_CONNECT) {
+  process.env.DATABASE_URL = process.env.SUPABASE_CONNECT;
+}
+
+// Generate Prisma Client first so types and models are always ready
+console.log("📦 Generating Prisma Client...");
+try {
+  execSync("npx prisma generate", {
+    env: process.env,
+    stdio: "inherit",
+    timeout: 30000,
+  });
+  console.log("✓ Prisma Client generated.");
+} catch (err) {
+  console.warn("⚠️ Warning: Prisma generate had issues:", err.message || err);
+}
+
 if (!rawDbUrl) {
   console.log("ℹ No database connection string detected. Skipping automated migrations.");
   process.exit(0);
-}
-
-// Ensure DATABASE_URL is populated if user only provided SUPABASE_CONNECT
-if (!process.env.DATABASE_URL && process.env.SUPABASE_CONNECT) {
-  process.env.DATABASE_URL = process.env.SUPABASE_CONNECT;
 }
 
 // Check for Supabase Transaction Pooler (port 6543)

@@ -1,5 +1,9 @@
+import NextAuth from "next-auth";
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
+import { authConfig } from "./auth.config";
+
+// Instantiate edge-safe NextAuth for proxy without Node database dependencies
+const { auth } = NextAuth(authConfig);
 
 export const proxy = auth((req) => {
   const role = req.auth?.user?.role;
