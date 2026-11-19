@@ -1,91 +1,154 @@
 "use client";
 
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { ArrowUpDown, X, MapPin } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-const GENDER_LABELS: Record<string, string> = {
-  ANY: "Any gender",
-  FEMALE: "Girls",
-  MALE: "Boys",
-};
+interface ChildFilterBarProps {
+  locations: string[];
+  totalCount?: number;
+}
 
-const SORT_LABELS: Record<string, string> = {
-  featured: "Featured first",
-  newest: "Newest first",
-};
-
-export function ChildFilterBar({ locations }: { locations: string[] }) {
+export function ChildFilterBar({ locations, totalCount }: ChildFilterBarProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  function setParam(key: string, value: string | null) {
-    if (value === null) return;
+  const currentGender = searchParams.get("gender") || "ALL";
+  const currentLocation = searchParams.get("location") || "ALL";
+  const currentSort = searchParams.get("sort") || "featured";
+
+  const hasActiveFilters =
+    currentGender !== "ALL" || currentLocation !== "ALL" || currentSort !== "featured";
+
+  function updateFilter(key: string, value: string) {
     const params = new URLSearchParams(searchParams.toString());
-    if (value === "ANY") {
+    if (value === "ALL" || (key === "sort" && value === "featured")) {
       params.delete(key);
     } else {
       params.set(key, value);
     }
-    router.push(`${pathname}?${params.toString()}#available-children`, { scroll: false });
+    const query = params.toString();
+    router.push(query ? `${pathname}?${query}#available-children` : pathname, { scroll: false });
+  }
+
+  function clearAllFilters() {
+    router.push(pathname, { scroll: false });
   }
 
   return (
-    <div className="mb-8 flex flex-wrap items-center justify-center gap-3">
-      <Select
-        key={`gender-${searchParams.get("gender") ?? "ANY"}`}
-        defaultValue={searchParams.get("gender") ?? "ANY"}
-        onValueChange={(v: string | null) => setParam("gender", v)}
-      >
-        <SelectTrigger className="w-40 bg-card">
-          <SelectValue placeholder="Gender">{(v: string) => GENDER_LABELS[v] ?? v}</SelectValue>
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="ANY">Any gender</SelectItem>
-          <SelectItem value="FEMALE">Girls</SelectItem>
-          <SelectItem value="MALE">Boys</SelectItem>
-        </SelectContent>
-      </Select>
+    <div className="mb-8 space-y-3">
+      {/* Top Filter Container */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-2.5 sm:p-3 rounded-2xl bg-card border border-border/80 shadow-xs">
+        {/* Gender Segmented Control */}
+        <div className="flex items-center gap-1 p-1 rounded-xl bg-muted/60 w-full sm:w-auto">
+          <button
+            type="button"
+            onClick={() => updateFilter("gender", "ALL")}
+            className={cn(
+              "flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200",
+              currentGender === "ALL"
+                ? "bg-brand-navy text-white shadow-xs"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted"
+            )}
+          >
+            All Children
+          </button>
+          <button
+            type="button"
+            onClick={() => updateFilter("gender", "FEMALE")}
+            className={cn(
+              "flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200",
+              currentGender === "FEMALE"
+                ? "bg-brand-navy text-white shadow-xs"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted"
+            )}
+          >
+            Girls
+          </button>
+          <button
+            type="button"
+            onClick={() => updateFilter("gender", "MALE")}
+            className={cn(
+              "flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200",
+              currentGender === "MALE"
+                ? "bg-brand-navy text-white shadow-xs"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted"
+            )}
+          >
+            Boys
+          </button>
+        </div>
 
-      {locations.length > 0 && (
-        <Select
-          key={`location-${searchParams.get("location") ?? "ANY"}`}
-          defaultValue={searchParams.get("location") ?? "ANY"}
-          onValueChange={(v: string | null) => setParam("location", v)}
-        >
-          <SelectTrigger className="w-48 bg-card">
-            <SelectValue placeholder="Location">{(v: string) => (v === "ANY" ? "Any location" : v)}</SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="ANY">Any location</SelectItem>
-            {locations.map((loc) => (
-              <SelectItem key={loc} value={loc}>
-                {loc}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        {/* Dropdown Filters: Location & Sort */}
+        <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto justify-end">
+          {/* Location Filter */}
+          {locations.length > 0 && (
+            <div className="relative flex-1 sm:flex-initial">
+              <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
+              <select
+                value={currentLocation}
+                onChange={(e) => updateFilter("location", e.target.value)}
+                aria-label="Filter by Location"
+                className="w-full sm:w-44 pl-8 pr-8 py-2 text-xs sm:text-sm rounded-xl border border-input bg-background text-foreground font-medium appearance-none focus:outline-none focus:ring-2 focus:ring-brand-gold/50 cursor-pointer shadow-xs"
+              >
+                <option value="ALL">All Locations</option>
+                {locations.map((loc) => (
+                  <option key={loc} value={loc}>
+                    {loc}
+                  </option>
+                ))}
+              </select>
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground text-[10px]">
+                ▼
+              </div>
+            </div>
+          )}
+
+          {/* Sort Filter */}
+          <div className="relative flex-1 sm:flex-initial">
+            <ArrowUpDown className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
+            <select
+              value={currentSort}
+              onChange={(e) => updateFilter("sort", e.target.value)}
+              aria-label="Sort children"
+              className="w-full sm:w-40 pl-8 pr-8 py-2 text-xs sm:text-sm rounded-xl border border-input bg-background text-foreground font-medium appearance-none focus:outline-none focus:ring-2 focus:ring-brand-gold/50 cursor-pointer shadow-xs"
+            >
+              <option value="featured">Featured First</option>
+              <option value="newest">Newest First</option>
+            </select>
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground text-[10px]">
+              ▼
+            </div>
+          </div>
+
+          {/* Reset Filters Button */}
+          {hasActiveFilters && (
+            <button
+              type="button"
+              onClick={clearAllFilters}
+              className="inline-flex items-center gap-1 px-3 py-2 text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/80 rounded-xl transition-colors border border-border/50"
+              title="Reset all filters"
+            >
+              <X className="h-3.5 w-3.5" />
+              Reset
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Counter Summary */}
+      {typeof totalCount === "number" && (
+        <div className="flex items-center justify-between text-xs text-muted-foreground px-1">
+          <span>
+            Showing <strong className="text-foreground font-semibold">{totalCount}</strong>{" "}
+            {totalCount === 1 ? "child" : "children"} awaiting sponsorship
+          </span>
+          {hasActiveFilters && (
+            <span className="text-amber-600 dark:text-amber-400 font-medium">Filtered</span>
+          )}
+        </div>
       )}
-
-      <Select
-        key={`sort-${searchParams.get("sort") ?? "featured"}`}
-        defaultValue={searchParams.get("sort") ?? "featured"}
-        onValueChange={(v: string | null) => setParam("sort", v)}
-      >
-        <SelectTrigger className="w-40 bg-card">
-          <SelectValue placeholder="Sort">{(v: string) => SORT_LABELS[v] ?? v}</SelectValue>
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="featured">Featured first</SelectItem>
-          <SelectItem value="newest">Newest first</SelectItem>
-        </SelectContent>
-      </Select>
     </div>
   );
 }

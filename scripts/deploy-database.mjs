@@ -71,16 +71,16 @@ try {
   console.warn("   Site build will proceed without blocking.");
 }
 
-console.log("🌱 Running test users seed (30s timeout guard)...");
+console.log("🌱 Running complete platform seed (users, children, CMS, settings)...");
 try {
-  execSync("npx tsx scripts/seed-test-users.ts", {
+  execSync("npx tsx scripts/seed-complete-platform.ts", {
     env: envWithDirect,
     stdio: "inherit",
     timeout: 30000,
   });
-  console.log("✓ Test users seeded successfully.");
+  console.log("✓ Complete platform seeded successfully.");
 } catch (err) {
-  console.warn("⚠️ Warning: Test user seeding skipped or failed:", err.message || err);
+  console.warn("⚠️ Warning: Platform seeding skipped or failed:", err.message || err);
 }
 
 console.log("✅ Database deployment step completed.");

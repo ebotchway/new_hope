@@ -146,12 +146,20 @@ export default async function SponsorAChildPage(props: PageProps<"/sponsor-a-chi
             />
           </Reveal>
 
-          <ChildFilterBar locations={allLocations.map((l) => l.location!).filter(Boolean)} />
+          <ChildFilterBar
+            locations={allLocations.map((l) => l.location!).filter(Boolean)}
+            totalCount={children.length}
+          />
 
           {children.length === 0 ? (
-            <p className="text-center text-sm text-muted-foreground">
-              No children match these filters right now. Try a different search, or check back soon.
-            </p>
+            <div className="py-12 text-center space-y-4">
+              <p className="text-sm text-muted-foreground">
+                No children match the selected filters right now.
+              </p>
+              <Button asChild variant="outline" size="sm" className="rounded-full">
+                <Link href="/sponsor-a-child#available-children">View All Children</Link>
+              </Button>
+            </div>
           ) : (
             <RevealGroup className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {children.map((child) => {
