@@ -2,7 +2,7 @@ import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
 import { getCmsAppearance } from "@/lib/cms-loader";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
   const appearance = await getCmsAppearance();

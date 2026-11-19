@@ -1,4 +1,5 @@
 import { prisma } from "./prisma";
+import { unstable_cache } from "next/cache";
 import { CmsPageData, CmsSection } from "./cms-types";
 import {
   DEFAULT_HOMEPAGE_SECTIONS,
@@ -225,31 +226,39 @@ export const DEFAULT_APPEARANCE: AppearanceSettings = {
   faviconUrl: null,
 };
 
-export async function getCmsAppearance(): Promise<AppearanceSettings> {
-  try {
-    const config = await prisma.cmsAppearance.findUnique({
-      where: { id: 1 },
-    });
-    if (config) {
-      return {
-        primaryColor: config.primaryColor,
-        secondaryColor: config.secondaryColor,
-        accentColor: config.accentColor,
-        fontHeading: config.fontHeading,
-        fontBody: config.fontBody,
-        buttonRadius: config.buttonRadius,
-        containerWidth: config.containerWidth,
-        headerSticky: config.headerSticky,
-        footerTheme: config.footerTheme,
-        logoUrl: config.logoUrl,
-        logoDarkUrl: config.logoDarkUrl,
-        faviconUrl: config.faviconUrl,
-      };
+const getCachedCmsAppearanceRaw = unstable_cache(
+  async () => {
+    try {
+      const config = await prisma.cmsAppearance.findUnique({
+        where: { id: 1 },
+      });
+      if (config) {
+        return {
+          primaryColor: config.primaryColor,
+          secondaryColor: config.secondaryColor,
+          accentColor: config.accentColor,
+          fontHeading: config.fontHeading,
+          fontBody: config.fontBody,
+          buttonRadius: config.buttonRadius,
+          containerWidth: config.containerWidth,
+          headerSticky: config.headerSticky,
+          footerTheme: config.footerTheme,
+          logoUrl: config.logoUrl,
+          logoDarkUrl: config.logoDarkUrl,
+          faviconUrl: config.faviconUrl,
+        };
+      }
+    } catch (error) {
+      console.warn("[CMS Loader] Could not load CMS appearance, using defaults:", error);
     }
-  } catch (error) {
-    console.warn("[CMS Loader] Could not load CMS appearance, using defaults:", error);
-  }
-  return DEFAULT_APPEARANCE;
+    return DEFAULT_APPEARANCE;
+  },
+  ["cms-appearance-cache"],
+  { revalidate: 300, tags: ["cms-appearance", "cms"] }
+);
+
+export async function getCmsAppearance(): Promise<AppearanceSettings> {
+  return getCachedCmsAppearanceRaw();
 }
 
 export interface NavItemWithChildren {
@@ -262,57 +271,65 @@ export interface NavItemWithChildren {
   children: NavItemWithChildren[];
 }
 
-export async function getCmsNavItems(menu: NavMenu): Promise<NavItemWithChildren[]> {
-  try {
-    const items = await prisma.cmsNavItem.findMany({
-      where: {
-        menu,
-        published: true,
-        parentId: null,
-      },
-      include: {
-        children: {
-          where: { published: true },
-          orderBy: { order: "asc" },
+const getCachedCmsNavItemsRaw = unstable_cache(
+  async (menu: NavMenu): Promise<NavItemWithChildren[]> => {
+    try {
+      const items = await prisma.cmsNavItem.findMany({
+        where: {
+          menu,
+          published: true,
+          parentId: null,
         },
-      },
-      orderBy: { order: "asc" },
-    });
+        include: {
+          children: {
+            where: { published: true },
+            orderBy: { order: "asc" },
+          },
+        },
+        orderBy: { order: "asc" },
+      });
 
-    if (items.length > 0) {
-      return items.map((item) => ({
-        id: item.id,
-        menu: item.menu,
-        label: item.label,
-        href: item.href,
-        order: item.order,
-        isExternal: item.isExternal,
-        children: item.children.map((child) => ({
-          id: child.id,
-          menu: child.menu,
-          label: child.label,
-          href: child.href,
-          order: child.order,
-          isExternal: child.isExternal,
-          children: [],
-        })),
-      }));
+      if (items.length > 0) {
+        return items.map((item) => ({
+          id: item.id,
+          menu: item.menu,
+          label: item.label,
+          href: item.href,
+          order: item.order,
+          isExternal: item.isExternal,
+          children: item.children.map((child) => ({
+            id: child.id,
+            menu: child.menu,
+            label: child.label,
+            href: child.href,
+            order: child.order,
+            isExternal: child.isExternal,
+            children: [],
+          })),
+        }));
+      }
+    } catch (error) {
+      console.warn(`[CMS Loader] Could not load nav items for ${menu}:`, error);
     }
-  } catch (error) {
-    console.warn(`[CMS Loader] Could not load nav items for ${menu}:`, error);
-  }
 
-  // Default header links
-  if (menu === "HEADER") {
-    return [
-      { id: "def_about", menu: "HEADER", label: "About Us", href: "/about", order: 1, isExternal: false, children: [] },
-      { id: "def_wwd", menu: "HEADER", label: "What We Do", href: "/what-we-do", order: 2, isExternal: false, children: [] },
-      { id: "def_sponsor", menu: "HEADER", label: "Sponsor a Child", href: "/sponsor-a-child", order: 3, isExternal: false, children: [] },
-      { id: "def_brightener", menu: "HEADER", label: "Become a Brightener", href: "/become-a-brightener", order: 4, isExternal: false, children: [] },
-      { id: "def_donate", menu: "HEADER", label: "Make a Donation", href: "/donate", order: 5, isExternal: false, children: [] },
-      { id: "def_contact", menu: "HEADER", label: "Contact Us", href: "/contact", order: 6, isExternal: false, children: [] },
-    ];
-  }
+    // Default header links
+    if (menu === "HEADER") {
+      return [
+        { id: "def_about", menu: "HEADER" as NavMenu, label: "About Us", href: "/about", order: 1, isExternal: false, children: [] },
+        { id: "def_wwd", menu: "HEADER" as NavMenu, label: "What We Do", href: "/what-we-do", order: 2, isExternal: false, children: [] },
+        { id: "def_sponsor", menu: "HEADER" as NavMenu, label: "Sponsor a Child", href: "/sponsor-a-child", order: 3, isExternal: false, children: [] },
+        { id: "def_brightener", menu: "HEADER" as NavMenu, label: "Become a Brightener", href: "/become-a-brightener", order: 4, isExternal: false, children: [] },
+        { id: "def_donate", menu: "HEADER" as NavMenu, label: "Make a Donation", href: "/donate", order: 5, isExternal: false, children: [] },
+        { id: "def_contact", menu: "HEADER" as NavMenu, label: "Contact Us", href: "/contact", order: 6, isExternal: false, children: [] },
+      ];
+    }
 
-  return [];
+    return [];
+  },
+  ["cms-nav-items-cache"],
+  { revalidate: 300, tags: ["cms-nav", "cms"] }
+);
+
+export async function getCmsNavItems(menu: NavMenu): Promise<NavItemWithChildren[]> {
+  return getCachedCmsNavItemsRaw(menu);
 }

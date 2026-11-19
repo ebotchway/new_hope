@@ -7,6 +7,8 @@ import { CmsDonationCtaSection } from "@/components/cms/sections/donation-cta-se
 import type { PartnershipCtaSectionProps, DonationCtaSectionProps } from "@/lib/cms-types";
 import type { Metadata } from "next";
 
+export const revalidate = 60;
+
 export async function generateMetadata(): Promise<Metadata> {
   const page = await getCmsPage("home");
   return {

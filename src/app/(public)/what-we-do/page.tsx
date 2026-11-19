@@ -3,6 +3,8 @@ import { getCmsPage } from "@/lib/cms-loader";
 import { CmsSectionRenderer } from "@/components/cms/section-renderer";
 import type { Metadata } from "next";
 
+export const revalidate = 120;
+
 export async function generateMetadata(): Promise<Metadata> {
   const page = await getCmsPage("what-we-do");
   return {

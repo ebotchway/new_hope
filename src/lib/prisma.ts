@@ -34,10 +34,11 @@ const pool =
   globalForPrisma.pool ??
   new Pool({
     connectionString: dbUrl,
-    // Keep max connections small in production serverless environments to avoid saturating limits
-    max: process.env.NODE_ENV === "production" ? 3 : 10,
-    idleTimeoutMillis: 10000,
+    // Max 10 connections to allow parallel queries in Promise.all without connection queuing
+    max: 10,
+    idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 8000,
+    keepAlive: true,
   });
 
 // Catch unexpected errors on idle pool clients without crashing the process

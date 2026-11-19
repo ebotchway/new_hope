@@ -17,6 +17,7 @@ import { PLACEHOLDER_IMAGES } from "@/lib/placeholder-images";
 import { calculateAge } from "@/lib/format";
 import type { Gender } from "@/generated/prisma/enums";
 
+export const revalidate = 30;
 export const metadata = { title: "Sponsor a Child" };
 
 const STEPS = [
