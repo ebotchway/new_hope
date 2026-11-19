@@ -46,11 +46,13 @@ export function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
     try {
       const result = await loginAction(values);
       if (result.success) {
-        const safeDestination = getSafeCallbackUrl(callbackUrl);
-        router.push(safeDestination);
+        const explicitCallback =
+          callbackUrl && callbackUrl !== "/" ? getSafeCallbackUrl(callbackUrl) : null;
+        const target = explicitCallback ?? result.defaultUrl ?? "/admin";
+        router.push(target);
         router.refresh();
       } else {
-        setFormError(result.error);
+        setFormError(result.error ?? "Authentication failed. Please check your credentials.");
       }
     } catch {
       setFormError("Couldn't reach the authentication server. Please check your network connection.");

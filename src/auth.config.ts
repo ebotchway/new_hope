@@ -14,6 +14,20 @@ export const authConfig: NextAuthConfig = {
   },
   providers: [], // Injected in auth.ts with full Node.js database providers
   callbacks: {
+    jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.role = user.role ?? "DONOR";
+      }
+      return token;
+    },
+    session({ session, token }) {
+      if (session.user && token) {
+        session.user.id = (token.id as string) ?? (token.sub as string);
+        session.user.role = (token.role as "DONOR" | "STAFF" | "ADMIN") ?? "DONOR";
+      }
+      return session;
+    },
     authorized({ auth, request: { nextUrl } }) {
       const role = auth?.user?.role;
       const isStaff = role === "ADMIN" || role === "STAFF";

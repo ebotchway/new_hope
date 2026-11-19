@@ -14,7 +14,14 @@ import {
 import { sendPasswordResetEmail } from "@/lib/email";
 import type { ActionResult } from "@/actions/inquiries";
 
-export async function loginAction(values: unknown): Promise<ActionResult> {
+export interface LoginActionResult {
+  success: boolean;
+  error?: string;
+  role?: string;
+  defaultUrl?: string;
+}
+
+export async function loginAction(values: unknown): Promise<LoginActionResult> {
   const parsed = loginSchema.safeParse(values);
   if (!parsed.success) {
     return { success: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
@@ -25,7 +32,24 @@ export async function loginAction(values: unknown): Promise<ActionResult> {
 
   try {
     await signIn("credentials", { email, password, redirect: false });
-    return { success: true };
+
+    const user = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { email },
+          { email: email.includes("@") ? email : `${email}@livinghope.org` },
+          { name: { equals: email, mode: "insensitive" } },
+        ],
+      },
+      select: { role: true },
+    });
+
+    const isStaff = user?.role === "ADMIN" || user?.role === "STAFF";
+    return {
+      success: true,
+      role: user?.role,
+      defaultUrl: isStaff ? "/admin" : "/account",
+    };
   } catch (error) {
     if (error instanceof CredentialsSignin) {
       return { success: false, error: "Invalid email or password" };
