@@ -117,7 +117,7 @@ export function ProgressReportDialog({
     <>
       {triggerElement}
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-lg rounded-2xl">
+        <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto rounded-3xl p-6 sm:p-8">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl font-bold font-heading">
             <FileText className="size-5 text-brand-navy dark:text-blue-400" />

@@ -32,6 +32,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { CmsSection, CmsSectionType } from "@/lib/cms-types";
 import {
   savePageDraft,
@@ -232,6 +233,7 @@ export function HomepageBuilder({
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isPublishConfirmOpen, setIsPublishConfirmOpen] = useState(false);
+  const [isUnpublishConfirmOpen, setIsUnpublishConfirmOpen] = useState(false);
   const [isScheduleOpen, setIsScheduleOpen] = useState(false);
   const [scheduledDateTime, setScheduledDateTime] = useState("");
   const [compareRevId, setCompareRevId] = useState<string | null>(null);
@@ -359,15 +361,16 @@ export function HomepageBuilder({
   };
 
   const handleUnpublish = () => {
-    if (!confirm("Are you sure you want to take the homepage offline? Public visitors will receive an offline status until republished.")) {
-      return;
-    }
+    setIsUnpublishConfirmOpen(true);
+  };
 
+  const executeUnpublish = () => {
     setMessage(null);
     startTransition(async () => {
       const res = await unpublishPage(pageId);
       if (res.success) {
         setMessage({ type: "success", text: "Homepage unpublished. It is now in DRAFT status and hidden from public." });
+        setIsUnpublishConfirmOpen(false);
       } else {
         setMessage({ type: "error", text: res.error || "Failed to unpublish" });
       }
@@ -626,7 +629,7 @@ export function HomepageBuilder({
 
       {/* Add Section Dialog */}
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-        <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto rounded-3xl">
+        <DialogContent className="sm:max-w-3xl max-h-[85vh] overflow-y-auto rounded-3xl p-6 sm:p-8">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold font-heading">Add Section to Homepage</DialogTitle>
           </DialogHeader>
@@ -663,7 +666,7 @@ export function HomepageBuilder({
       {/* Section Content Property Editor Dialog */}
       {editingSection && (
         <Dialog open={Boolean(editingSection)} onOpenChange={() => setEditingSection(null)}>
-          <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto rounded-3xl">
+          <DialogContent className="sm:max-w-3xl max-h-[85vh] overflow-y-auto rounded-3xl p-6 sm:p-8">
             <DialogHeader>
               <DialogTitle className="text-xl font-bold font-heading flex items-center gap-2">
                 <Edit className="size-5 text-brand-primary" />
@@ -695,7 +698,7 @@ export function HomepageBuilder({
 
       {/* Publish Live Confirmation Dialog */}
       <Dialog open={isPublishConfirmOpen} onOpenChange={setIsPublishConfirmOpen}>
-        <DialogContent className="max-w-md rounded-3xl">
+        <DialogContent className="sm:max-w-lg rounded-3xl p-6 sm:p-8">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold font-heading flex items-center gap-2 text-foreground">
               <CheckCircle2 className="size-5 text-emerald-600" />
@@ -722,7 +725,7 @@ export function HomepageBuilder({
 
       {/* Schedule Release Dialog */}
       <Dialog open={isScheduleOpen} onOpenChange={setIsScheduleOpen}>
-        <DialogContent className="max-w-md rounded-3xl">
+        <DialogContent className="sm:max-w-lg rounded-3xl p-6 sm:p-8">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold font-heading flex items-center gap-2">
               <Calendar className="size-5 text-brand-primary" />
@@ -757,7 +760,7 @@ export function HomepageBuilder({
 
       {/* Revision History & Diff Drawer */}
       <Dialog open={isHistoryOpen} onOpenChange={setIsHistoryOpen}>
-        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto rounded-3xl">
+        <DialogContent className="sm:max-w-3xl max-h-[85vh] overflow-y-auto rounded-3xl p-6 sm:p-8">
           <DialogHeader>
             <div className="flex items-center justify-between pr-6">
               <DialogTitle className="text-2xl font-bold font-heading">
@@ -831,6 +834,18 @@ export function HomepageBuilder({
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Unpublish Confirmation Dialog */}
+      <ConfirmDialog
+        open={isUnpublishConfirmOpen}
+        onOpenChange={setIsUnpublishConfirmOpen}
+        title="Take Homepage Offline"
+        description="Are you sure you want to take the homepage offline? Public visitors will receive an offline status until a revision is republished."
+        confirmText="Unpublish Homepage"
+        variant="warning"
+        isPending={isPending}
+        onConfirm={executeUnpublish}
+      />
     </div>
   );
 }

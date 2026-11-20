@@ -39,9 +39,9 @@ export function ProgressReportDetailDialog({
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl">
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl p-6 sm:p-8">
         <DialogHeader>
-          <div className="flex items-center justify-between pr-6">
+          <div className="flex flex-wrap items-center justify-between gap-2 pr-4">
             <Badge
               variant="outline"
               className={
@@ -53,18 +53,18 @@ export function ProgressReportDetailDialog({
               {report.published ? "Published" : "Draft"}
             </Badge>
             {report.createdAt && (
-              <span className="text-xs text-muted-foreground flex items-center gap-1">
+              <span className="text-xs text-muted-foreground font-mono flex items-center gap-1">
                 <Calendar className="size-3.5" />
                 {formatDate(report.createdAt)}
               </span>
             )}
           </div>
-          <DialogTitle className="text-xl font-bold font-heading text-foreground mt-2">
+          <DialogTitle className="text-2xl font-bold font-heading text-foreground mt-2 break-words">
             {report.title}
           </DialogTitle>
           {report.childName && (
             <DialogDescription className="text-xs text-muted-foreground flex items-center gap-1.5 mt-1">
-              <User className="size-3.5 text-brand-navy" />
+              <User className="size-3.5 text-brand-navy shrink-0" />
               Progress report for <strong className="text-foreground">{report.childName}</strong>
             </DialogDescription>
           )}

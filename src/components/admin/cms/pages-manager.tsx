@@ -25,6 +25,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { createCmsPage, updatePageMetadata, deleteCmsPage } from "@/actions/admin/cms";
 
 export interface PageListItem {
@@ -48,6 +49,7 @@ export function PagesManager({ initialPages }: { initialPages: PageListItem[] })
   const [search, setSearch] = useState("");
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editingMetadataPage, setEditingMetadataPage] = useState<PageListItem | null>(null);
+  const [pageToDelete, setPageToDelete] = useState<PageListItem | null>(null);
   const [newTitle, setNewTitle] = useState("");
   const [newSlug, setNewSlug] = useState("");
   const [newDesc, setNewDesc] = useState("");
@@ -110,16 +112,18 @@ export function PagesManager({ initialPages }: { initialPages: PageListItem[] })
 
   const handleDelete = (page: PageListItem) => {
     if (page.isSystem) return;
-    if (!confirm(`Are you sure you want to delete page "/${page.slug}"? This action cannot be undone.`)) {
-      return;
-    }
+    setPageToDelete(page);
+  };
 
+  const executeDeletePage = () => {
+    if (!pageToDelete) return;
     setMessage(null);
     startTransition(async () => {
-      const res = await deleteCmsPage(page.id);
+      const res = await deleteCmsPage(pageToDelete.id);
       if (res.success) {
-        setMessage({ type: "success", text: `Page "/${page.slug}" deleted.` });
-        setPages(pages.filter((p) => p.id !== page.id));
+        setMessage({ type: "success", text: `Page "/${pageToDelete.slug}" deleted.` });
+        setPages(pages.filter((p) => p.id !== pageToDelete.id));
+        setPageToDelete(null);
       } else {
         setMessage({ type: "error", text: res.error || "Failed to delete page" });
       }
@@ -290,7 +294,7 @@ export function PagesManager({ initialPages }: { initialPages: PageListItem[] })
 
       {/* Create New Page Dialog */}
       <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-        <DialogContent className="max-w-md rounded-3xl">
+        <DialogContent className="sm:max-w-lg rounded-3xl p-6 sm:p-8">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold font-heading">Create New Website Page</DialogTitle>
           </DialogHeader>
@@ -354,7 +358,7 @@ export function PagesManager({ initialPages }: { initialPages: PageListItem[] })
       {/* Edit Page Metadata / SEO Dialog */}
       {editingMetadataPage && (
         <Dialog open={Boolean(editingMetadataPage)} onOpenChange={() => setEditingMetadataPage(null)}>
-          <DialogContent className="max-w-xl max-h-[85vh] overflow-y-auto rounded-3xl">
+          <DialogContent className="sm:max-w-2xl max-h-[85vh] overflow-y-auto rounded-3xl p-6 sm:p-8">
             <DialogHeader>
               <DialogTitle className="text-xl font-bold font-heading">
                 Page Metadata & SEO: {editingMetadataPage.title}
@@ -439,6 +443,18 @@ export function PagesManager({ initialPages }: { initialPages: PageListItem[] })
           </DialogContent>
         </Dialog>
       )}
+
+      {/* Delete Page Confirmation Dialog */}
+      <ConfirmDialog
+        open={Boolean(pageToDelete)}
+        onOpenChange={(open) => !open && setPageToDelete(null)}
+        title="Delete Website Page"
+        description={`Are you sure you want to permanently delete page "/${pageToDelete?.slug}"? All associated page revisions and sections will be removed.`}
+        confirmText="Delete Page"
+        variant="destructive"
+        isPending={isPending}
+        onConfirm={executeDeletePage}
+      />
     </div>
   );
 }

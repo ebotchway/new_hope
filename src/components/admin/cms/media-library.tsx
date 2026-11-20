@@ -24,6 +24,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { uploadCmsMedia, deleteCmsMedia, updateCmsMedia } from "@/actions/admin/cms";
 
 export interface MediaAssetItem {
@@ -47,6 +48,7 @@ export function MediaLibrary({ initialAssets }: { initialAssets: MediaAssetItem[
   const [selectedFolder, setSelectedFolder] = useState<string>("all");
   const [editingAsset, setEditingAsset] = useState<MediaAssetItem | null>(null);
   const [copiedUrl, setCopiedUrl] = useState<string | null>(null);
+  const [assetToDelete, setAssetToDelete] = useState<MediaAssetItem | null>(null);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -90,14 +92,18 @@ export function MediaLibrary({ initialAssets }: { initialAssets: MediaAssetItem[
   };
 
   const handleDelete = (asset: MediaAssetItem) => {
-    if (!confirm(`Are you sure you want to delete ${asset.filename}?`)) return;
+    setAssetToDelete(asset);
+  };
 
+  const executeDelete = () => {
+    if (!assetToDelete) return;
     setMessage(null);
     startTransition(async () => {
-      const res = await deleteCmsMedia(asset.id);
+      const res = await deleteCmsMedia(assetToDelete.id);
       if (res.success) {
-        setMessage({ type: "success", text: `Deleted ${asset.filename}` });
-        setAssets(assets.filter((a) => a.id !== asset.id));
+        setMessage({ type: "success", text: `Deleted ${assetToDelete.filename}` });
+        setAssets(assets.filter((a) => a.id !== assetToDelete.id));
+        setAssetToDelete(null);
       } else {
         setMessage({ type: "error", text: res.error || "Failed to delete asset" });
       }
@@ -275,7 +281,7 @@ export function MediaLibrary({ initialAssets }: { initialAssets: MediaAssetItem[
       {/* Edit Alt Text Dialog */}
       {editingAsset && (
         <Dialog open={Boolean(editingAsset)} onOpenChange={() => setEditingAsset(null)}>
-          <DialogContent className="max-w-md rounded-3xl">
+          <DialogContent className="sm:max-w-lg rounded-3xl p-6 sm:p-8">
             <DialogHeader>
               <DialogTitle className="text-xl font-bold font-heading">Edit Media Asset</DialogTitle>
             </DialogHeader>
@@ -330,6 +336,18 @@ export function MediaLibrary({ initialAssets }: { initialAssets: MediaAssetItem[
           </DialogContent>
         </Dialog>
       )}
+
+      {/* Delete Media Confirmation Dialog */}
+      <ConfirmDialog
+        open={Boolean(assetToDelete)}
+        onOpenChange={(open) => !open && setAssetToDelete(null)}
+        title="Delete Media Asset"
+        description={`Are you sure you want to delete ${assetToDelete?.filename}? This will remove the file permanently from the media library and storage.`}
+        confirmText="Delete File"
+        variant="destructive"
+        isPending={isPending}
+        onConfirm={executeDelete}
+      />
     </div>
   );
 }

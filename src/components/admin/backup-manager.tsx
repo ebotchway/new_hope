@@ -387,7 +387,7 @@ export function BackupManager({ initialBackups }: BackupManagerProps) {
 
       {/* Create Backup Dialog */}
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-lg rounded-3xl p-6 sm:p-8">
           <DialogHeader>
             <DialogTitle>Create New Backup Snapshot</DialogTitle>
             <DialogDescription>
@@ -432,7 +432,7 @@ export function BackupManager({ initialBackups }: BackupManagerProps) {
 
       {/* Upload Backup Dialog */}
       <Dialog open={uploadOpen} onOpenChange={setUploadOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-lg rounded-3xl p-6 sm:p-8">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Upload className="h-5 w-5 text-brand-navy dark:text-blue-400" />
@@ -482,7 +482,7 @@ export function BackupManager({ initialBackups }: BackupManagerProps) {
 
       {/* Safety Restore Dialog */}
       <Dialog open={Boolean(restoreTarget)} onOpenChange={(open) => !open && setRestoreTarget(null)}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="sm:max-w-xl rounded-3xl p-6 sm:p-8">
           <DialogHeader>
             <div className="flex items-center gap-2 text-destructive mb-1">
               <AlertTriangle className="h-5 w-5" />
@@ -551,7 +551,7 @@ export function BackupManager({ initialBackups }: BackupManagerProps) {
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={Boolean(deleteTarget)} onOpenChange={(open) => !open && setDeleteTarget(null)}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-lg rounded-3xl p-6 sm:p-8">
           <DialogHeader>
             <DialogTitle>Delete Backup Archive</DialogTitle>
             <DialogDescription>

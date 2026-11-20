@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { CmsSection } from "@/lib/cms-types";
 import { compareRevisions } from "@/actions/admin/cms";
 
@@ -35,6 +36,7 @@ export function RevisionDiffDialog({
 }: RevisionDiffDialogProps) {
   const [targetSections, setTargetSections] = useState<CmsSection[]>([]);
   const [loading, setLoading] = useState(false);
+  const [confirmRestoreOpen, setConfirmRestoreOpen] = useState(false);
 
   useEffect(() => {
     if (!open || !targetRevisionId) return;
@@ -59,39 +61,31 @@ export function RevisionDiffDialog({
   }, [open, targetRevisionId]);
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto rounded-3xl">
-        <DialogHeader>
-          <div className="flex items-center justify-between pr-6">
-            <DialogTitle className="text-2xl font-bold font-heading flex items-center gap-2">
-              <GitCompare className="size-5 text-brand-primary" />
-              <span>Compare: Current Draft vs Revision #{targetRevisionNumber}</span>
-            </DialogTitle>
-            {targetRevisionId && targetRevisionNumber && (
-              <Button
-                variant="outline"
-                size="sm"
-                className="gap-2 rounded-xl text-amber-700 border-amber-300 hover:bg-amber-50"
-                onClick={() => {
-                  if (
-                    confirm(
-                      `Are you sure you want to restore Revision #${targetRevisionNumber}? This will replace the working draft.`
-                    )
-                  ) {
-                    onRestore?.(targetRevisionId, targetRevisionNumber);
-                    onOpenChange(false);
-                  }
-                }}
-              >
-                <History className="size-4" />
-                Restore Revision #{targetRevisionNumber}
-              </Button>
-            )}
-          </div>
-          <DialogDescription>
-            Side-by-side comparison between your current working draft and the selected historical revision.
-          </DialogDescription>
-        </DialogHeader>
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:max-w-4xl max-h-[85vh] overflow-y-auto rounded-3xl p-6 sm:p-8">
+          <DialogHeader>
+            <div className="flex flex-wrap items-center justify-between gap-3 pr-6">
+              <DialogTitle className="text-2xl font-bold font-heading flex items-center gap-2">
+                <GitCompare className="size-5 text-brand-primary shrink-0" />
+                <span>Compare: Current Draft vs Revision #{targetRevisionNumber}</span>
+              </DialogTitle>
+              {targetRevisionId && targetRevisionNumber && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-2 rounded-xl text-amber-700 border-amber-300 hover:bg-amber-50"
+                  onClick={() => setConfirmRestoreOpen(true)}
+                >
+                  <History className="size-4" />
+                  Restore Revision #{targetRevisionNumber}
+                </Button>
+              )}
+            </div>
+            <DialogDescription>
+              Side-by-side comparison between your current working draft and the selected historical revision.
+            </DialogDescription>
+          </DialogHeader>
 
         {loading ? (
           <div className="py-12 text-center text-muted-foreground text-sm">
@@ -170,5 +164,23 @@ export function RevisionDiffDialog({
         )}
       </DialogContent>
     </Dialog>
+
+    <ConfirmDialog
+      open={confirmRestoreOpen}
+      onOpenChange={setConfirmRestoreOpen}
+      title={`Restore Revision #${targetRevisionNumber}`}
+      description={`Are you sure you want to restore Revision #${targetRevisionNumber}? This will replace your current working draft with the layout and sections from this historical revision.`}
+      confirmText="Restore Revision"
+      cancelText="Cancel"
+      variant="warning"
+      onConfirm={() => {
+        if (targetRevisionId && targetRevisionNumber) {
+          onRestore?.(targetRevisionId, targetRevisionNumber);
+          setConfirmRestoreOpen(false);
+          onOpenChange(false);
+        }
+      }}
+    />
+  </>
   );
 }

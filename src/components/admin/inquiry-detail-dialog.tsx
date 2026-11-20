@@ -63,50 +63,50 @@ export function InquiryDetailDialog({ inquiry }: { inquiry: InquiryDetailData })
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl">
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl p-6 sm:p-8">
         <DialogHeader>
-          <div className="flex items-center justify-between pr-6">
+          <div className="flex flex-wrap items-center justify-between gap-2 pr-4">
             <Badge
               variant={isBrightener ? "default" : "secondary"}
               className={isBrightener ? "bg-brand-navy text-white text-xs" : "text-xs"}
             >
               {isBrightener ? "Brightener Registration" : "General Inquiry"}
             </Badge>
-            <span className="text-xs text-muted-foreground">
+            <span className="text-xs text-muted-foreground font-mono">
               {formatDate(inquiry.createdAt)}
             </span>
           </div>
-          <DialogTitle className="text-xl font-bold font-heading text-foreground mt-2">
+          <DialogTitle className="text-2xl font-bold font-heading text-foreground mt-2 break-words">
             {inquiry.subject || `${inquiry.type.replace(/_/g, " ")} from ${inquiry.name}`}
           </DialogTitle>
           <DialogDescription className="text-xs text-muted-foreground">
-            Type: {inquiry.type.replace(/_/g, " ")}
+            Inquiry Category: {inquiry.type.replace(/_/g, " ")}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-5 pt-2 text-sm">
           {/* Sender Information */}
-          <div className="rounded-xl border bg-muted/30 p-4 space-y-3">
+          <div className="rounded-2xl border bg-muted/30 p-5 space-y-3">
             <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Sender Contact Information
             </h4>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs sm:text-sm">
               <div>
                 <span className="text-muted-foreground block text-xs">Full Name:</span>
-                <span className="font-semibold text-foreground">{inquiry.name}</span>
+                <span className="font-semibold text-foreground break-words">{inquiry.name}</span>
               </div>
               <div>
                 <span className="text-muted-foreground block text-xs">Email Address:</span>
-                <a href={`mailto:${inquiry.email}`} className="font-medium text-brand-navy dark:text-blue-400 hover:underline flex items-center gap-1">
-                  <Mail className="size-3" />
+                <a href={`mailto:${inquiry.email}`} className="font-medium text-brand-navy dark:text-blue-400 hover:underline flex items-center gap-1 break-all">
+                  <Mail className="size-3 shrink-0" />
                   {inquiry.email}
                 </a>
               </div>
               {inquiry.phone && (
                 <div>
                   <span className="text-muted-foreground block text-xs">Phone Number:</span>
-                  <a href={`tel:${inquiry.phone}`} className="text-foreground flex items-center gap-1 hover:underline">
-                    <Phone className="size-3 text-muted-foreground" />
+                  <a href={`tel:${inquiry.phone}`} className="text-foreground flex items-center gap-1 hover:underline break-all">
+                    <Phone className="size-3 text-muted-foreground shrink-0" />
                     {inquiry.phone}
                   </a>
                 </div>
@@ -114,8 +114,8 @@ export function InquiryDetailDialog({ inquiry }: { inquiry: InquiryDetailData })
               {inquiry.organization && (
                 <div>
                   <span className="text-muted-foreground block text-xs">Organization:</span>
-                  <span className="text-foreground flex items-center gap-1">
-                    <Building className="size-3 text-muted-foreground" />
+                  <span className="text-foreground flex items-center gap-1 break-words">
+                    <Building className="size-3 text-muted-foreground shrink-0" />
                     {inquiry.organization} {inquiry.role ? `(${inquiry.role})` : ""}
                   </span>
                 </div>
