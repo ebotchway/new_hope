@@ -3,6 +3,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { InquiryStatusSelect } from "@/components/admin/inquiry-status-select";
+import { InquiryDetailDialog } from "@/components/admin/inquiry-detail-dialog";
 import { DeleteButton } from "@/components/admin/delete-button";
 import { deleteInquiry } from "@/actions/admin/inquiries";
 import { requireStaff } from "@/lib/session";
@@ -181,6 +182,7 @@ export default async function AdminInquiriesPage(props: PageProps<"/admin/inquir
 
                   <TableCell className="align-top">
                     <div className="flex items-center gap-1.5">
+                      <InquiryDetailDialog inquiry={inquiry} />
                       <InquiryStatusSelect id={inquiry.id} status={inquiry.status} />
                       <DeleteButton
                         confirmMessage="Permanently delete this inquiry from the database?"

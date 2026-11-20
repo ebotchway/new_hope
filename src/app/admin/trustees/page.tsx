@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { Plus, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -42,7 +42,7 @@ export default async function AdminTrusteesPage() {
                 <TableHead>Trustee</TableHead>
                 <TableHead>Role / Title</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead className="w-24 text-right">Actions</TableHead>
+                <TableHead className="w-28 text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -73,10 +73,17 @@ export default async function AdminTrusteesPage() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <DeleteButton
-                        action={deleteTrustee.bind(null, trustee.id)}
-                        confirmMessage={`Delete trustee "${trustee.name}"?`}
-                      />
+                      <div className="flex items-center justify-end gap-1">
+                        <Button asChild variant="ghost" size="icon" className="size-8" title="Edit Trustee">
+                          <Link href={`/admin/trustees/${trustee.id}`}>
+                            <Edit className="size-4 text-muted-foreground" />
+                          </Link>
+                        </Button>
+                        <DeleteButton
+                          action={deleteTrustee.bind(null, trustee.id)}
+                          confirmMessage={`Delete trustee "${trustee.name}"?`}
+                        />
+                      </div>
                     </TableCell>
                   </SortableRow>
                 ))

@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { DonationActions } from "@/components/admin/donation-actions";
+import { DonationDetailDialog } from "@/components/admin/donation-detail-dialog";
 import { requireStaff } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { formatMoney, formatDate } from "@/lib/format";
@@ -228,12 +229,41 @@ export default async function AdminDonationsPage(props: PageProps<"/admin/donati
                 </TableCell>
 
                 <TableCell className="text-right">
-                  <DonationActions
-                    id={donation.id}
-                    status={donation.status}
-                    paymentMethod={donation.paymentMethod}
-                    amountFormatted={formatMoney(donation.amountCents, donation.currency)}
-                  />
+                  <div className="flex items-center justify-end gap-1.5">
+                    <DonationDetailDialog
+                      donation={{
+                        id: donation.id,
+                        amountCents: donation.amountCents,
+                        amountGhsCents: donation.amountGhsCents,
+                        currency: donation.currency,
+                        status: donation.status,
+                        paymentMethod: donation.paymentMethod,
+                        donorName: donation.anonymous ? "Anonymous Donor" : donation.donorName,
+                        donorEmail: donation.donorEmail,
+                        donorPhone: donation.donorPhone,
+                        title: donation.title,
+                        createdAt: donation.createdAt,
+                        stripePaymentIntentId: donation.stripePaymentIntentId,
+                        stripeInvoiceId: donation.stripeInvoiceId,
+                        stripeSubscriptionId: donation.stripeSubscriptionId,
+                        stripeCustomerId: donation.stripeCustomerId,
+                        momoReference: donation.momoReference,
+                        momoVerifiedAt: donation.momoVerifiedAt,
+                        momoVerifiedBy: donation.momoVerifiedBy,
+                        momoRejectionReason: donation.momoRejectionReason,
+                        exchangeRate: donation.exchangeRate,
+                        child: donation.child
+                          ? { id: donation.child.id, name: donation.child.name, slug: donation.child.slug }
+                          : null,
+                      }}
+                    />
+                    <DonationActions
+                      id={donation.id}
+                      status={donation.status}
+                      paymentMethod={donation.paymentMethod}
+                      amountFormatted={formatMoney(donation.amountCents, donation.currency)}
+                    />
+                  </div>
                 </TableCell>
               </TableRow>
             ))}

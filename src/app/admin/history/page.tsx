@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { Plus, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -41,7 +41,7 @@ export default async function AdminHistoryPage() {
                 <TableHead>Year</TableHead>
                 <TableHead>Milestone Title</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead className="w-24 text-right">Actions</TableHead>
+                <TableHead className="w-28 text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -68,10 +68,17 @@ export default async function AdminHistoryPage() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <DeleteButton
-                        action={deleteHistoryEvent.bind(null, event.id)}
-                        confirmMessage={`Delete milestone "${event.title}"?`}
-                      />
+                      <div className="flex items-center justify-end gap-1">
+                        <Button asChild variant="ghost" size="icon" className="size-8" title="Edit Milestone">
+                          <Link href={`/admin/history/${event.id}`}>
+                            <Edit className="size-4 text-muted-foreground" />
+                          </Link>
+                        </Button>
+                        <DeleteButton
+                          action={deleteHistoryEvent.bind(null, event.id)}
+                          confirmMessage={`Delete milestone "${event.title}"?`}
+                        />
+                      </div>
                     </TableCell>
                   </SortableRow>
                 ))

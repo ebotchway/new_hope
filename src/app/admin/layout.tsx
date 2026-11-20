@@ -33,60 +33,47 @@ import { ThemeToggle } from "@/components/theme-toggle";
 const NAV_SECTIONS = [
   {
     title: "Overview",
-    items: [{ href: "/admin", label: "Dashboard", icon: LayoutDashboard }],
-  },
-  {
-    title: "Reports & Analytics",
     items: [
-      { href: "/admin/reports", label: "Overview", icon: BarChart3 },
-      { href: "/admin/reports/financial", label: "Financial Reports", icon: HandCoins },
-      { href: "/admin/reports/donations", label: "Donation Ledger", icon: FileText },
-      { href: "/admin/reports/recurring", label: "Recurring Giving", icon: RefreshCw },
-      { href: "/admin/reports/sponsorships", label: "Sponsorships", icon: HeartHandshake },
-      { href: "/admin/reports/donors", label: "Donors & Retention", icon: Users2 },
-      { href: "/admin/reports/children", label: "Beneficiaries", icon: GraduationCap },
-      { href: "/admin/reports/momo", label: "MoMo Reconciliation", icon: Smartphone },
-      { href: "/admin/reports/reconciliation", label: "Payment Audit", icon: ShieldCheck },
-      { href: "/admin/reports/inquiries", label: "Inquiries", icon: Mail },
-      { href: "/admin/reports/website", label: "Content Reports", icon: Globe },
-      { href: "/admin/reports/audit-logs", label: "Audit Logs", icon: History },
+      { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
+      { href: "/admin/reports", label: "Reports & Analytics", icon: BarChart3 },
     ],
   },
   {
-    title: "Website Management",
+    title: "Programs & Beneficiaries",
     items: [
-      { href: "/admin/website", label: "Overview", icon: Globe },
+      { href: "/admin/children", label: "Children Profiles", icon: Users2 },
+      { href: "/admin/progress-reports", label: "Progress Reports", icon: FileText },
+      { href: "/admin/stories", label: "Impact Stories", icon: BookHeart },
+      { href: "/admin/impact-stats", label: "Impact Statistics", icon: BarChart3 },
+      { href: "/admin/history", label: "Milestones & History", icon: History },
+      { href: "/admin/trustees", label: "Board & Trustees", icon: Contact },
+    ],
+  },
+  {
+    title: "Fundraising & Community",
+    items: [
+      { href: "/admin/donations", label: "Donation Ledger", icon: HandCoins },
+      { href: "/admin/inquiries", label: "Inquiries & Brighteners", icon: Mail },
+    ],
+  },
+  {
+    title: "Website & Content",
+    items: [
+      { href: "/admin/website/pages", label: "Pages & Revisions", icon: FileText },
       { href: "/admin/website/homepage", label: "Homepage Builder", icon: Sparkles },
-      { href: "/admin/website/pages", label: "Pages", icon: FileText },
-      { href: "/admin/website/navigation", label: "Navigation & Menus", icon: Navigation },
+      { href: "/admin/website/navigation", label: "Navigation Menus", icon: Navigation },
       { href: "/admin/website/media", label: "Media Library", icon: ImageIcon },
       { href: "/admin/website/appearance", label: "Appearance & Branding", icon: Palette },
       { href: "/admin/website/seo", label: "SEO & Social", icon: Search },
     ],
   },
   {
-    title: "Programs",
-    items: [
-      { href: "/admin/children", label: "Children", icon: Users2 },
-      { href: "/admin/stories", label: "Stories", icon: BookHeart },
-      { href: "/admin/impact-stats", label: "Impact Stats", icon: BarChart3 },
-      { href: "/admin/history", label: "History", icon: History },
-      { href: "/admin/trustees", label: "Trustees", icon: Contact },
-    ],
-  },
-  {
-    title: "Fundraising",
-    items: [
-      { href: "/admin/donations", label: "Donations", icon: HandCoins },
-      { href: "/admin/inquiries", label: "Inquiries", icon: Mail },
-    ],
-  },
-  {
     title: "Administration",
     items: [
-      { href: "/admin/users", label: "Users", icon: UserCog },
+      { href: "/admin/users", label: "User Accounts", icon: UserCog },
       { href: "/admin/settings", label: "Site & Payments", icon: Settings },
       { href: "/admin/settings/backups", label: "Backups & Restore", icon: Archive },
+      { href: "/admin/reports/audit-logs", label: "Audit Logs", icon: ShieldCheck },
     ],
   },
 ];

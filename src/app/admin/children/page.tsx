@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Plus, ExternalLink, Users, HeartHandshake } from "lucide-react";
+import { Plus, ExternalLink, Users, HeartHandshake, FileText, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -20,7 +20,7 @@ export default async function AdminChildrenPage() {
     orderBy: [{ archived: "asc" }, { createdAt: "desc" }],
     include: {
       _count: {
-        select: { sponsorships: true, donations: true },
+        select: { sponsorships: true, donations: true, updates: true },
       },
     },
   });
@@ -49,8 +49,9 @@ export default async function AdminChildrenPage() {
               <TableHead>Age</TableHead>
               <TableHead>Location</TableHead>
               <TableHead>Status</TableHead>
+              <TableHead>Progress Reports</TableHead>
               <TableHead>Linked Gifts</TableHead>
-              <TableHead className="w-28 text-right">Actions</TableHead>
+              <TableHead className="w-32 text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -103,6 +104,18 @@ export default async function AdminChildrenPage() {
                   </div>
                 </TableCell>
                 <TableCell>
+                  <Link
+                    href={`/admin/progress-reports?child=${child.id}`}
+                    className="inline-flex items-center gap-1.5 rounded-md border border-input bg-background/50 px-2 py-1 text-xs font-medium text-brand-navy hover:bg-muted dark:text-blue-400 transition-colors"
+                    title="View progress updates for this child"
+                  >
+                    <FileText className="size-3 text-muted-foreground" />
+                    <span>
+                      {child._count.updates} {child._count.updates === 1 ? "report" : "reports"}
+                    </span>
+                  </Link>
+                </TableCell>
+                <TableCell>
                   <div className="flex items-center gap-3 text-xs text-muted-foreground">
                     <span className="flex items-center gap-1" title="Active/Past Sponsorships">
                       <HeartHandshake className="size-3.5 text-brand-accent" />
@@ -116,6 +129,11 @@ export default async function AdminChildrenPage() {
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex items-center justify-end gap-1">
+                    <Button asChild variant="ghost" size="icon" className="size-8" title="Edit Profile">
+                      <Link href={`/admin/children/${child.id}`}>
+                        <Edit className="size-4 text-muted-foreground" />
+                      </Link>
+                    </Button>
                     <Button asChild variant="ghost" size="icon" className="size-8" title="View Public Profile">
                       <Link href={`/sponsor-a-child/${child.slug}`} target="_blank">
                         <ExternalLink className="size-4 text-muted-foreground" />
@@ -131,7 +149,7 @@ export default async function AdminChildrenPage() {
             ))}
             {children.length === 0 && (
               <TableRow>
-                <TableCell colSpan={6} className="py-12 text-center text-sm text-muted-foreground">
+                <TableCell colSpan={7} className="py-12 text-center text-sm text-muted-foreground">
                   No children profiles created yet. Add your first child to begin sponsorships.
                 </TableCell>
               </TableRow>

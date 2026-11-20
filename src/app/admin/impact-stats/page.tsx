@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { Plus, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -41,7 +41,7 @@ export default async function AdminImpactStatsPage() {
                 <TableHead>Value / Number</TableHead>
                 <TableHead>Description Label</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead className="w-24 text-right">Actions</TableHead>
+                <TableHead className="w-28 text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -66,10 +66,17 @@ export default async function AdminImpactStatsPage() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <DeleteButton
-                        action={deleteImpactStat.bind(null, stat.id)}
-                        confirmMessage={`Delete "${stat.label}"?`}
-                      />
+                      <div className="flex items-center justify-end gap-1">
+                        <Button asChild variant="ghost" size="icon" className="size-8" title="Edit Metric">
+                          <Link href={`/admin/impact-stats/${stat.id}`}>
+                            <Edit className="size-4 text-muted-foreground" />
+                          </Link>
+                        </Button>
+                        <DeleteButton
+                          action={deleteImpactStat.bind(null, stat.id)}
+                          confirmMessage={`Delete "${stat.label}"?`}
+                        />
+                      </div>
                     </TableCell>
                   </SortableRow>
                 ))
