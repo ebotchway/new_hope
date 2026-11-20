@@ -37,62 +37,101 @@ function parseChildForm(formData: FormData) {
 }
 
 export async function createChild(formData: FormData): Promise<ActionResult> {
-  await requireStaff();
-  const parsed = parseChildForm(formData);
-  if (!parsed.success) {
-    return { success: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
+  let createdChildId: string | null = null;
+  try {
+    await requireStaff();
+    const parsed = parseChildForm(formData);
+    if (!parsed.success) {
+      return { success: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
+    }
+
+    const photo = formData.get("photo");
+    let photoUrl: string | null = null;
+    if (photo instanceof File && photo.size > 0) {
+      try {
+        photoUrl = await uploadFile(photo, "children");
+      } catch (uploadErr: unknown) {
+        return {
+          success: false,
+          error: uploadErr instanceof Error ? uploadErr.message : "Failed to upload child photo.",
+        };
+      }
+    }
+
+    const slug = await uniqueSlug(parsed.data.name);
+
+    const child = await prisma.child.create({
+      data: {
+        ...parsed.data,
+        dateOfBirth: parsed.data.dateOfBirth ? new Date(parsed.data.dateOfBirth) : null,
+        slug,
+        photoUrl,
+      },
+    });
+
+    createdChildId = child.id;
+    revalidatePath("/admin/children");
+    revalidatePath("/sponsor-a-child");
+  } catch (err: unknown) {
+    console.error("[createChild Error]:", err);
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : "An unexpected server error occurred while creating child.",
+    };
   }
 
-  const photo = formData.get("photo");
-  const photoUrl = photo instanceof File && photo.size > 0 ? await uploadFile(photo, "children") : null;
-
-  const slug = await uniqueSlug(parsed.data.name);
-
-  const child = await prisma.child.create({
-    data: {
-      ...parsed.data,
-      dateOfBirth: parsed.data.dateOfBirth ? new Date(parsed.data.dateOfBirth) : null,
-      slug,
-      photoUrl,
-    },
-  });
-
-  revalidatePath("/admin/children");
-  revalidatePath("/sponsor-a-child");
-  redirect(`/admin/children/${child.id}`);
+  redirect(`/admin/children/${createdChildId}`);
 }
 
 export async function updateChild(id: string, formData: FormData): Promise<ActionResult> {
-  await requireStaff();
-  const parsed = parseChildForm(formData);
-  if (!parsed.success) {
-    return { success: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
+  try {
+    await requireStaff();
+    const parsed = parseChildForm(formData);
+    if (!parsed.success) {
+      return { success: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
+    }
+
+    const existing = await prisma.child.findUnique({ where: { id } });
+    if (!existing) return { success: false, error: "Child not found" };
+
+    const photo = formData.get("photo");
+    let photoUrl = existing.photoUrl;
+
+    if (photo instanceof File && photo.size > 0) {
+      try {
+        photoUrl = await uploadFile(photo, "children");
+      } catch (uploadErr: unknown) {
+        return {
+          success: false,
+          error: uploadErr instanceof Error ? uploadErr.message : "Failed to upload child photo.",
+        };
+      }
+    }
+
+    const slug = existing.name === parsed.data.name ? existing.slug : await uniqueSlug(parsed.data.name, id);
+
+    await prisma.child.update({
+      where: { id },
+      data: {
+        ...parsed.data,
+        dateOfBirth: parsed.data.dateOfBirth ? new Date(parsed.data.dateOfBirth) : null,
+        slug,
+        photoUrl,
+      },
+    });
+
+    revalidatePath("/admin/children");
+    revalidatePath(`/admin/children/${id}`);
+    revalidatePath("/sponsor-a-child");
+    revalidatePath(`/sponsor-a-child/${slug}`);
+    return { success: true };
+  } catch (err: unknown) {
+    console.error("[updateChild Error]:", err);
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : "An unexpected server error occurred while updating child.",
+    };
   }
-
-  const existing = await prisma.child.findUnique({ where: { id } });
-  if (!existing) return { success: false, error: "Child not found" };
-
-  const photo = formData.get("photo");
-  const photoUrl =
-    photo instanceof File && photo.size > 0 ? await uploadFile(photo, "children") : existing.photoUrl;
-
-  const slug = existing.name === parsed.data.name ? existing.slug : await uniqueSlug(parsed.data.name, id);
-
-  await prisma.child.update({
-    where: { id },
-    data: {
-      ...parsed.data,
-      dateOfBirth: parsed.data.dateOfBirth ? new Date(parsed.data.dateOfBirth) : null,
-      slug,
-      photoUrl,
-    },
-  });
-
-  revalidatePath("/admin/children");
-  revalidatePath(`/admin/children/${id}`);
-  revalidatePath("/sponsor-a-child");
-  revalidatePath(`/sponsor-a-child/${slug}`);
-  return { success: true };
 }
 
 export async function toggleArchiveChild(id: string, archived: boolean): Promise<ActionResult> {

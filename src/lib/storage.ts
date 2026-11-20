@@ -7,17 +7,45 @@ export const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
 
 const ALLOWED_MIME_TYPES: Record<string, string> = {
   "image/jpeg": "jpg",
+  "image/jpg": "jpg",
+  "image/pjpeg": "jpg",
   "image/png": "png",
+  "image/x-png": "png",
   "image/webp": "webp",
+  "image/avif": "avif",
+  "image/gif": "gif",
+  "image/svg+xml": "svg",
+};
+
+const EXTENSION_MAP: Record<string, string> = {
+  jpg: "jpg",
+  jpeg: "jpg",
+  png: "png",
+  webp: "webp",
+  avif: "avif",
+  gif: "gif",
+  svg: "svg",
 };
 
 function extensionFor(file: File): string {
-  const mime = file.type.toLowerCase();
-  const ext = ALLOWED_MIME_TYPES[mime];
-  if (!ext) {
-    throw new Error("Invalid file type. Only JPG, PNG, and WebP images are permitted.");
+  const mime = (file.type || "").toLowerCase().trim();
+  if (mime && ALLOWED_MIME_TYPES[mime]) {
+    return ALLOWED_MIME_TYPES[mime];
   }
-  return ext;
+
+  // Fallback to filename extension when MIME type is absent or generic
+  const name = file.name || "";
+  const dotIndex = name.lastIndexOf(".");
+  if (dotIndex !== -1) {
+    const rawExt = name.slice(dotIndex + 1).toLowerCase();
+    if (EXTENSION_MAP[rawExt]) {
+      return EXTENSION_MAP[rawExt];
+    }
+  }
+
+  throw new Error(
+    "Invalid file type. Supported formats are JPG, PNG, WebP, AVIF, GIF, and SVG."
+  );
 }
 
 function sanitizeFolderPath(folder: string): string {
@@ -50,12 +78,18 @@ export async function uploadFile(file: File, folder: string): Promise<string> {
     return blob.url;
   }
 
-  const destDir = path.join(UPLOAD_DIR, sanitizedFolder);
-  await mkdir(destDir, { recursive: true });
-  const buffer = Buffer.from(await file.arrayBuffer());
-  const destPath = path.join(UPLOAD_DIR, filename);
-  await writeFile(destPath, buffer);
-  return `/uploads/${filename}`;
+  try {
+    const destDir = path.join(UPLOAD_DIR, sanitizedFolder);
+    await mkdir(destDir, { recursive: true });
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const destPath = path.join(UPLOAD_DIR, filename);
+    await writeFile(destPath, buffer);
+    return `/uploads/${filename}`;
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error(`[Storage] Failed to store uploaded file to ${filename}:`, err);
+    throw new Error(`Upload storage error: ${message}`);
+  }
 }
 
 /**

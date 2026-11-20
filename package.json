@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3010",
-    "build": "prisma generate && next build",
+    "build": "prisma generate && next build --webpack",
     "start": "next start -p 3010",
     "test": "tsx --env-file=.env --test src/lib/__tests__/*.test.ts",
     "lint": "eslint",

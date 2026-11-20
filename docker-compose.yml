@@ -32,7 +32,6 @@ services:
     build: .
     restart: unless-stopped
     init: true
-    command: sh -c "if [ -d /app/public-defaults/uploads ]; then cp -rn /app/public-defaults/uploads/* /app/public/uploads/ 2>/dev/null || true; fi; if [ \"$${RUN_MIGRATIONS_ON_STARTUP:-false}\" = \"true\" ]; then node scripts/deploy-database.mjs; fi; exec npm run start"
     env_file: .env
     environment:
       DATABASE_URL: "postgresql://livinghope:livinghope@db:5432/livinghope?schema=public"
@@ -44,6 +43,7 @@ services:
       - "3010:3010"
     volumes:
       - uploads:/app/public/uploads
+      - backups:/app/backups
     networks:
       - livinghope-network
     depends_on:
@@ -69,6 +69,7 @@ services:
 volumes:
   db-data:
   uploads:
+  backups:
 
 networks:
   livinghope-network:

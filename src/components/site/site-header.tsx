@@ -25,6 +25,8 @@ import { ThemeToggle } from "@/components/theme-toggle";
 
 import { getCmsNavItems } from "@/lib/cms-loader";
 
+import { SiteNavLinks } from "@/components/site/site-nav-links";
+
 const NAV_LINKS: Array<{ href: string; label: string; isExternal?: boolean }> = [
   { href: "/what-we-do", label: "What We Do" },
   { href: "/sponsor-a-child", label: "Sponsor a Child" },
@@ -52,19 +54,7 @@ export async function SiteHeader() {
       <div className="mx-auto flex max-w-7xl items-center justify-between rounded-2xl bg-brand-navy px-5 py-3 text-white shadow-md shadow-brand-navy/10 sm:px-7">
         <Logo light size="md" className="shrink-0" />
 
-        <nav className="hidden items-center gap-6 lg:flex">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              target={link.isExternal ? "_blank" : undefined}
-              rel={link.isExternal ? "noopener noreferrer" : undefined}
-              className="text-[15px] font-medium text-white/85 transition-colors hover:text-white"
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
+        <SiteNavLinks links={navLinks} variant="desktop" className="hidden lg:flex" />
 
         <div className="hidden items-center gap-3 lg:flex">
           <ThemeToggle className="text-white/85 hover:bg-white/10 hover:text-white" />
@@ -149,19 +139,7 @@ export async function SiteHeader() {
                 <ThemeToggle className="text-foreground hover:bg-muted" />
               </SheetTitle>
             </SheetHeader>
-            <nav className="flex flex-col gap-1 px-4">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  target={link.isExternal ? "_blank" : undefined}
-                  rel={link.isExternal ? "noopener noreferrer" : undefined}
-                  className="rounded-lg px-3 py-2 text-sm font-medium text-foreground hover:bg-muted"
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </nav>
+            <SiteNavLinks links={navLinks} variant="mobile" className="px-4" />
             <div className="mt-4 flex flex-col gap-2 px-4">
               {user ? (
                 <>

@@ -75,12 +75,16 @@ export function MediaLibrary({ initialAssets }: { initialAssets: MediaAssetItem[
     formData.append("altText", file.name.replace(/\.[^/.]+$/, ""));
 
     startTransition(async () => {
-      const res = await uploadCmsMedia(formData);
-      if (res.success && res.data) {
-        setMessage({ type: "success", text: `Uploaded "${file.name}" successfully!` });
-        window.location.reload();
-      } else {
-        setMessage({ type: "error", text: res.error || "Upload failed" });
+      try {
+        const res = await uploadCmsMedia(formData);
+        if (res.success && res.data) {
+          setMessage({ type: "success", text: `Uploaded "${file.name}" successfully!` });
+          window.location.reload();
+        } else {
+          setMessage({ type: "error", text: res.error || "Upload failed" });
+        }
+      } catch (err: unknown) {
+        setMessage({ type: "error", text: err instanceof Error ? err.message : "Upload failed" });
       }
     });
   };
