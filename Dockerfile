@@ -28,14 +28,15 @@ RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/package-lock.json ./package-lock.json
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
-COPY --from=builder /app/.next ./.next
+COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
 COPY --from=builder /app/scripts ./scripts
 
-# Ensure persistent uploads directory exists and is owned by non-root nextjs user
-RUN mkdir -p /app/public/uploads && chown -R nextjs:nodejs /app/public/uploads
+# Ensure persistent uploads and backup directories exist and are owned by non-root nextjs user
+RUN mkdir -p /app/public/uploads /app/backups /app/.next/cache && \
+    chown -R nextjs:nodejs /app/public/uploads /app/backups /app/.next/cache
 
 # Keep a defaults copy of initial uploads so volume mounts can initialize authentic assets
 RUN mkdir -p /app/public-defaults && cp -r /app/public/uploads /app/public-defaults/

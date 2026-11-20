@@ -25,6 +25,7 @@ import { AdminPageHeader } from "@/components/admin/page-header";
 import { DeleteButton } from "@/components/admin/delete-button";
 import { ProgressReportDialog } from "@/components/admin/progress-report-dialog";
 import { ProgressReportDetailDialog } from "@/components/admin/progress-report-detail-dialog";
+import { ProgressReportsFilter } from "@/components/admin/progress-reports-filter";
 import { requireStaff } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { deleteChildUpdate } from "@/actions/admin/child-updates";
@@ -144,64 +145,14 @@ export default async function AdminProgressReportsPage(props: {
       </div>
 
       {/* Filter Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border bg-card p-4">
-        <div className="flex flex-wrap items-center gap-3">
-          <span className="text-xs font-semibold text-muted-foreground">Filter by:</span>
-
-          {/* Child Filter */}
-          <div className="flex items-center gap-1.5">
-            <select
-              aria-label="Filter by Child"
-              defaultValue={selectedChildId}
-              onChange={(e) => {
-                const url = new URL(window.location.href);
-                if (e.target.value) {
-                  url.searchParams.set("child", e.target.value);
-                } else {
-                  url.searchParams.delete("child");
-                }
-                window.location.href = url.toString();
-              }}
-              className="rounded-lg border border-input bg-background px-3 py-1.5 text-xs font-medium shadow-xs focus:outline-hidden focus:ring-2 focus:ring-ring"
-            >
-              <option value="">All Children ({children.length})</option>
-              {children.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Status Filter */}
-          <div className="flex items-center gap-1.5">
-            <select
-              aria-label="Filter by Status"
-              defaultValue={statusFilter}
-              onChange={(e) => {
-                const url = new URL(window.location.href);
-                if (e.target.value !== "all") {
-                  url.searchParams.set("status", e.target.value);
-                } else {
-                  url.searchParams.delete("status");
-                }
-                window.location.href = url.toString();
-              }}
-              className="rounded-lg border border-input bg-background px-3 py-1.5 text-xs font-medium shadow-xs focus:outline-hidden focus:ring-2 focus:ring-ring"
-            >
-              <option value="all">All Statuses ({totalReports})</option>
-              <option value="published">Published Only ({publishedCount})</option>
-              <option value="draft">Drafts Only ({draftCount})</option>
-            </select>
-          </div>
-        </div>
-
-        {(selectedChildId || statusFilter !== "all") && (
-          <Button asChild variant="ghost" size="sm" className="h-8 text-xs text-muted-foreground">
-            <Link href="/admin/progress-reports">Reset Filters</Link>
-          </Button>
-        )}
-      </div>
+      <ProgressReportsFilter
+        childrenList={children}
+        selectedChildId={selectedChildId}
+        statusFilter={statusFilter}
+        totalReports={totalReports}
+        publishedCount={publishedCount}
+        draftCount={draftCount}
+      />
 
       {/* Reports Table */}
       <div className="overflow-hidden rounded-2xl border bg-card shadow-xs">
