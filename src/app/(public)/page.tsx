@@ -31,25 +31,35 @@ export default async function HomePage() {
     urgentChildren,
   ] = await Promise.all([
     getCmsPage("home"),
-    prisma.story.findMany({
-      where: { published: true },
-      orderBy: { order: "asc" },
-      take: 6,
-    }),
-    prisma.donation.aggregate({ where: { status: "SUCCEEDED" }, _sum: { amountCents: true } }),
-    prisma.sponsorship.count({ where: { status: "ACTIVE" } }),
-    prisma.child.count({ where: { status: { in: ["SPONSORED", "GRADUATED"] }, archived: false } }),
-    prisma.donation.findMany({
-      where: { status: "SUCCEEDED" },
-      orderBy: { createdAt: "desc" },
-      take: 10,
-      include: { child: { select: { name: true } } },
-    }),
-    prisma.child.findMany({
-      where: { status: "AVAILABLE", archived: false },
-      orderBy: [{ featured: "desc" }, { order: "asc" }],
-      take: 6,
-    }),
+    prisma.story
+      .findMany({
+        where: { published: true },
+        orderBy: { order: "asc" },
+        take: 6,
+      })
+      .catch(() => []),
+    prisma.donation
+      .aggregate({ where: { status: "SUCCEEDED" }, _sum: { amountCents: true } })
+      .catch(() => ({ _sum: { amountCents: null } })),
+    prisma.sponsorship.count({ where: { status: "ACTIVE" } }).catch(() => 0),
+    prisma.child
+      .count({ where: { status: { in: ["SPONSORED", "GRADUATED"] }, archived: false } })
+      .catch(() => 0),
+    prisma.donation
+      .findMany({
+        where: { status: "SUCCEEDED" },
+        orderBy: { createdAt: "desc" },
+        take: 10,
+        include: { child: { select: { name: true } } },
+      })
+      .catch(() => []),
+    prisma.child
+      .findMany({
+        where: { status: "AVAILABLE", archived: false },
+        orderBy: [{ featured: "desc" }, { order: "asc" }],
+        take: 6,
+      })
+      .catch(() => []),
   ]);
 
   const liveStats = {

@@ -25,13 +25,19 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function AboutPage() {
   const [cmsPage, history, trustees, recentDonors] = await Promise.all([
     getCmsPage("about"),
-    prisma.historyEvent.findMany({ where: { published: true }, orderBy: { order: "asc" } }),
-    prisma.trustee.findMany({ where: { published: true }, orderBy: { order: "asc" } }),
-    prisma.donation.findMany({
-      where: { status: "SUCCEEDED" },
-      orderBy: { createdAt: "desc" },
-      take: 12,
-    }),
+    prisma.historyEvent
+      .findMany({ where: { published: true }, orderBy: { order: "asc" } })
+      .catch(() => []),
+    prisma.trustee
+      .findMany({ where: { published: true }, orderBy: { order: "asc" } })
+      .catch(() => []),
+    prisma.donation
+      .findMany({
+        where: { status: "SUCCEEDED" },
+        orderBy: { createdAt: "desc" },
+        take: 12,
+      })
+      .catch(() => []),
   ]);
 
   const sections = cmsPage?.sections || [];
