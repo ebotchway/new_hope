@@ -5,6 +5,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { getStripeClient } from "@/lib/stripe";
 import { donationSchema } from "@/lib/validations";
+import { sendMomoInitiatedSms } from "@/lib/sms";
 
 export type CheckoutResult =
   | { success: true; url: string }
@@ -71,6 +72,19 @@ export async function createDonationCheckout(values: unknown): Promise<CheckoutR
   });
 
   if (data.paymentMethod === "MOBILE_MONEY") {
+    if (data.donorPhone) {
+      const ghsFormatted = amountGhsCents
+        ? `GH₵ ${(amountGhsCents / 100).toFixed(2)}`
+        : `$${(data.amountCents / 100).toFixed(2)}`;
+
+      sendMomoInitiatedSms({
+        to: data.donorPhone,
+        donorName: data.donorName,
+        amountGhsFormatted: ghsFormatted,
+        momoReference: donation.momoReference || donation.id.slice(0, 8),
+      }).catch((err) => console.warn("MoMo initiated SMS dispatch warning:", err));
+    }
+
     return { success: true, url: `${appUrl}/donate/mobile-money/${donation.id}` };
   }
 

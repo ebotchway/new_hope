@@ -65,6 +65,22 @@ export const generalInquirySchema = z.object({
 export type BrightenerRegistrationInput = z.infer<typeof brightenerRegistrationSchema>;
 export type GeneralInquiryInput = z.infer<typeof generalInquirySchema>;
 
+export const updateDonorProfileSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters").max(100),
+  phone: z.string().max(30).optional().or(z.literal("")),
+});
+
+export const changePasswordSchema = z
+  .object({
+    currentPassword: z.string().optional().or(z.literal("")),
+    newPassword: z.string().min(8, "New password must be at least 8 characters"),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "New passwords do not match",
+    path: ["confirmPassword"],
+  });
+
 export const signupSchema = z
   .object({
     name: z.string().min(2, "Name is required").max(100),

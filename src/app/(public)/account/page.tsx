@@ -1,13 +1,14 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { HeartHandshake, HandCoins, ArrowRight, Smartphone, CreditCard, ExternalLink } from "lucide-react";
+import { HeartHandshake, HandCoins, ArrowRight, Smartphone, CreditCard, ExternalLink, Receipt } from "lucide-react";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { DonorProfileForm } from "@/components/site/donor-profile-form";
 import { formatMoney, formatDate } from "@/lib/format";
 
 export const metadata = { title: "My Donor Portal — LivingHope" };
@@ -46,7 +47,13 @@ export default async function AccountPage() {
     }),
     prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { role: true, createdAt: true },
+      select: {
+        role: true,
+        createdAt: true,
+        name: true,
+        phone: true,
+        passwordHash: true,
+      },
     }),
   ]);
 
@@ -218,7 +225,7 @@ export default async function AccountPage() {
                       </p>
                     </div>
 
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
                       {d.paymentMethod === "MOBILE_MONEY" ? (
                         <span className="flex items-center gap-1 text-emerald-700 dark:text-emerald-400 font-medium">
                           <Smartphone className="size-3.5" /> Mobile Money
@@ -229,6 +236,16 @@ export default async function AccountPage() {
                           <CreditCard className="size-3.5" /> Card
                         </span>
                       )}
+
+                      <Link
+                        href={`/receipt/${d.id}`}
+                        target="_blank"
+                        className="inline-flex items-center gap-1 rounded-md border px-2 py-1 text-[11px] font-medium text-brand-navy hover:bg-muted dark:text-blue-400 transition-colors"
+                        title="View & Print Official Receipt"
+                      >
+                        <Receipt className="size-3" />
+                        Receipt
+                      </Link>
                     </div>
                   </li>
                 ))}
@@ -236,6 +253,14 @@ export default async function AccountPage() {
             )}
           </CardContent>
         </Card>
+
+        {/* Profile Settings & Security */}
+        <DonorProfileForm
+          initialName={user?.name ?? ""}
+          initialPhone={user?.phone ?? ""}
+          email={session.user.email ?? ""}
+          hasPassword={Boolean(user?.passwordHash)}
+        />
       </div>
     </section>
   );

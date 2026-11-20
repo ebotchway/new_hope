@@ -2,14 +2,17 @@
 
 import crypto from "node:crypto";
 import bcrypt from "bcryptjs";
+import { revalidatePath } from "next/cache";
 import { CredentialsSignin } from "next-auth";
-import { signIn } from "@/auth";
+import { auth, signIn } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import {
   loginSchema,
   signupSchema,
   forgotPasswordSchema,
   resetPasswordSchema,
+  updateDonorProfileSchema,
+  changePasswordSchema,
 } from "@/lib/validations";
 import { sendPasswordResetEmail } from "@/lib/email";
 import type { ActionResult } from "@/actions/inquiries";
@@ -183,5 +186,73 @@ export async function resetPasswordAction(values: unknown): Promise<ActionResult
     },
   });
 
+  return { success: true };
+}
+
+export async function updateDonorProfileAction(values: unknown): Promise<ActionResult> {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, error: "You must be signed in to update your profile." };
+  }
+
+  const parsed = updateDonorProfileSchema.safeParse(values);
+  if (!parsed.success) {
+    return { success: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
+  }
+
+  const { name, phone } = parsed.data;
+
+  await prisma.user.update({
+    where: { id: session.user.id },
+    data: {
+      name: name.trim(),
+      phone: phone ? phone.trim() : null,
+    },
+  });
+
+  revalidatePath("/account");
+  return { success: true };
+}
+
+export async function changePasswordAction(values: unknown): Promise<ActionResult> {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, error: "You must be signed in to change your password." };
+  }
+
+  const parsed = changePasswordSchema.safeParse(values);
+  if (!parsed.success) {
+    return { success: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
+  }
+
+  const { currentPassword, newPassword } = parsed.data;
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { passwordHash: true },
+  });
+
+  if (!user) {
+    return { success: false, error: "User not found." };
+  }
+
+  // If user has existing passwordHash, verify currentPassword
+  if (user.passwordHash) {
+    if (!currentPassword) {
+      return { success: false, error: "Please enter your current password." };
+    }
+    const isValid = await bcrypt.compare(currentPassword, user.passwordHash);
+    if (!isValid) {
+      return { success: false, error: "Incorrect current password." };
+    }
+  }
+
+  const passwordHash = await bcrypt.hash(newPassword, 12);
+  await prisma.user.update({
+    where: { id: session.user.id },
+    data: { passwordHash },
+  });
+
+  revalidatePath("/account");
   return { success: true };
 }

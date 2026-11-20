@@ -5,6 +5,7 @@ import { requireStaff, requireAdmin } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { finalizeSuccessfulDonation } from "@/lib/donation-fulfillment";
 import { getStripeClient } from "@/lib/stripe";
+import { sendMomoVerifiedSms } from "@/lib/sms";
 import type { ActionResult } from "@/actions/inquiries";
 
 /** Manual reconciliation for Mobile Money donations: staff confirm the transfer landed. */
@@ -30,6 +31,22 @@ export async function markMobileMoneyDonationReceived(id: string): Promise<Actio
   });
 
   await finalizeSuccessfulDonation(id);
+
+  // Send SMS verification acknowledgment if donor provided phone
+  if (donation.donorPhone) {
+    const amountGhsFormatted = donation.amountGhsCents
+      ? `GH₵ ${(donation.amountGhsCents / 100).toFixed(2)}`
+      : `$${(donation.amountCents / 100).toFixed(2)}`;
+    const receiptCode = `LH-REC-${donation.id.slice(-6).toUpperCase()}`;
+
+    sendMomoVerifiedSms({
+      to: donation.donorPhone,
+      donorName: donation.donorName,
+      amountGhsFormatted,
+      momoReference: donation.momoReference || donation.id.slice(0, 8),
+      receiptNumber: receiptCode,
+    }).catch((err) => console.warn("MoMo verified SMS dispatch warning:", err));
+  }
 
   revalidatePath("/admin/donations");
   revalidatePath("/admin");

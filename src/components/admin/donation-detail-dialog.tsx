@@ -135,10 +135,16 @@ export function DonationDetailDialog({ donation }: { donation: DonationDetailDat
                 )}
                 <div>
                   <span className="text-muted-foreground block text-xs">Receipt Tracking:</span>
-                  <span className="font-mono text-foreground font-medium flex items-center gap-1">
+                  <Link
+                    href={`/receipt/${donation.id}`}
+                    target="_blank"
+                    className="font-mono text-brand-navy hover:underline dark:text-blue-400 font-medium flex items-center gap-1"
+                    title="Open and print official tax receipt"
+                  >
                     <Receipt className="size-3 text-emerald-600" />
                     {receiptCode}
-                  </span>
+                    <ExternalLink className="size-2.5 opacity-70" />
+                  </Link>
                 </div>
               </div>
             </div>
