@@ -7,6 +7,8 @@ import {
   createDatabaseSnapshot,
   createMediaArchive,
   restoreFromSnapshot,
+  restoreMediaArchive,
+  saveUploadedBackup,
   deleteBackup,
   type BackupItem,
 } from "@/lib/backup-service";
@@ -63,7 +65,7 @@ export async function createBackupAction(options?: {
 export async function restoreBackupAction(
   filename: string,
   confirmation: string
-): Promise<BackupActionResult<{ counts: Record<string, number> }>> {
+): Promise<BackupActionResult<{ counts: Record<string, number>; preRestoreSnapshot?: string }>> {
   try {
     await requireAdmin();
 
@@ -81,22 +83,118 @@ export async function restoreBackupAction(
       };
     }
 
+    // Create an automatic pre-restore safety snapshot before modifying database
+    let preRestoreSnapshot: string | undefined;
+    try {
+      const safetySnap = await createDatabaseSnapshot({ isPreRestore: true });
+      preRestoreSnapshot = safetySnap.filename;
+    } catch (safetyErr) {
+      console.warn("Could not generate pre-restore safety snapshot:", safetyErr);
+    }
+
     const result = await restoreFromSnapshot(filename);
 
     revalidatePath("/");
     revalidatePath("/about");
-    revalidatePath("/children");
+    revalidatePath("/sponsor-a-child");
     revalidatePath("/stories");
     revalidatePath("/donate");
     revalidatePath("/admin");
+    revalidatePath("/admin/children");
+    revalidatePath("/admin/progress-reports");
+    revalidatePath("/admin/donations");
+    revalidatePath("/admin/inquiries");
+    revalidatePath("/admin/users");
     revalidatePath("/admin/settings");
     revalidatePath("/admin/settings/backups");
 
-    return { success: true, data: { counts: result.counts } };
+    return {
+      success: true,
+      data: {
+        counts: result.counts,
+        preRestoreSnapshot,
+      },
+    };
   } catch (err) {
     return {
       success: false,
       error: err instanceof Error ? err.message : "Failed to restore backup snapshot",
+    };
+  }
+}
+
+export async function restoreMediaAction(
+  filename: string,
+  confirmation: string
+): Promise<BackupActionResult<{ message: string }>> {
+  try {
+    await requireAdmin();
+
+    if (confirmation.trim() !== "RESTORE") {
+      return {
+        success: false,
+        error: "Confirmation failed. You must type 'RESTORE' exactly to proceed with media restore.",
+      };
+    }
+
+    if (!filename.includes("_media_") && !filename.endsWith(".tar.gz")) {
+      return {
+        success: false,
+        error: "Only media tarball archives (.tar.gz) can be restored using this action.",
+      };
+    }
+
+    const result = await restoreMediaArchive(filename);
+
+    revalidatePath("/admin/website/media");
+    revalidatePath("/admin/settings/backups");
+
+    return {
+      success: true,
+      data: { message: result.message },
+    };
+  } catch (err) {
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : "Failed to restore media archive",
+    };
+  }
+}
+
+export async function uploadBackupAction(
+  formData: FormData
+): Promise<BackupActionResult<BackupItem>> {
+  try {
+    await requireAdmin();
+
+    const file = formData.get("file");
+    if (!(file instanceof File) || file.size === 0) {
+      return {
+        success: false,
+        error: "Please select a valid backup archive file (.json.gz, .sql.gz, or .tar.gz).",
+      };
+    }
+
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    const saved = await saveUploadedBackup(buffer, file.name);
+
+    revalidatePath("/admin/settings/backups");
+    return {
+      success: true,
+      data: {
+        filename: saved.filename,
+        sizeBytes: saved.sizeBytes,
+        sizeFormatted: saved.sizeFormatted,
+        createdAt: new Date().toISOString(),
+        type: saved.type,
+      },
+    };
+  } catch (err) {
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : "Failed to upload and store backup archive",
     };
   }
 }

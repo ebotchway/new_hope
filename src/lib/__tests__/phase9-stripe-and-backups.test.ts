@@ -1,7 +1,13 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import zlib from "node:zlib";
 import { siteSettingsSchema } from "@/lib/validations";
-import { sanitizeFilename, listBackups } from "@/lib/backup-service";
+import {
+  sanitizeFilename,
+  listBackups,
+  saveUploadedBackup,
+  createDatabaseSnapshot,
+} from "@/lib/backup-service";
 import { testStripeConnection, getStripeConfig } from "@/lib/stripe";
 
 test("Phase 9: Stripe Gateway & Backup Engine Verification", async (t) => {
@@ -110,6 +116,34 @@ test("Phase 9: Stripe Gateway & Backup Engine Verification", async (t) => {
     const malformed = await testStripeConnection("invalid_prefix_123456789");
     assert.equal(malformed.ok, false);
     assert.ok(malformed.error?.includes("Invalid Stripe key format"));
+  });
+
+  await t.test("saveUploadedBackup validates format and gzip integrity", async () => {
+    // Rejects non-gz extension
+    await assert.rejects(
+      async () => saveUploadedBackup(Buffer.from("invalid"), "malicious.exe"),
+      /Invalid backup format/
+    );
+
+    // Rejects invalid non-gzip buffer
+    await assert.rejects(
+      async () => saveUploadedBackup(Buffer.from("not-a-gzip-file"), "test.json.gz"),
+      /Uploaded file is not a valid compressed gzip archive/
+    );
+
+    // Valid mock snapshot gzip
+    const mockPayload = JSON.stringify({ version: "1.0", data: { users: [] } });
+    const validGzip = zlib.gzipSync(Buffer.from(mockPayload));
+    const saved = await saveUploadedBackup(validGzip, "valid_mock_snapshot.json.gz");
+    assert.equal(saved.filename, "valid_mock_snapshot.json.gz");
+    assert.equal(saved.type, "db_snapshot");
+    assert.ok(saved.sizeBytes > 0);
+  });
+
+  await t.test("createDatabaseSnapshot supports pre-restore safety prefix", async () => {
+    const snap = await createDatabaseSnapshot({ isPreRestore: true });
+    assert.ok(snap.filename.includes("_pre_restore_"));
+    assert.ok(snap.sizeBytes > 0);
   });
 
   await t.test("getStripeConfig returns structured gateway configuration", async () => {

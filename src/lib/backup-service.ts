@@ -6,7 +6,31 @@ import { promisify } from "node:util";
 import { prisma } from "@/lib/prisma";
 
 const execFileAsync = promisify(execFile);
-const BACKUP_DIR = path.resolve(process.cwd(), "backups");
+
+export function getBackupDir(): string {
+  if (process.env.BACKUP_DIR) {
+    if (!fs.existsSync(process.env.BACKUP_DIR)) {
+      fs.mkdirSync(process.env.BACKUP_DIR, { recursive: true });
+    }
+    return process.env.BACKUP_DIR;
+  }
+
+  const defaultDir = path.resolve(process.cwd(), "backups");
+  try {
+    if (!fs.existsSync(defaultDir)) {
+      fs.mkdirSync(defaultDir, { recursive: true });
+    }
+    // Test writability
+    fs.accessSync(defaultDir, fs.constants.W_OK);
+    return defaultDir;
+  } catch {
+    const tmpDir = path.join("/tmp", "livinghope-backups");
+    if (!fs.existsSync(tmpDir)) {
+      fs.mkdirSync(tmpDir, { recursive: true });
+    }
+    return tmpDir;
+  }
+}
 
 export type BackupType = "db_snapshot" | "db_sql" | "media" | "unknown";
 
@@ -40,26 +64,33 @@ export function sanitizeFilename(filename: string): string {
 
 export function getBackupFilePath(filename: string): string {
   const safeName = sanitizeFilename(filename);
-  const filePath = path.join(BACKUP_DIR, safeName);
-  if (!fs.existsSync(filePath)) {
-    throw new Error("Backup file not found");
+  const dir = getBackupDir();
+  const filePath = path.join(dir, safeName);
+  if (fs.existsSync(filePath)) {
+    return filePath;
   }
-  return filePath;
+  // Check fallback tmp directory if different
+  const fallbackPath = path.join("/tmp", "livinghope-backups", safeName);
+  if (fs.existsSync(fallbackPath)) {
+    return fallbackPath;
+  }
+  throw new Error("Backup file not found");
 }
 
 export async function listBackups(): Promise<BackupItem[]> {
-  if (!fs.existsSync(BACKUP_DIR)) {
-    fs.mkdirSync(BACKUP_DIR, { recursive: true });
+  const dir = getBackupDir();
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
     return [];
   }
 
-  const entries = fs.readdirSync(BACKUP_DIR, { withFileTypes: true });
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
   const backups: BackupItem[] = [];
 
   for (const entry of entries) {
     if (!entry.isFile() || entry.name.startsWith(".")) continue;
 
-    const fullPath = path.join(BACKUP_DIR, entry.name);
+    const fullPath = path.join(dir, entry.name);
     try {
       const stat = fs.statSync(fullPath);
       let type: BackupType = "unknown";
@@ -83,6 +114,39 @@ export async function listBackups(): Promise<BackupItem[]> {
     }
   }
 
+  // Also check /tmp/livinghope-backups if primary directory is different
+  const tmpDir = path.join("/tmp", "livinghope-backups");
+  if (tmpDir !== dir && fs.existsSync(tmpDir)) {
+    try {
+      const tmpEntries = fs.readdirSync(tmpDir, { withFileTypes: true });
+      for (const entry of tmpEntries) {
+        if (!entry.isFile() || entry.name.startsWith(".")) continue;
+        if (backups.some((b) => b.filename === entry.name)) continue;
+
+        const fullPath = path.join(tmpDir, entry.name);
+        const stat = fs.statSync(fullPath);
+        let type: BackupType = "unknown";
+        if (entry.name.includes("_db_snapshot_") || entry.name.endsWith(".json.gz")) {
+          type = "db_snapshot";
+        } else if (entry.name.includes("_db_") || entry.name.endsWith(".sql.gz")) {
+          type = "db_sql";
+        } else if (entry.name.includes("_media_") || entry.name.endsWith(".tar.gz")) {
+          type = "media";
+        }
+
+        backups.push({
+          filename: entry.name,
+          sizeBytes: stat.size,
+          sizeFormatted: formatBytes(stat.size),
+          createdAt: stat.mtime.toISOString(),
+          type,
+        });
+      }
+    } catch {
+      // Ignore tmp read errors
+    }
+  }
+
   // Sort newest first
   return backups.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 }
@@ -91,14 +155,17 @@ export async function listBackups(): Promise<BackupItem[]> {
  * Creates a complete database snapshot in pure Node.js/Prisma.
  * Guaranteed to succeed in any hosting environment without requiring pg_dump.
  */
-export async function createDatabaseSnapshot(): Promise<{
+export async function createDatabaseSnapshot(options?: {
+  isPreRestore?: boolean;
+}): Promise<{
   filename: string;
   sizeBytes: number;
   sizeFormatted: string;
   counts: Record<string, number>;
 }> {
-  if (!fs.existsSync(BACKUP_DIR)) {
-    fs.mkdirSync(BACKUP_DIR, { recursive: true });
+  const dir = getBackupDir();
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
   }
 
   // Extract all models
@@ -206,8 +273,9 @@ export async function createDatabaseSnapshot(): Promise<{
     .replace(/[-:]/g, "")
     .replace("T", "_")
     .replace(/\..+/, "");
-  const filename = `livinghope_db_snapshot_${timestamp}.json.gz`;
-  const filePath = path.join(BACKUP_DIR, filename);
+  const prefix = options?.isPreRestore ? "livinghope_db_snapshot_pre_restore_" : "livinghope_db_snapshot_";
+  const filename = `${prefix}${timestamp}.json.gz`;
+  const filePath = path.join(dir, filename);
 
   fs.writeFileSync(filePath, compressed);
 
@@ -228,8 +296,9 @@ export async function createMediaArchive(): Promise<{
   sizeBytes: number;
   sizeFormatted: string;
 }> {
-  if (!fs.existsSync(BACKUP_DIR)) {
-    fs.mkdirSync(BACKUP_DIR, { recursive: true });
+  const dir = getBackupDir();
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
   }
 
   const uploadsDir = path.resolve(process.cwd(), "public", "uploads");
@@ -243,7 +312,7 @@ export async function createMediaArchive(): Promise<{
     .replace("T", "_")
     .replace(/\..+/, "");
   const filename = `livinghope_media_${timestamp}.tar.gz`;
-  const archivePath = path.join(BACKUP_DIR, filename);
+  const archivePath = path.join(dir, filename);
 
   try {
     await execFileAsync("tar", ["-czf", archivePath, "-C", path.resolve(process.cwd(), "public"), "uploads"]);
@@ -257,6 +326,95 @@ export async function createMediaArchive(): Promise<{
     filename,
     sizeBytes: stat.size,
     sizeFormatted: formatBytes(stat.size),
+  };
+}
+
+/**
+ * Restores public uploaded media files (/public/uploads) from a tarball archive.
+ */
+export async function restoreMediaArchive(filename: string): Promise<{
+  success: boolean;
+  message: string;
+}> {
+  const filePath = getBackupFilePath(filename);
+  const publicDir = path.resolve(process.cwd(), "public");
+  const uploadsDir = path.resolve(publicDir, "uploads");
+
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  }
+
+  try {
+    // Tarballs were created with: tar -czf ... -C public uploads
+    // Extracting into publicDir unpacks files into public/uploads
+    await execFileAsync("tar", ["-xzf", filePath, "-C", publicDir]);
+    return {
+      success: true,
+      message: "Media files restored successfully to public uploads directory.",
+    };
+  } catch (err) {
+    throw new Error(`Failed to restore media archive: ${err instanceof Error ? err.message : String(err)}`);
+  }
+}
+
+/**
+ * Validates and safely stores an uploaded backup archive (.json.gz, .sql.gz, or .tar.gz).
+ */
+export async function saveUploadedBackup(
+  buffer: Buffer,
+  originalFilename: string
+): Promise<{
+  filename: string;
+  sizeBytes: number;
+  sizeFormatted: string;
+  type: BackupType;
+}> {
+  const safeName = sanitizeFilename(originalFilename);
+  if (!safeName.endsWith(".json.gz") && !safeName.endsWith(".sql.gz") && !safeName.endsWith(".tar.gz")) {
+    throw new Error(
+      "Invalid backup format. Only .json.gz (DB Snapshot), .sql.gz (SQL Dump), or .tar.gz (Media Archive) are accepted."
+    );
+  }
+
+  // Validate gzip magic numbers (0x1f, 0x8b)
+  if (buffer.length < 2 || buffer[0] !== 0x1f || buffer[1] !== 0x8b) {
+    throw new Error("Uploaded file is not a valid compressed gzip archive.");
+  }
+
+  // If DB snapshot, verify that it decompresses and contains valid data structure
+  if (safeName.endsWith(".json.gz")) {
+    try {
+      const decompressed = zlib.gunzipSync(buffer);
+      const parsed = JSON.parse(decompressed.toString("utf8"));
+      if (!parsed.data || typeof parsed.data !== "object") {
+        throw new Error("Invalid snapshot payload: missing 'data' object.");
+      }
+    } catch (parseErr) {
+      throw new Error(
+        `Corrupted snapshot archive: ${parseErr instanceof Error ? parseErr.message : "decompression failed"}`
+      );
+    }
+  }
+
+  const dir = getBackupDir();
+  const targetPath = path.join(dir, safeName);
+  fs.writeFileSync(targetPath, buffer);
+
+  const stat = fs.statSync(targetPath);
+  let type: BackupType = "unknown";
+  if (safeName.includes("_db_snapshot_") || safeName.endsWith(".json.gz")) {
+    type = "db_snapshot";
+  } else if (safeName.includes("_db_") || safeName.endsWith(".sql.gz")) {
+    type = "db_sql";
+  } else if (safeName.includes("_media_") || safeName.endsWith(".tar.gz")) {
+    type = "media";
+  }
+
+  return {
+    filename: safeName,
+    sizeBytes: stat.size,
+    sizeFormatted: formatBytes(stat.size),
+    type,
   };
 }
 
